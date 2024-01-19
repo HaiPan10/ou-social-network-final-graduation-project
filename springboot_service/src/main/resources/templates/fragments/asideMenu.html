@@ -1,0 +1,55 @@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo" style="justify-content: center;">
+        <img style="width: 60%; height: 100%;" th:src="@{/img/logo/full-size-logo.png}"/>      
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    <ul class="menu-inner py-1">
+        <!-- Dashboard -->
+        <li class="menu-item" id="dash-board">
+            <a href="/admin/dashboard" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div>Bảng điều khiển</div>
+            </a>
+        </li>
+
+        <!-- Layouts -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Tài khoản</span>
+        </li>
+        <li class="menu-item" id="account-verification-menu">
+            <a href="/admin/accounts/verification" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-check-shield"></i>
+                <div>Duyệt tài khoản</div>
+            </a>
+        </li>
+        <li class="menu-item" id="account-providers-menu">
+            <a href="/admin/accounts/provider" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+                <div>Cấp tài khoản giảng viên</div>
+            </a>
+        </li>
+        <li class="menu-item" id="accounts-admin">
+            <a href="/admin/accounts" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-dock-top"></i>
+                <div>Quản lý tài khoản</div>
+            </a>
+        </li>
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Bài đăng</span>
+        </li>
+        <li class="menu-item" id="posts-admin">
+            <a href="/admin/posts" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-dock-right"></i>
+                <div>Quản lý bài đăng</div>
+            </a>
+        </li>
+        <li class="menu-item" id="upload-post">
+            <a href="/admin/posts/upload" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-upload"></i>
+                <div>Đăng bài</div>
+            </a>
+        </li>
+    </ul>
+</aside>

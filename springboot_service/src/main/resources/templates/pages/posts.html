@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Quản lý bài đăng</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div id="currentPage" th:attr="data-currentPage=${currentPage}"></div>
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Bài đăng /</span> Quản lý bài đăng</h4>
+        <div th:if="${status != null}" class="alert alert-success">
+            <span th:text="${status}"></span>
+        </div>
+
+        <div class="card">
+            <h5 class="card-header">Danh sách bài đăng</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <!-- <th>Số thứ tự</th> -->
+                            <th>Id tác giả</th>
+                            <th>Tên tác giả</th>
+                            <th style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;">Nội dung</th>
+                            <th>Ngày tạo</th>
+                            <th>Loại bài đăng</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        <th:block th:each="p : ${posts}">
+                            <tr>
+                                <td th:text="${p.userId.id}"></td>
+                                <td th:text="${p.userId.lastName} + ' ' + ${p.userId.firstName}"></td>
+                                <td style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;"
+                                    th:text="${p.content}"></td>
+                                <td th:text="${p.createdAt}"></td>
+                                <td>
+                                    <span th:switch="${true}">
+                                        <span th:case="${p.postSurvey == null && p.postInvitation != null}">
+                                            <i class='bx bxs-envelope'></i> Bài đăng thư mời thông báo
+                                        </span>
+                                        <span th:case="${p.postSurvey != null && p.postInvitation == null}">
+                                            <i class='bx bx-bar-chart-square'></i> Bài đăng khảo sát
+                                        </span>
+                                        <span th:case="*">
+                                            <i class='bx bxs-dock-right'></i> Bài đăng thông thường
+                                        </span>
+                                    </span>
+                                </td>
+                                <th><a th:href="@{/admin/posts/{id}(id=${p.id})}">Xem chi tiết</a></th>
+                            </tr>
+                        </th:block>
+                    </tbody>
+                </table>
+                <div th:if="${counter > 1}" class="demo-inline-spacing">
+                    <!-- Basic Pagination -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <th:block th:each="i : ${#numbers.sequence(1, counter)}">
+                                <th:block
+                                    th:with="pageAction=${'/admin/posts' + '?page=' + i + (#strings.isEmpty(kw) ? '' : '&kw=' + kw)}">
+                                    <li class="page-item" th:id="'pagePosts' + ${i}">
+                                        <a class="page-link" th:href="${pageAction}" th:text="${i}"></a>
+                                    </li>
+                                </th:block>
+                            </th:block>
+                        </ul>
+                    </nav>
+                    <!--/ Basic Pagination -->
+                </div>
+            </div>
+        </div>
+        <!--/ Basic Bootstrap Table -->
+
+        <script>
+            var postsAdmin = document.getElementById("posts-admin");
+            postsAdmin.className += " active";
+            var curPage = document.getElementById("currentPage").getAttribute("data-currentPage");
+            var pagePosts = document.getElementById(`pagePosts${curPage}`);
+            pagePosts.className += " active";
+        </script>
+    </div>
+</body>
+
+</html>

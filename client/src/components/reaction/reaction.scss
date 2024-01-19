@@ -1,0 +1,56 @@
+@import "../../style.scss";
+
+#modal-reaction {
+    @include themify($themes) {
+        .modal-content {
+            background-color: themed("bg");
+            color: themed("textColor");
+            width: 16vw;
+            margin: auto;
+            z-index: -1;
+            max-height: 50vh;
+            overflow: auto;
+
+            @include mobile {
+                width: 85vw;
+            }
+
+            .reaction-title {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                align-items: center;
+                color: themed("mainColor");
+                font-size: 18px;
+            }
+            
+            .reaction-body {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                gap: 10px;
+                padding-top: 0;
+                padding-bottom: 0;
+                .user_list {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 10px;
+                    cursor: pointer;
+                    .avatar {
+                        img {
+                            width:  20px;
+                            height: 20px;
+                            border-radius: 50%;
+                        }
+                    }
+
+                    .name {
+                        &:hover {
+                            color:themed("mainHoverColor");
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

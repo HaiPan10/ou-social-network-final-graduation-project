@@ -1,0 +1,25 @@
+@import "../../style.scss";
+
+.postDetail {
+    @include themify($themes) {
+        min-height: calc(100vh);
+        background-color: themed("bg");
+        padding: 20px 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        position: relative;
+        z-index: 2;
+
+        .unavailablePost {
+            color: themed("textColor");
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            justify-self: center;
+            align-self: center;
+            height: 100%;
+            line-height: calc(100vh);
+        }
+    }
+}

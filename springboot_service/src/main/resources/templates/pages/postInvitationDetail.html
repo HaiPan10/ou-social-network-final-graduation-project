@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Chi tiết bài đăng</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h4 class="fw-bold py-3 mb-4"><span id="btnPrevious"
+            class="text-muted fw-light">Quản lý bài đăng /</span> Thông tin chi tiết
+        </h4>
+        <div class="card">
+            <h1 class="text-center" th:text="${post.postInvitation.eventName}"></h1>
+            <h5 class="text-center" th:text="${post.content}"></h5>
+            <div class="text-end">
+                <button th:onclick="'javascript:deletePost(' + ${post.id} + ')'" class="btn-delete"><i
+                        class='bx bx-trash' style="color: red; width: 100%;"></i>
+                </button>
+            </div>
+            <div class="table-responsive text-nowrap">
+                <th:block th:if="${post.postInvitation.postInvitationUsers.empty}">
+                    <h3 class="text-center">Sự kiện này cho tất cả người dùng!</h3>
+                </th:block>
+
+                <th:block th:if="${!post.postInvitation.postInvitationUsers.empty}">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id người nhận</th>
+                                <th style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;">Tên người nhận</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            <th:block th:each="p : ${post.postInvitation.postInvitationUsers}">
+                                <tr>
+                                    <td th:text="${p.userId.id}"></td>
+                                    <td style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;"
+                                        th:text="${p.userId.lastName} + ' ' + ${p.userId.firstName}"></td>
+                                </tr>
+                            </th:block>
+                        </tbody>
+                    </table>
+                </th:block>
+            </div>
+        </div>
+
+        <script>
+            function deletePost(postId) {
+                var path = "/admin/posts/delete/" + postId;
+                if (confirm("Bạn chắc chắn xóa không?") === true) {
+                    fetch(path, {
+                        method: "DELETE"
+                    }).then(res => {
+                        if (res.status === 204) {
+                            window.location.replace('/admin/posts');
+                        }
+                        else
+                            alert("Something wrong!!!");
+                    });
+                }
+            }
+
+            document.getElementById("btnPrevious").addEventListener('click', async (e) => {
+                window.history.back();
+            });
+        </script>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Chi tiết bài đăng</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h4 class="fw-bold py-3 mb-4"><span id="btnPrevious"
+            class="text-muted fw-light">Quản lý bài đăng /</span> Thông tin chi tiết
+        </h4>
+        <div class="card">
+            <h1 class="text-center" th:text="${post.postSurvey.surveyTitle}"></h1>
+            <h5 class="text-center" th:text="${post.content}"></h5>
+            <div class="text-end">
+                <button th:onclick="'javascript:deletePost(' + ${post.id} + ')'" class="btn-delete"><i
+                        class='bx bx-trash' style="color: red; width: 100%;"></i>
+                </button>
+            </div>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Id câu hỏi</th>
+                            <th style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;">Nội dung câu hỏi
+                            </th>
+                            <th>Bắt buộc</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        <th:block th:each="q : ${post.postSurvey.questions}">
+                            <tr>
+                                <td th:text="${q.id}"></td>
+                                <td style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;"
+                                    th:text="${q.questionText}"></td>
+                                <td th:text="${q.isMandatory}"></td>
+                                <th><a th:href="@{/admin/posts/survey_question/{id}(id=${q.id})}">Xem thống kê</a></th>
+                            </tr>
+                        </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            function deletePost(postId) {
+                var path = "/admin/posts/delete/" + postId;
+                if (confirm("Bạn chắc chắn xóa không?") === true) {
+                    fetch(path, {
+                        method: "DELETE"
+                    }).then(res => {
+                        if (res.status === 204) {
+                            window.location.replace('/admin/posts');
+                        }
+                        else
+                            alert("Something wrong!!!");
+                    });
+                }
+            }
+
+            document.getElementById("btnPrevious").addEventListener('click', async (e) => {
+                window.history.back();
+            });
+        </script>
+    </div>
+</body>
+
+</html>

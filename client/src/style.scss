@@ -1,0 +1,70 @@
+$themes: (
+  light: (
+    textColor: #000,
+    bg: white,
+    mainColor: #07689f,
+    mainHoverColor: #2F90C7,
+    bgSoft: #f6f3f3,
+    textColorSoft: #555,
+    border: lightgray,
+    logo: url(../../images/logo-light-theme.png),
+    friendIcon: url(../../images/friend-light-theme.png),
+    commentColor: #f0f2f5,
+    hoverColor: #f8faff,
+    targetChatColor: #f8faff,
+    roomColor: #000,
+    notificationColor: rgba(0, 0, 0, 0.5),
+    reverseColor: #000,
+  ),
+  dark: (
+    textColor: whitesmoke,
+    bg: #222,
+    mainColor: #3893C9,
+    mainHoverColor: #70B8E2,
+    bgSoft: #333,
+    textColorSoft: lightgray,
+    border: #444,
+    logo: url(../../images/logo-dark-theme.png),
+    friendIcon: url(../../images/friend-dark-theme.png),
+    commentColor: #3a3b3c,
+    hoverColor: #545556,
+    targetChatColor: #f8faff,
+    roomColor: #ccc,
+    notificationColor: rgba(255, 255, 255, 0.2),
+    reverseColor: #ccc,
+  ),
+);
+
+@mixin themify($themes) {
+  @each $theme, $map in $themes {
+    .theme-#{$theme} & {
+      $theme-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($themes, $theme), "#{$key}");
+        $theme-map: map-merge(
+          $theme-map,
+          (
+            $key: $value,
+          )
+        ) !global;
+      }
+      @content;
+      $theme-map: null !global;
+    }
+  }
+}
+
+@function themed($key) {
+  @return map-get($theme-map, $key);
+}
+
+@mixin mobile {
+  @media (max-width: 480px) {
+    @content;
+  }
+}
+@mixin tablet {
+  @media (max-width: 960px) {
+    @content;
+  }
+}

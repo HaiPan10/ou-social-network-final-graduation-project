@@ -1,0 +1,54 @@
+@import "../../style.scss";
+
+.home {
+    @include themify($themes) {
+        min-height: calc(100vh);
+        background-color: themed("bg");
+
+        @include mobile {
+            min-height: calc(100vh - 50px);
+        }
+
+        .posts{
+            padding: 20px 160px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+    
+            @include mobile {
+              padding: 10px;
+            }
+
+            .caught-up {
+                background-color: themed("bg");
+                color: themed("textColor");
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+
+                button {
+                    width: 40%;
+                    padding: 5px;
+                    background-color: themed("mainColor");
+                    border-radius: 15px;
+                    color: themed("textColor");
+                    border: none;
+                    &:hover {
+                        background-color: themed("mainHoverColor");
+                    }
+                }
+            }
+
+            .bottom-loading {
+                background-color: themed("bg");
+                color: themed("textColor");
+                display: flex;
+                justify-content: center;
+            }
+        }
+    }
+}

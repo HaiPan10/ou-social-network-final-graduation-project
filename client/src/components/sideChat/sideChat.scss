@@ -1,0 +1,187 @@
+@import "../../style.scss";
+
+.side-chat {
+    @include themify($themes) {
+        // width: 100%;
+        // height: 100vh;
+        // background-color: themed("bg");
+        // position: sticky;
+        // top: 0px;
+        // display: flex;
+        // flex-direction: column;
+        // color: themed("textColor");
+        // border-right: 1px solid themed("border");
+
+        // @include mobile {
+        //     height: 20vh;
+        // }
+
+        width: 100%;
+        height: 100vh;
+        background-color: themed("bg");
+        position: sticky;
+        top: 0px;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+
+        @include mobile {
+            height: 20vh;
+        }
+
+        .side-menu {
+            display: flex;
+            flex-direction: row;
+            padding: 15px;
+
+            .side-menu-item {
+                width: 50%;
+                text-align: center;
+                background-color: themed("bgSoft");
+                padding-top: 10px;
+                padding-bottom: 10px;
+                color: themed("textColor");
+                cursor: pointer;
+
+                &:hover {
+                    background-color: themed("commentColor");
+                }
+            }
+
+            .active {
+                background-color: themed("mainColor");
+                color: #f8faff;
+
+                &:hover {
+                    background-color: themed("mainColor");
+                }
+            }
+
+            .people-menu {
+                border-top-right-radius: 15px;
+                border-bottom-right-radius: 15px;
+                border-left: 1px solid themed("border");
+            }
+
+            .chat-menu {
+                border-top-left-radius: 15px;
+                border-bottom-left-radius: 15px;
+                border-right: 1px solid themed("border");
+            }
+        }
+
+        .item-wrapper {
+            overflow: auto;
+        }
+
+        .item-wrapper::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .item-wrapper::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        }
+        
+        .item-wrapper::-webkit-scrollbar-thumb {
+            background-color: darkgrey;
+            outline: 1px solid slategrey;
+        }
+
+        .loading {
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .turnoff-link-style {
+            text-decoration: none;
+            color: themed("textColor");
+            .user {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                img {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+
+                span {
+                    font-size: 14px;
+                }
+            }
+        }
+
+        .title {
+            padding: 15px;
+            font-size: 22px;
+        }
+        
+        .searchbar {
+            padding: 15px;
+
+            .form-control {
+                border-radius: 0;
+                background-color: themed("bgSoft");
+                color: themed("textColor");
+                border: 1px solid themed("mainColor");
+                border-radius: 20px;
+            }
+            input::placeholder {
+                color: themed("mainColor");
+                opacity: 1;
+            }
+
+            input[type="search"]::-webkit-search-cancel-button:hover { 
+                cursor:pointer; 
+            }
+        }
+        
+        .active {
+            background-color: themed("mainColor");
+        }
+        
+        .chat-room-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            padding-left: 10px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: themed("bgSoft");
+            }
+            .avatar {
+                position: relative;
+                img {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    object-fit: contain;
+                }
+                .user-status-online {
+                    position: absolute;
+                    right: 3px;
+                    bottom: 3px;
+                    background-color: #45cc58;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                }
+            }
+            .chat-info {
+                .displayName {
+                }
+            }
+        }
+
+
+    }
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Chi tiết bài đăng</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/css/tailwind.css}" rel="stylesheet">
+    <link th:href="@{/css/images-grid.css}" rel="stylesheet">
+    <script th:src="@{/js/images-grid.js}"></script>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h4 class="fw-bold py-3 mb-4"><span id="btnPrevious"
+            class="text-muted fw-light">Quản lý bài đăng /</span> Thông tin chi tiết
+        </h4>
+        <div id="wrapper" class="is-collapse">
+            <div class="">
+                <div class="mcontainer">
+                    <div class="lg:w-1/2 space-y-7">
+                        <div class="card lg:mx-0 uk-animation-slide-bottom-small">
+                            <div class="flex justify-between items-center lg:p-4 p-2.5">
+                                <div class="flex flex-1 items-center space-x-4">
+                                    <a href="#">
+                                        <img th:src="${post.userId.avatar}"
+                                            class="bg-gray-200 border border-white rounded-full w-10 h-10"
+                                            style="object-fit: cover;">
+                                    </a>
+                                    <div class="flex-1 font-semibold">
+                                        <a href="#" class="text-black dark:text-gray-100" 
+                                            th:text="${post.userId.lastName} + ' ' + ${post.userId.firstName}">
+                                        </a>
+                                        <div th:text="${post.createdAt}"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button th:onclick="'javascript:deletePost(' + ${post.id} + ')'"
+                                        class="btn-delete"><i class='bx bx-trash' style="color: red; width: 100%;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="lg:p-4 p-2.5 pt-0 pb-0 dark:border-gray-700" th:text="${post.content}">
+                            </div>
+                            <div id="image-urls" style="display: none;">
+                                <th:block th:each="i, loop : ${post.imageInPostList}">
+                                    <th:block th:text="${i.imageUrl} + (${loop.last} ? '' : ',')"></th:block>
+                                </th:block>
+                            </div>
+                            <div class="img-container">
+                                <div id="gallery"></div>
+                                <script>
+                                    var imageUrl = document.getElementById("image-urls").textContent.split(',');
+                                    var images = [];
+                                    imageUrl.forEach(img => {
+                                        if (img.trim().length != 0) {
+                                            images.push(img.trim());
+                                        }
+                                    });
+                                    $(document).ready(function () {
+                                        $.noConflict();
+                                        $('#gallery').imagesGrid({
+                                            images: images
+                                        });
+                                    })
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            function deletePost(postId) {
+                var path = "/admin/posts/delete/" + postId;
+                if (confirm("Bạn chắc chắn xóa không?") === true) {
+                    fetch(path, {
+                        method: "DELETE"
+                    }).then(res => {
+                        if (res.status === 204) {
+                            window.location.replace('/admin/posts?status=success');
+                        }
+                        else
+                            alert("Something wrong!!!");
+                    });
+                }
+            }
+
+            document.getElementById("btnPrevious").addEventListener('click', async (e) => {
+                window.history.back();
+            });
+        </script>
+    </div>
+
+</body>
+
+</html>

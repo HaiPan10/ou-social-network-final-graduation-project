@@ -1,0 +1,12 @@
+@import "../../style.scss";
+
+
+.leftBarWrapper {
+    @include mobile{
+        display: none;
+    }
+}
+
+.layout::-webkit-scrollbar {
+    display: none;
+}

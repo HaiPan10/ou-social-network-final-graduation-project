@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Cấp tài khoản</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div th:if="${status != null}" class="alert alert-success">
+            <span th:text="${status}"></span>
+        </div>
+        <div class="row">
+            <div class="col-xl">
+                <form th:action="@{/admin/accounts/provider}" id="provideAccount" th:object="${account}" method="post"
+                    enctype="multipart/form-data">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Thông tin tài khoản</h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${#fields.hasAnyErrors()}" class="mb-3 text-danger">
+                                <div th:each="err : ${#fields.allErrors()}" th:text="${err}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="bx bx-envelope"></i></span>
+                                    <input class="form-control" type="text" th:field="*{email}" th:name="email" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu</label>
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="bx bxs-key"></i></span>
+                                    <input class="form-control" type="text" th:name="password" id="password"
+                                        th:value="${defaultPassword}" readonly="true"/>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tên giảng viên</label>
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="bx bx-user"></i></span>
+                                    <input class="form-control" id="user.firstName" type="text" th:field="*{user.firstName}"
+                                        th:name="user.firstName" placeholder="Tên"/>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Họ tên lót giảng viên</label>
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="bx bx-user"></i></span>
+                                    <input class="form-control" type="text" th:field="*{user.lastName}" 
+                                        th:name="user.lastName" placeholder="Họ tên lót" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ngày tháng năm sinh</label>
+                                <div class="input-group input-group-merge">
+                                    <input id="dob" class="form-control" type="date" th:field="*{user.dob}" 
+                                        th:name="user.dob" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Avatar tài khoản</label>
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="bx bx-image-alt"></i></span>
+                                    <input class="form-control" id="formFile" type="file" name="fileInput">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Cấp tài khoản</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            var provider = document.getElementById("account-providers-menu");
+            provider.className += " active";
+
+        </script>
+    </div>
+</body>
+
+</html>

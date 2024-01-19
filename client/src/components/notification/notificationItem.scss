@@ -1,0 +1,74 @@
+@import "../../style.scss";
+
+.active {
+    @include themify($themes) {
+        background-color: rgba(themed("reverseColor"), 0.2);
+    }
+}
+
+.notificationItem {
+    @include themify($themes) {
+        display: flex;
+        flex-direction: row;
+        padding: 10px;
+        gap: 10px;
+        border-bottom: 1px solid themed("mainColor");
+        cursor: pointer;
+
+        &:hover {
+            background-color: themed("mainHoverColor");
+        }
+
+        // &:last-child {
+        //     border-bottom-left-radius: 10px;
+        //     border-bottom-right-radius: 10px;
+        //     // border-bottom: none;
+
+        //     &:hover {
+        //         border-bottom-left-radius: 10px;
+        //         border-bottom-right-radius: 10px;
+        //         border-bottom: 1px solid themed("mainColor");
+        //     }
+        // }
+
+        .notificationImage {
+            position: relative;
+            height: 100%;
+
+            img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+            }
+
+            .notificationSubIcon {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                color: themed("mainColor");
+                margin-right: -2px;
+                margin-bottom: -12px;
+            }
+        }
+
+        .textWrapper {
+            .notificationText {
+                font-size: 15px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                color: themed("textColor");
+            }
+
+            .notificationTimestamp {
+                font-size: 12px;
+                color: themed("textColor");
+                font-weight: bold;
+            }
+
+        }
+    }
+}

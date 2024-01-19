@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1080" height="1080" viewBox="0 0 1080 1080" xml:space="preserve">
+<desc>Created with Fabric.js 5.2.4</desc>
+<defs>
+</defs>
+<g transform="matrix(1 0 0 1 540 540)" id="0445dd0e-1327-418e-b73e-b4a71cdb94d1"  >
+<rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; visibility: hidden;" vector-effect="non-scaling-stroke"  x="-540" y="-540" rx="0" ry="0" width="1080" height="1080" />
+</g>
+<g transform="matrix(1 0 0 1 540 540)" id="15117b03-311e-4e06-8ba7-fa93e4e945ac"  >
+</g>
+<g transform="matrix(1 0 0 1 498.15 -581.39)"  >
+<g style="" vector-effect="non-scaling-stroke"   >
+		<g transform="matrix(1 0 0 1 -2.43 47.39)" id="Path_195"  >
+<linearGradient id="SVGID_linear-gradient_3" gradientUnits="objectBoundingBox" gradientTransform="matrix(1 0 0 1 0 0)"  x1="0.5" y1="0" x2="0.5" y2="1">
+<stop offset="0%" style="stop-color:rgb(54,28,193);stop-opacity: 1"/>
+<stop offset="100%" style="stop-color:rgb(46,130,239);stop-opacity: 1"/>
+</linearGradient>
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: url(#SVGID_linear-gradient_3); fill-rule: nonzero; opacity: 0.11;" vector-effect="non-scaling-stroke"  transform=" translate(-427, -208.78)" d="M -533.089 278.364 C -533.089 278.364 -432.65900000000005 518.308 -131.88300000000004 469.841 C 168.89299999999997 421.374 310.18499999999995 479.418 405.74699999999996 584.782 C 501.30899999999997 690.1460000000001 757.838 679.111 986.7339999999999 637.1560000000001 C 1215.6299999999999 595.2010000000001 1349.9 678.95 1387.094 746.594 C 1387.1100000000001 746.61 1386.721 -329.0149999999999 1386.721 -329.0149999999999 L -533.0450000000001 -329.04199999999986 Z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(1 0 0 1 -2.41 47.39)" id="Path_194"  >
+<linearGradient id="SVGID_linear-gradient_4" gradientUnits="objectBoundingBox" gradientTransform="matrix(1 0 0 1 0 0)"  x1="0.5" y1="0" x2="0.5" y2="1">
+<stop offset="0%" style="stop-color:rgb(54,28,193);stop-opacity: 1"/>
+<stop offset="100%" style="stop-color:rgb(46,130,239);stop-opacity: 1"/>
+</linearGradient>
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: url(#SVGID_linear-gradient_4); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-427.02, -208.78)" d="M -533.031 278.516 C -533.031 278.516 -437.76199999999994 482.70900000000006 -131.82099999999997 439.663 C 174.12 396.61699999999996 287.83500000000004 407.563 412.367 536.5550000000001 C 536.899 665.5470000000001 756.344 644.095 985.2760000000001 603.6210000000001 C 1214.208 563.1470000000002 1345.4660000000001 671.7790000000001 1387.066 746.589 C 1387.107 744.1890000000001 1386.992 -329.03200000000004 1386.992 -329.03200000000004 L -533.008 -329.021 Z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(1 0 0 1 0 -162.2)" id="Path_4" clip-path="url(#CLIPPATH_5)"  >
+<clipPath id="CLIPPATH_5" >
+	<path transform="matrix(1 0 0 1 -2.41 209.58) translate(-427.02, -208.78)" id="Path_199" d="M -533.031 278.516 C -533.031 278.516 -437.76199999999994 482.70900000000006 -131.82099999999997 439.663 C 174.12 396.61699999999996 287.83500000000004 407.563 412.367 536.5550000000001 C 536.899 665.5470000000001 756.344 644.095 985.2760000000001 603.6210000000001 C 1214.208 563.1470000000002 1345.4660000000001 671.7790000000001 1387.066 746.589 C 1387.107 744.1890000000001 1386.992 -329.03200000000004 1386.992 -329.03200000000004 L -533.008 -329.021 Z" stroke-linecap="round" />
+</clipPath>
+<path style="stroke: rgb(54,28,193); stroke-width: 128; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: none; fill-rule: nonzero; opacity: 0.14;" vector-effect="non-scaling-stroke"  transform=" translate(-440.43, 38.22)" d="M -496.368 321.285 C -496.368 321.285 -322.126 -70.761 321.065 66.253 C 964.256 203.267 1190.48 143.72 1377.226 -397.72900000000004" stroke-linecap="round" />
+</g>
+</g>
+</g>
+</svg>

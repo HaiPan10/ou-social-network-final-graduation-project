@@ -1,0 +1,78 @@
+$primaryColor: #07689f;
+
+.emailVerification {
+    height: 100vh;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    .card {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      border-radius: 10px;
+      // min-height: 300px;
+      overflow: hidden;
+      align-items: center;
+
+      .title {
+        background-repeat: no-repeat;
+        background-size:contain;
+        width: 100%;
+        text-align: center;
+        padding: 5px;
+        color: $primaryColor;
+
+        img {
+          width: 10%;
+          height: 10%;
+        }
+      }
+
+      .content {
+        padding: 15px;
+        padding-top: 0;
+        font-size: 20px;
+        width: 100%;
+        padding-bottom: 0;
+
+        button {
+          padding: 5px;
+          border: none;
+          background-color: $primaryColor;
+          color: white;
+          font-size: 15px;
+          border-radius: 5px;
+          cursor: pointer;
+
+          &:hover {
+            background-color: #ccc;
+          }
+        }
+      }
+
+      .logout{
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+
+        button {
+          margin-right: 25px;
+          margin-bottom: 10px;
+          padding: 10px;
+          border: none;
+          background-color: $primaryColor;
+          color: white;
+          font-weight: bold;
+          border-radius: 5px;
+          cursor: pointer;
+
+          &:hover {
+            background-color: #ccc;
+          }
+        }
+      }
+    }
+}

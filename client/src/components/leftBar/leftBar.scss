@@ -1,0 +1,300 @@
+@import "../../style.scss";
+
+.leftBar {
+    @include themify($themes) {
+        // flex: 6;
+        // position: sticky;
+        // top: 0px;
+        // height: calc(100vh);
+        height: 100%;
+        overflow: scroll;
+        background-color: themed("bg");
+        color: themed("textColor");
+        border-right: 1px solid themed("border");
+        display: flex;
+        position: relative;
+        transition: all 0.1s linear;
+        // z-index: 3;
+
+        @include mobile{
+            display: none;
+        }
+        
+        .transition-container {
+            display: flex;
+        }
+          
+        .transition-item {
+            flex: 1;
+            transition: opacity 0.5s, transform 0.5s;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .transition-item-exit {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .transition-item-exit-active {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+          
+
+        .active {
+            background-color: themed("bgSoft");
+        }
+
+        .search-active {
+            box-sizing: border-box;
+            border: 1px solid themed("bgSoft");
+        }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .container {
+            padding: 20px;
+            height: 100%;
+            z-index: 5;
+
+            hr {
+                margin: 20px 0px;
+                border: none;
+                height: 0.5px;
+                background-color: themed("border");
+            }
+
+            .menu {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+
+                .menu-bottom {
+                    display: flex;
+                    flex-direction: column;
+
+                    .dropdown {
+                        cursor: pointer;
+                        position: relative;
+                        display: inline-block;
+                        
+                        .setting {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            font-weight: 500;
+                            padding: 10px;
+                            position: relative;
+            
+                            img {
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 50%;
+                                object-fit: cover;
+                            }
+            
+                            span {}
+                        }
+            
+                        .dropdown-content {
+                            display: block;
+                            align-items: flex-end;
+                            width: 100%;
+                            position: absolute;
+                            bottom: 50px;
+                            border-radius: 5px;
+                            left: 0;
+                            background-color: themed("bg");
+                            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                            z-index: 5;
+
+                            .icon-wrapper {
+                                color: themed("textColor");
+                                padding: 12px 16px;
+                                text-decoration: none;
+                                display: block;
+                                display: flex;
+                                flex-direction: row;
+                                height: 100%;
+            
+                                &:hover {background-color: themed("bgSoft");}
+
+                                .piority-setting {
+                                    width: 8px;
+                                    // height: 100%;
+                                    display: flex;
+                                    align-items: flex-end;
+                                    .piority-item {
+                                        width: 100%;
+                                        height: 8px;
+                                        background-color: #FF3040;
+                                        border-radius: 50%;
+                                        display: flex;
+                                    }
+                                }
+                            }
+                        }
+            
+                    }
+
+                    .item {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        border-radius: 5px;
+                        padding: 10px;
+                        cursor: pointer;
+
+                        .icon-wrapper {
+                            position: relative;
+                            .icon {
+                                width: 30px;
+                                height: 30px;
+                            }
+
+                            .piority {
+                                width: 8px;
+                                height: 8px;
+                                background-color: #FF3040;
+                                border-radius: 50%;
+                                position: absolute;
+                                bottom: 0;
+                                right: 0;
+                                padding: 0;
+                                margin: 0;
+                            }
+                        }
+
+                        span {
+                            font-size: 14px;
+                        }
+
+                        &:hover {
+                            background-color: themed("bgSoft");
+                        }
+                    }
+                }
+
+                .menu-top {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    height: 100%;
+
+                    .turnoff-link-style {
+                        text-decoration: none;
+                        color: themed("textColor");
+                        .user {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+        
+                            img {
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 50%;
+                                object-fit: cover;
+                            }
+        
+                            span {
+                                font-size: 14px;
+                            }
+                        }
+                    }
+
+                    .item {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        border-radius: 5px;
+                        padding: 10px;
+                        cursor: pointer;
+
+                        .icon-wrapper {
+                            position: relative;
+                            .messageUnseenTotal {
+                                position: absolute;
+                                right: 0;
+                                bottom: 0;
+                                font-weight: bold;
+                                background-color: red;
+                                border-radius: 50%;
+                                font-size: 12px;
+                                width: 15px;
+                                height: 15px;
+                                line-height: 15px;
+                                text-align: center;
+                                color: white;
+                            }
+                        }
+
+                        .icon {
+                            width: 30px;
+                            height: 30px;
+                        }
+
+                        #friend {
+                            content: themed("friendIcon");
+                        }
+
+                        img {
+                            width: 30px;
+                        }
+
+                        span {
+                            font-size: 14px;
+                        }
+
+                        &:hover {
+                            background-color: themed("bgSoft");
+                        }
+                    }
+
+                    .logo {
+                        width: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: default;
+                        
+        
+                        @include mobile{
+                            width: 30%;
+                        }
+        
+                        img {
+                            width: 80px;
+                            height: 40px;
+                            padding-right: 10px;
+                            content: themed("logo");
+                        }
+                    }
+                }
+            }
+        }
+
+        .appendDiv {
+            border-left: 1px solid themed("border");
+            width: 90%;
+            height: 100%;
+            position: relative;
+            z-index: 3;
+            --animate-duration: 0.1s;
+        }
+
+        .pressDiv {
+            border-left: 1px solid themed("border");
+            position: absolute;
+            width: 80%;
+            top: 0;
+            right: 0;
+            z-index: 4;
+            --animate-duration: 0.1s;
+        }
+        
+    }
+}

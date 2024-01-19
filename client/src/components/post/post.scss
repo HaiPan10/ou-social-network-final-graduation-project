@@ -1,0 +1,338 @@
+@import "../../style.scss";
+
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 45vw;
+
+        @include themify($themes) {
+            .modal-content {
+                max-height: calc(100vh);
+                border: 2px solid themed("border");
+
+                .modal-body {
+                    overflow: auto;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    padding-top: 0;
+                    padding-bottom: 0;
+                }
+
+                .modal-body::-webkit-scrollbar {
+                    width: 5px;
+                }
+
+                .modal-body::-webkit-scrollbar-track {
+                    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+                }
+
+                .modal-body::-webkit-scrollbar-thumb {
+                    background-color: darkgrey;
+                    outline: 1px solid slategrey;
+                }
+            }
+        }
+    }
+}
+
+.post {
+    @include themify($themes) {
+        // -webkit-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
+        // -moz-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
+        // box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
+        // border-radius: 20px;
+        background-color: themed("bg");
+        color: themed("textColor");
+        padding: 0;
+        border-bottom: 1px solid themed("border");
+
+        .reaction-icon {
+
+            &:hover {
+                color: themed("mainHoverColor");
+            }
+        }
+
+        .no-hover {
+        }
+
+        .item-chatting {
+            padding: 5px 10px 5px 10px;
+            background-color: themed("mainColor");
+            border-radius: 20px;
+            color: themed("textColor");
+
+            &:hover {
+                background-color: themed("mainHoverColor");
+                color: themed("textColor");
+            }
+        }
+
+        .selected {
+            color: themed("mainColor");
+        }
+
+        .reaction_number {
+            &:hover {
+                color: themed("mainColor");
+            }
+        }
+
+        .postContainer {
+            padding: 20px 0px;
+
+            .comments {
+                img {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+
+                .read {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin: 20px 0px;
+                    gap: 10px;
+
+                    input {
+                        flex: 5;
+                        width: calc(85% - 50px);
+                        padding: 10px;
+                        border: 1px solid themed("border");
+                        border-radius: max(0px, min(20px, calc((100vw - 4px - 100%) * 9999)));
+                        background-color: transparent;
+                        color: themed("textColor");
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: themed("bgSoft");
+                        }
+                    }
+                }
+            }
+
+            .user {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .userInfo {
+                    display: flex;
+                    gap: 10px;
+
+                    img {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                    }
+
+                    .details {
+                        display: flex;
+                        flex-direction: column;
+
+                        .name {
+                            font-weight: 500;
+
+                            span {
+                                font-size: 12px;
+                                color: themed("mainColor");
+                            }
+                        }
+
+                        .date {
+                            font-size: 12px;
+                        }
+                    }
+                }
+
+                .dropdown {
+                    cursor: pointer;
+                    position: relative;
+                    // display: inline-block;
+
+                    .btn-edit {
+                        display: flex;
+                        justify-content: right;
+                        align-items: flex-end;
+                        border-radius: 50%;
+
+                        &:hover {
+                            background-color: themed("commentColor");
+                        }
+                    }
+
+                    .dropdown-content {
+                        position: absolute;
+                        width: 600%;
+                        border-radius: 5px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        right: 0;
+                        background-color: themed("bgSoft");
+                        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+                        z-index: 1;
+                    }
+
+                    .dropdown-content div {
+                        color: themed("textColor");
+                        width: 100%;
+                        padding: 12px 16px;
+                        text-decoration: none;
+                        border-radius: 5px;
+
+                        &:hover {
+                            background-color: themed("commentColor");
+                        }
+                    }
+                }
+            }
+
+            .content {
+                margin: 10px 0px;
+
+                .show-more {
+                    position: relative;
+                    cursor: pointer;
+
+                    .move-icon {
+                        transition: "all 0.5s ease",
+                    }
+
+                    &:hover {
+                        background-color: themed("bgSoft");
+                    }
+                }
+
+                .question-wrapper {
+                    .piority-question {
+                        font-size: 12px;
+                        color: themed("mainColor");
+                        margin: 10px;
+                        font-weight: bold;
+                    }
+
+                    .input-question {
+                        width: 100%;
+
+                        textarea {
+                            width: 100%;
+                        }
+
+                        textarea::-webkit-scrollbar {
+                            width: 5px;
+                        }
+
+                        textarea::-webkit-scrollbar-track {
+                            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+                        }
+
+                        textarea::-webkit-scrollbar-thumb {
+                            background-color: darkgrey;
+                            outline: 1px solid slategrey;
+                        }
+                    }
+                }
+
+                .image-post {
+                    position: relative;
+
+                    .layout {
+                        position: absolute;
+                        bottom: 0;
+                        width: 100%;
+                        height: 25%;
+                        background-color: rgba(64, 64, 64, 0.8);
+                        display: flex;
+                        flex-direction: column;
+
+                        .layout-title {
+                            width: 100%;
+                            text-align: center;
+                            height: 20%;
+                            font-size: 13px;
+                            font-weight: bold;
+                        }
+
+                        .countdown {
+                            width: 100%;
+                            height: 80%;
+                        }
+                    }
+                }
+
+                .start_at {
+                    width: 100%;
+                    background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%), radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+                    text-align: center;
+                    line-height: 40px;
+                    color: white;
+                    height: 40px;
+                    font-size: 13px;
+                }
+
+                .title {
+                    width: 100%;
+                    text-align: center;
+                }
+
+                p {
+                    margin-bottom: 10px;
+                }
+
+                img {
+                    width: 100%;
+                    max-height: 500px;
+                    object-fit: cover;
+                    margin-top: 10px;
+                }
+
+                .grid-container {
+                    padding: 0;
+
+
+                    .container {
+                        .row {
+                            .height-one {
+                                // padding-top: 50%;
+                            }
+
+                            .background {
+                                border-radius: 0;
+                            }
+
+                            .cover {
+                                border-radius: 0;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .info {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                justify-content: space-between;
+
+                .item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    cursor: pointer;
+                    font-size: 14px;
+                }
+
+                .lockComment {
+                    font-size: 14px;
+                    color: #ffdddd;
+                }
+            }
+
+        }
+    }
+}

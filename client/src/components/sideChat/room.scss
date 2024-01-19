@@ -1,0 +1,118 @@
+@import "../../style.scss";
+
+.room {
+    @include themify($themes) {
+        width: 100%;
+
+        .item-wrapper {
+            overflow: auto;
+        }
+
+        .item-wrapper::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .item-wrapper::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        }
+        
+        .item-wrapper::-webkit-scrollbar-thumb {
+            background-color: darkgrey;
+            outline: 1px solid slategrey;
+        }
+
+        .turnoff-link-style {
+            text-decoration: none;
+            color: themed("textColor");
+            .user {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                img {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+
+                span {
+                    font-size: 14px;
+                }
+            }
+        }
+
+        .active{
+            background-color: themed("bgSoft");
+        }
+
+        .chat-room-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: themed("bgSoft");
+            }
+            .avatar {
+                position: relative;
+
+                img {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    object-fit: contain;
+                }
+
+                .user-status-online {
+                    position: absolute;
+                    right: 3px;
+                    bottom: 3px;
+                    background-color: #45cc58;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                }
+            }
+            .chat-info {
+                display: flex;
+                flex-direction: column;
+                width: 85%;
+
+                .displayName {
+                    font-size: 18px;
+                    font-weight: bold;
+                    width: 100%;
+                }
+
+                .content {
+                    display: flex;
+                    flex-direction: row;
+                    width: 100%;
+                    position: relative;
+                    
+                    .latestMessage {
+                        font-size: 15px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 18vw;
+                        color: themed("roomColor");
+                    }
+
+                    .timeStamp {
+                        font-size: 10px;
+                        color: themed("mainColor");
+                        align-self: flex-end;
+                        padding-left: 5px;
+                        max-width: 30%;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+@import "../../style.scss";
+
+.rightBar {
+    @include themify($themes) {
+        flex: 3;
+        position: sticky;
+        top: 0px;
+        height: calc(100vh);
+        overflow: scroll;
+        background-color: themed("bg");
+        background-image: url("../../images/rightbar_dark.png");
+        background-size: cover;
+        display: flex;
+
+        @include mobile{
+            display: none;
+        }
+
+        @include tablet{
+            display: none;
+        }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .container {
+            padding: 20px;
+            align-self: flex-end;
+            color: themed("textColor");
+        }
+    }
+}
