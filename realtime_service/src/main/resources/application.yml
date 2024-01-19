@@ -39,6 +39,7 @@ spring:
 server:
   error:
     include-message: always
+  port: 8081
   # port: 80
   # servlet:
   #   context-path: /social_network
@@ -48,6 +49,6 @@ server:
 logging:
   level:
     root: info
-    org:
-      springframework:
-        security: INFO
+    # org:
+    #   springframework:
+    #     security: INFO
