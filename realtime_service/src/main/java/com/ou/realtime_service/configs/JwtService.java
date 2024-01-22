@@ -14,7 +14,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.ou.realtime_service.pojo.Account;
+// import com.ou.realtime_service.modals.Account;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,29 +29,29 @@ public class JwtService {
     private static final long EXPIRE_DURATION = HOUR * MINUTE * SECOND * MILISECOND;
     private static final byte[] BYTES = SECRECT.getBytes();
 
-    public String generateAccessToken(Account account){
-        String token = null;
-        if(account != null){
-            try {
-                JWSSigner signer = new MACSigner(BYTES);
-                JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-                builder.claim("email", account.getEmail());
-                builder.claim("id", account.getId());
-                builder.issueTime(new Date(System.currentTimeMillis()));
-                builder.expirationTime(new Date(System.currentTimeMillis() + EXPIRE_DURATION));
+    // public String generateAccessToken(Account account){
+    //     String token = null;
+    //     if(account != null){
+    //         try {
+    //             JWSSigner signer = new MACSigner(BYTES);
+    //             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+    //             builder.claim("email", account.getEmail());
+    //             builder.claim("id", account.getId());
+    //             builder.issueTime(new Date(System.currentTimeMillis()));
+    //             builder.expirationTime(new Date(System.currentTimeMillis() + EXPIRE_DURATION));
                 
-                JWTClaimsSet claimsSet = builder.build();
-                SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
-                signedJWT.sign(signer);
+    //             JWTClaimsSet claimsSet = builder.build();
+    //             SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+    //             signedJWT.sign(signer);
 
-                token = signedJWT.serialize();
+    //             token = signedJWT.serialize();
 
-            } catch (JOSEException e) {
-                System.out.println("[ERROR] - " + e.getMessage());
-            }
-        }
-        return token;
-    }
+    //         } catch (JOSEException e) {
+    //             System.out.println("[ERROR] - " + e.getMessage());
+    //         }
+    //     }
+    //     return token;
+    // }
 
     private JWTClaimsSet getClaimsSet(String token){
         JWTClaimsSet claimsSet = null;
