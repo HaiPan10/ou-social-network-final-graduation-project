@@ -1,4 +1,4 @@
-package com.ou.social_network.pojo;
+package com.ou.realtime_service.modals;
 
 import java.security.Principal;
 

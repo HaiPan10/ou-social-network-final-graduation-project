@@ -82,4 +82,6 @@ docker tag react-app:latest phonglai0809/react-app:latest
 docker push phonglai0809/react-app:latest
 ```
 
-
+#### Note mới
+mvn clean compile jib:build
+update timestamp in userDoc
