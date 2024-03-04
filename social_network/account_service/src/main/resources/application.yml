@@ -1,0 +1,35 @@
+# ConfigurationDB
+spring:
+  servlet:
+        multipart:
+          max-file-size: 10MB
+          max-request-size: 10MB
+  main:
+    allow-circular-references: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ou-social-network-user
+    username: root
+    password: mai2604
+    # password: IamPhong89
+    # url: jdbc:mysql://34.118.232.140:3306/${DB_NAME}
+    # username: ${DB_USERNAME}
+    # password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+#JPA/Hibernate
+server:
+  error:
+    include-message: always
+
+#Logging
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        security: INFO

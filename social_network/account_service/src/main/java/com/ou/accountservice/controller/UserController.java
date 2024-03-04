@@ -66,7 +66,6 @@ public class UserController {
     public ResponseEntity<Object> loadProfile(@PathVariable Long userId, HttpServletRequest httpServletRequest, @RequestParam Map<String, String> params) {
         try {
             Long currentUserId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
-            System.out.println("IN CONTROLLER");
             return ResponseEntity.ok().body(userService.loadProfile(userId, currentUserId, params));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
