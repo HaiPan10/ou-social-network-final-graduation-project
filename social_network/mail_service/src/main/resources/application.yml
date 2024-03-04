@@ -1,0 +1,33 @@
+# ConfigurationDB
+spring:
+  mail:
+    host: cp03hn.emailserver.net.vn
+    port: 465
+    username: ousocialnetwork@ousocialnetwork.id.vn
+    password: Vo2Z%)nF_+,{
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            protocols: TLSv1.2
+            trust: "*"
+        debug: true
+
+#JPA/Hibernate
+server:
+  error:
+    include-message: always
+  # port: 80
+  # servlet:
+  #   context-path: /social_network
+
+
+#Logging
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        security: INFO
