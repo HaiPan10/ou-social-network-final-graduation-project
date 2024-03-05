@@ -18,9 +18,8 @@
 		<module>post_service</module>
 		<module>comment_service</module>
 		<module>mail_service</module>
-		<module>notification_service</module>
-		<module>realtime_service</module>
 		<module>admin_service</module>
+		<module>realtime_service</module>
 	</modules>
 	<description>Spring Boot ou social network microservice</description>
 	<properties>

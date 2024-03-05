@@ -1,11 +1,11 @@
-package com.ou.social_network.repository.repositoryJPA;
+package com.ou.accountservice.repository.repositoryJPA;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.ou.social_network.pojo.InvitationGroup;
+import com.ou.accountservice.pojo.InvitationGroup;
 
 public interface GroupRepositoryJPA extends JpaRepository<InvitationGroup, Long>{
     @Query("SELECT u.id, a.email, CONCAT(u.lastName, ' ', u.firstName), u.avatar " +
