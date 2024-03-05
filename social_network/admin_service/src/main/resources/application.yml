@@ -1,0 +1,25 @@
+# ConfigurationDB
+spring:
+  servlet:
+        multipart:
+          max-file-size: 10MB
+          max-request-size: 10MB
+  main:
+    allow-circular-references: true
+
+#JPA/Hibernate
+server:
+  error:
+    include-message: always
+  # port: 80
+  # servlet:
+  #   context-path: /social_network
+
+
+#Logging
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        security: INFO
