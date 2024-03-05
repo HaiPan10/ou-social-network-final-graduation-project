@@ -20,6 +20,8 @@
 		<module>mail_service</module>
 		<module>admin_service</module>
 		<module>realtime_service</module>
+		<module>api-gateway</module>
+		<module>eureka-server</module>
 	</modules>
 	<description>Spring Boot ou social network microservice</description>
 	<properties>
