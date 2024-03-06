@@ -1,4 +1,4 @@
-package com.ou.realtimeservice.configs;
+package com.ou.commentservice.configs;
 
 import java.text.ParseException;
 import java.util.Date;

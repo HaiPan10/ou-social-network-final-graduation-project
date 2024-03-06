@@ -24,9 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ou.postservice.docs.NotificationDoc;
+import com.ou.postservice.pojo.NotificationFirebaseModal;
 import com.ou.postservice.pojo.ImageInPost;
 import com.ou.postservice.pojo.InvitationGroup;
+import com.ou.postservice.pojo.NotificationFirebaseModal;
 import com.ou.postservice.pojo.Post;
 import com.ou.postservice.pojo.PostInvitation;
 import com.ou.postservice.pojo.PostInvitationUser;
@@ -109,7 +110,7 @@ public class PostServiceImpl implements PostService {
         newPost.setCommentTotal(commentService.countComment(newPost.getId()));
 
         if (userId.equals(Long.valueOf(1))) {
-            NotificationDoc notificationDoc = new NotificationDoc();
+            NotificationFirebaseModal notificationDoc = new NotificationDoc();
             notificationDoc.setNotificationType("post");
             notificationDoc.setContent(postContent);
             notificationDoc.setPostId(newPost.getId());
@@ -304,7 +305,7 @@ public class PostServiceImpl implements PostService {
         postSurvey.setQuestions(questions);
         post.setPostSurvey(postSurvey);
 
-        NotificationDoc notificationDoc = new NotificationDoc();
+        NotificationFirebaseModal notificationDoc = new NotificationDoc();
         notificationDoc.setNotificationType("survey");
         notificationDoc.setContent(postSurvey.getSurveyTitle());
         notificationDoc.setPostId(post.getId());
@@ -372,7 +373,7 @@ public class PostServiceImpl implements PostService {
         post.setPostInvitation(postInvitation);
         System.out.println("[DEBUG] - FINISH CALLING SEND MAIL AT " + Calendar.getInstance().getTimeInMillis());
 
-        NotificationDoc notificationDoc = new NotificationDoc();
+        NotificationFirebaseModal notificationDoc = new NotificationDoc();
         notificationDoc.setNotificationType("invitation");
         notificationDoc.setPostId(post.getId());
         notificationDoc.setContent(postInvitation.getEventName());

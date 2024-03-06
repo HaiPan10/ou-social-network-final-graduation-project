@@ -1,4 +1,4 @@
-package com.ou.realtimeservice.configs;
+package com.ou.accountservice.configs;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 // import com.nimbusds.jose.crypto.MACVerifier;
 // import com.nimbusds.jwt.JWTClaimsSet;
 // import com.nimbusds.jwt.SignedJWT;
+import com.ou.accountservice.pojo.Account;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -141,6 +142,10 @@ public class JwtService {
     //     Long id = getIdFromToken(token);
     //     return String.valueOf(id);
     // }
+
+    public String generateAccessToken(Account account){
+        return "emMaiemDungemHangemTcuaHai";
+    }
 
     public boolean isValidAccessToken(String token){
         return true;

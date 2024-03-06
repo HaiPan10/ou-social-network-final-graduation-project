@@ -1,4 +1,4 @@
-package com.ou.adminservice.configs;
+package com.ou.mailservice.configs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,12 +21,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+// import org.springframework.security.core.GrantedAuthority;
+// import org.springframework.security.core.authority.SimpleGrantedAuthority;
+// import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.core.userdetails.UserDetailsService;
+// import org.springframework.security.core.userdetails.UsernameNotFoundException;
+// import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.cors.CorsConfiguration;
@@ -34,9 +34,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 // import com.cloudinary.Cloudinary;
 // import com.cloudinary.utils.ObjectUtils;
+// import com.fasterxml.jackson.databind.ObjectMapper;
 // import com.google.auth.oauth2.GoogleCredentials;
 // import com.google.firebase.FirebaseApp;
 // import com.google.firebase.FirebaseOptions;
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Configuration
 @PropertySource("classpath:configs.properties")
 // @ComponentScan("com.ou.social_network")
-@EnableTransactionManagement
+// @EnableTransactionManagement
 public class ApplicationConfig implements WebMvcConfigurer {
     @Autowired
     private Environment environment;
@@ -58,8 +58,8 @@ public class ApplicationConfig implements WebMvcConfigurer {
     // @Autowired
     // private DateFormatter dateFormatter;
 
-    @Autowired
-    private ResourceLoader resourceLoader;
+    // @Autowired
+    // private ResourceLoader resourceLoader;
 
     // @Bean
     // public Cloudinary getCloudinary() {
@@ -135,29 +135,29 @@ public class ApplicationConfig implements WebMvcConfigurer {
     // return registrationBean;
     // }
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-
-    // @Bean(name = "scheduledExecutorService")
-    // public ScheduledExecutorService getScheduledService() {
-    //     int threadNumber = Integer.parseInt(environment.getProperty("THREAD_NUMBER"));
-    //     ScheduledExecutorService configs = Executors.newScheduledThreadPool(threadNumber);
-    //     return configs;
+    // @Bean
+    // public ObjectMapper objectMapper() {
+    //     return new ObjectMapper();
     // }
+
+    @Bean(name = "scheduledExecutorService")
+    public ScheduledExecutorService getScheduledService() {
+        int threadNumber = Integer.parseInt(environment.getProperty("THREAD_NUMBER"));
+        ScheduledExecutorService configs = Executors.newScheduledThreadPool(threadNumber);
+        return configs;
+    }
 
     @Bean
     public SimpleDateFormat getSimpleDate() {
         return new SimpleDateFormat("yyyy-MM-dd");
     }
 
-    // @Bean(name = "executorService")
-    // public ExecutorService getThreadPool() {
-    //     int threadNumber = Integer.parseInt(environment.getProperty("THREAD_NUMBER"));
-    //     ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-    //     return executor;
-    // }
+    @Bean(name = "executorService")
+    public ExecutorService getThreadPool() {
+        int threadNumber = Integer.parseInt(environment.getProperty("THREAD_NUMBER"));
+        ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
+        return executor;
+    }
 
     // @Override
     // public void addFormatters(FormatterRegistry registry) {
@@ -169,17 +169,17 @@ public class ApplicationConfig implements WebMvcConfigurer {
     //     registry.addFormatter(dateFormatter);
     // }
 
-    @Bean(name = "validator")
-    public LocalValidatorFactoryBean validator() {
-        LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
-        bean.setValidationMessageSource(messageSource());
-        return bean;
-    }
+    // @Bean(name = "validator")
+    // public LocalValidatorFactoryBean validator() {
+    //     LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+    //     bean.setValidationMessageSource(messageSource());
+    //     return bean;
+    // }
 
-    @Override
-    public Validator getValidator() {
-        return validator();
-    }
+    // @Override
+    // public Validator getValidator() {
+    //     return validator();
+    // }
     
     // @Bean
     // public FirebaseApp firebaseApp(GoogleCredentials credentials) {

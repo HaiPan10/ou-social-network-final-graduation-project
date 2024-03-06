@@ -97,6 +97,8 @@ public class Comment implements Serializable {
         this.id = id;
     }
 
+    @Transient
+    private Post post;
     
     
 }

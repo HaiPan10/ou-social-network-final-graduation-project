@@ -9,13 +9,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ou.commentservice.docs.NotificationDoc;
+import com.ou.commentservice.pojo.NotificationFirebaseModal;
 import com.ou.commentservice.pojo.Comment;
-import com.ou.commentservice.pojo.Post;
 import com.ou.commentservice.pojo.SocketClient;
 import com.ou.commentservice.pojo.User;
 import com.ou.commentservice.repository.repositoryJPA.CommentRepositoryJPA;
 import com.ou.commentservice.service.interfaces.CommentService;
+import com.ou.commentservice.pojo.Post;
 import com.ou.commentservice.service.interfaces.FirebaseService;
 import com.ou.commentservice.service.interfaces.PostService;
 import com.ou.commentservice.service.interfaces.SocketService;
@@ -62,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
             // boolean userIdExists = socketClients.stream()
             //         .anyMatch(client -> client.getId().equals(persistPost.getUserId().getId()));
             if (!persistPost.getUserId().getId().equals(userId)) {
-                NotificationDoc notificationDoc = new NotificationDoc();
+                NotificationFirebaseModal notificationDoc = new NotificationDoc();
                 notificationDoc.setNotificationType("comment");
                 notificationDoc.setCommentId(comment.getId());
                 notificationDoc.setPostId(postId);
@@ -80,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
                 socketService.realtimeReply(comment, parentComment.getId(), "CREATE");
 
                 if (!comment.getUserId().getId().equals(comment.getRepliedUser().getId())) {
-                    NotificationDoc notificationDoc = new NotificationDoc();
+                    NotificationFirebaseModal notificationDoc = new NotificationDoc();
                     notificationDoc.setNotificationType("reply");
                     notificationDoc.setCommentId(comment.getId());
                     notificationDoc.setPostId(postId);

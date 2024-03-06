@@ -1,4 +1,4 @@
-package com.ou.realtimeservice.configs;
+package com.ou.mailservice.configs;
 
 import java.text.ParseException;
 import java.util.Date;

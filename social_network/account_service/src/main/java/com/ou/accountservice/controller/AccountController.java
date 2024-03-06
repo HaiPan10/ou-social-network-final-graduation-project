@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-// import com.ou.accountservice.configs.JwtService;
+import com.ou.accountservice.configs.JwtService;
 import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.AuthRequest;
 import com.ou.accountservice.pojo.AuthResponse;

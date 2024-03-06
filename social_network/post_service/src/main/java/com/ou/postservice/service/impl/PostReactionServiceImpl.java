@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ou.postservice.docs.NotificationDoc;
+import com.ou.postservice.pojo.NotificationFirebaseModal;
 import com.ou.postservice.pojo.Post;
 import com.ou.postservice.pojo.PostReaction;
 import com.ou.postservice.pojo.Reaction;
@@ -66,7 +66,7 @@ public class PostReactionServiceImpl implements PostReactionService {
             throw new Exception("Post is unavailable!");
         }
 
-        NotificationDoc notificationDoc = new NotificationDoc();
+        NotificationFirebaseModal notificationDoc = new NotificationDoc();
         notificationDoc.setNotificationType("reaction");
         notificationDoc.setPostId(postId);
         notificationDoc.setReactionId(reaction.getId());
