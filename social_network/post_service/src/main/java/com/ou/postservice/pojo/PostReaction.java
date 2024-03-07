@@ -49,9 +49,11 @@ public class PostReaction implements Serializable {
     @ManyToOne
     private Reaction reactionId;
 
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @ManyToOne
-    private User userId;
+    @Column(name = "user_id")
+    private Long userId;
+
+    // @Transient
+    // private User user;
 
     @Override
     public String toString() {

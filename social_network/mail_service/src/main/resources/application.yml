@@ -19,6 +19,7 @@ spring:
 server:
   error:
     include-message: always
+  port: 8084
   # port: 80
   # servlet:
   #   context-path: /social_network

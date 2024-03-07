@@ -65,7 +65,7 @@ public class PostController {
         }
         try {
             Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
-            post.setUserId(new User(userId));
+            post.setUserId(userId);
             return ResponseEntity.ok(postService.update(post, images, isEditImage));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

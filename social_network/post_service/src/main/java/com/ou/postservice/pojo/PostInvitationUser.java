@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,9 +44,11 @@ public class PostInvitationUser implements Serializable {
     @ManyToOne(optional = false)
     private PostInvitation postInvitationId;
 
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private User userId;
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Transient
+    private User user;
 
     @Override
     public String toString() {

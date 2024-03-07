@@ -57,22 +57,27 @@ public class Comment implements Serializable {
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedDate;
 
-    @JsonIgnore
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
-    @ManyToOne
+    @Column(name = "post_id")
     private Long postId;
+    
+    @Transient
+    private Post post;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User userId;
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Transient
+    private User user;
 
     @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "parent_comment_id", referencedColumnName = "id",nullable = true)
     private Comment parentComment;
 
-    @ManyToOne()
-    @JoinColumn(name = "replied_user_id", referencedColumnName = "id",nullable = true)
+    @Column(name = "replied_user_id")
+    private Long repliedUserId;
+
+    @Transient
     private User repliedUser;
 
     @JsonIgnore
@@ -95,10 +100,6 @@ public class Comment implements Serializable {
 
     public Comment(Long id) {
         this.id = id;
-    }
-
-    @Transient
-    private Post post;
-    
+    }    
     
 }

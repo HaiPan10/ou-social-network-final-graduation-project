@@ -66,20 +66,22 @@ public class Post implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "postId")
     private List<ImageInPost> imageInPostList;
 
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @ManyToOne
-    private User userId;
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Transient
+    private User user;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "postId")
     private List<PostReaction> postReactionList;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "postId")
+
+    @Transient
     private List<Comment> commentList;
 
     @Transient
     private Map<Long, Long> reactionTotal;
+    
     @Transient
     private Integer commentTotal;
     // @Override

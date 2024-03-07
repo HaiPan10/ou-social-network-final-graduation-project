@@ -56,9 +56,11 @@ public class Response implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private PostSurvey surveyId;
 
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private User userId;
+    @Column(name = "user_id")
+    private Long userId;
+
+    // @Transient
+    // private User user;
 
     // @Override
     // public String toString() {

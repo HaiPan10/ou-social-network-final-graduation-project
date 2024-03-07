@@ -29,7 +29,7 @@ public class PostInvitationServiceImpl implements PostInvitationService {
             listUsers.stream().forEach(u -> {
                 PostInvitationUser p = new PostInvitationUser();
                 p.setPostInvitationId(postInvitation);
-                p.setUserId(u);
+                p.setUserId(u.getId());
                 list.add(p);
             });
             postInvitation.setPostInvitationUsers(list);

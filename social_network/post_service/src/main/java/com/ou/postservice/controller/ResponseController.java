@@ -28,7 +28,7 @@ public class ResponseController {
     public ResponseEntity<Object> create(@RequestBody Response response, HttpServletRequest httpServletRequest) throws Exception {
         try {
             Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
-            response.setUserId(new User(userId));
+            response.setUserId(userId);
             System.out.println(response);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseService.create(response));
         } catch (Exception e) {

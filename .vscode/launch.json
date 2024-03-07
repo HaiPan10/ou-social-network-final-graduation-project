@@ -19,6 +19,86 @@
             "projectName": "springboot_service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AccountServiceApplication<account_service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.accountservice.AccountServiceApplication",
+            "projectName": "account_service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-AdminServiceApplication<admin_service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.adminservice.AdminServiceApplication",
+            "projectName": "admin_service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ApiGatewayApplication<api-gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.apigateway.ApiGatewayApplication",
+            "projectName": "api-gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CommentServiceApplication<comment_service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.commentservice.CommentServiceApplication",
+            "projectName": "comment_service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-EurekaServerApplication<eureka-server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.eurekaserver.EurekaServerApplication",
+            "projectName": "eureka-server",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MailServiceApplication<mail_service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.mailservice.MailServiceApplication",
+            "projectName": "mail_service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PostServiceApplication<post_service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.postservice.PostServiceApplication",
+            "projectName": "post_service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-RealtimeServiceApplication<realtime_service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ou.realtimeservice.RealtimeServiceApplication",
+            "projectName": "realtime_service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
