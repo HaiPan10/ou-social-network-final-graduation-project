@@ -21,6 +21,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 // import org.springframework.security.core.GrantedAuthority;
 // import org.springframework.security.core.authority.SimpleGrantedAuthority;
 // import org.springframework.security.core.userdetails.UserDetails;
@@ -44,6 +45,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 // import com.ou.social_network.pojo.Account;
 // import com.ou.social_network.repository.repositoryJPA.AccountRepositoryJPA;
 
+import jakarta.annotation.PostConstruct;
+
 @Configuration
 @PropertySource("classpath:configs.properties")
 // @ComponentScan("com.ou.social_network")
@@ -52,45 +55,8 @@ public class ApplicationConfig implements WebMvcConfigurer {
     @Autowired
     private Environment environment;
 
-    // @Autowired
-    // private AccountRepositoryJPA accountRepository;
-
-    // @Autowired
-    // private DateFormatter dateFormatter;
-
-    // @Autowired
-    // private ResourceLoader resourceLoader;
-
-    // @Bean
-    // public Cloudinary getCloudinary() {
-    //     return new Cloudinary(ObjectUtils.asMap(
-    //             "cloud_name", environment.getProperty("CLOUDINARY_CLOUD_NAME"),
-    //             "api_key", environment.getProperty("CLOUDINARY_API_KEY"),
-    //             "api_secret", environment.getProperty("CLOUDINARY_API_SECRET"),
-    //             "secure", true));
-    // }
-
-    // @Override
-    // public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    // registry.addResourceHandler("/resources/**").addResourceLocations("/WEB-INF/resources/");
-    // }
-
-    // @Bean
-    // public UserDetailsService getUserDetailsService() {
-    //     return new UserDetailsService() {
-    //         @Override
-    //         public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    //             Account account = accountRepository.findByEmail(email).get();
-    //             if (account == null) {
-    //                 throw new UsernameNotFoundException("Email không tồn tại");
-    //             }
-    //             Set<GrantedAuthority> authorities = new HashSet<>();
-    //             authorities.add(new SimpleGrantedAuthority(account.getRoleId().getName()));
-    //             return new org.springframework.security.core.userdetails.User(
-    //                     account.getEmail(), account.getPassword(), authorities);
-    //         }
-    //     };
-    // }
+    @Autowired
+    private ConcurrentKafkaListenerContainerFactory concurrentKafkaListenerContainerFactory;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -126,20 +92,6 @@ public class ApplicationConfig implements WebMvcConfigurer {
         return filter;
     }
 
-    // @Bean
-    // public FilterRegistrationBean<CharacterEncodingFilter> getFilterBean() {
-    // FilterRegistrationBean<CharacterEncodingFilter> registrationBean =
-    // new FilterRegistrationBean<CharacterEncodingFilter>();
-    // registrationBean.setFilter(filter);
-    // registrationBean.addUrlPatterns("/*");
-    // return registrationBean;
-    // }
-
-    // @Bean
-    // public ObjectMapper objectMapper() {
-    //     return new ObjectMapper();
-    // }
-
     @Bean(name = "scheduledExecutorService")
     public ScheduledExecutorService getScheduledService() {
         int threadNumber = Integer.parseInt(environment.getProperty("THREAD_NUMBER"));
@@ -159,56 +111,8 @@ public class ApplicationConfig implements WebMvcConfigurer {
         return executor;
     }
 
-    // @Override
-    // public void addFormatters(FormatterRegistry registry) {
-    //     // registry.addFormatter(new CategoryFormatter());
-    //     // In case of needed to format fields of pojo
-    //     // create new class and
-    //     // implements the Formatter<T> interface
-    //     // might not necessary
-    //     registry.addFormatter(dateFormatter);
-    // }
-
-    // @Bean(name = "validator")
-    // public LocalValidatorFactoryBean validator() {
-    //     LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
-    //     bean.setValidationMessageSource(messageSource());
-    //     return bean;
-    // }
-
-    // @Override
-    // public Validator getValidator() {
-    //     return validator();
-    // }
-    
-    // @Bean
-    // public FirebaseApp firebaseApp(GoogleCredentials credentials) {
-    //     if(FirebaseApp.getApps().isEmpty()){
-    //         System.out.println("[DEBUG] - Starting create Firebase app");
-    //         FirebaseOptions options = FirebaseOptions.builder()
-    //                 .setCredentials(credentials)
-    //                 .setDatabaseUrl("https://ou-social-network-bf1ea-default-rtdb.asia-southeast1.firebasedatabase.app")
-    //                 .build();
-    //         System.out.println("[DEBUG] - Successfully create Firebase options");
-    //         return FirebaseApp.initializeApp(options);
-    //     } else {
-    //         return FirebaseApp.getInstance();
-    //     }
-        
-    // }
-
-    // @Bean
-    // public GoogleCredentials googleCredentials() throws IOException {
-    //     try {
-    //         Resource resource = resourceLoader.getResource("classpath:serviceAccountKey.json");
-    //         try (InputStream serviceAccount = resource.getInputStream()) {
-    //             System.out.println("[DEBUG] - ACCOUNT SERVICE CREDENTIAL");
-    //             return GoogleCredentials.fromStream(serviceAccount);
-    //         }
-
-    //     } catch (IOException ex) {
-    //         System.out.println("[DEBUG] - DEFAULT CREDENTIAL");
-    //         throw new IOException("FAIL TO INIT FIREBASE APP");
-    //     }
-    // }
+    @PostConstruct
+    void setup() {
+        this.concurrentKafkaListenerContainerFactory.getContainerProperties().setObservationEnabled(true);
+    }
 }

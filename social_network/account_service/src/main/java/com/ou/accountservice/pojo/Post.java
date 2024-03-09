@@ -1,4 +1,4 @@
-package com.ou.mailservice.pojo;
+package com.ou.accountservice.pojo;
 
 import java.io.Serializable;
 import java.util.Date;

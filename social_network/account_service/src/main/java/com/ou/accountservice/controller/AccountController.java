@@ -165,4 +165,15 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping()
+    public Account getAccount(@RequestParam Long accountId) {
+        try {
+            return accountService.retrieve(accountId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+
 }

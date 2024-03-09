@@ -6,6 +6,21 @@ spring:
           max-request-size: 10MB
   main:
     allow-circular-references: true
+  application:
+    name: realtime-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    template:
+      default-topic: realtimeTopic
+    consumer:
+      group-id: notificationId
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: event:com.ou.realtimeservice.pojo.OrderPlacedEvent
 
 #JPA/Hibernate
 server:

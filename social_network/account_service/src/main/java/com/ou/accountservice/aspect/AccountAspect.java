@@ -24,8 +24,8 @@ public class AccountAspect {
     private Environment env;
 
     @AfterReturning(pointcut = "execution(" +
-            "public com.ou.social_network.pojo.Account " +
-            "com.ou.social_network.service.interfaces.AccountService.changePassword(String, String))", returning = "account")
+            "public com.ou.accountservice.pojo.Account " +
+            "com.ou.accountservice.service.interfaces.AccountService.changePassword(String, String))", returning = "account")
     public void changePassword(Account account) {
         if (account.getStatus().equals(Status.PASSWORD_CHANGE_REQUIRED.toString())) {
             account.setStatus(Status.ACTIVE.toString());

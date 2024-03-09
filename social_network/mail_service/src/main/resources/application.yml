@@ -14,6 +14,21 @@ spring:
             protocols: TLSv1.2
             trust: "*"
         debug: true
+  application:
+    name: mail-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    template:
+      default-topic: mailTopic
+    consumer:
+      group-id: notificationId
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: event:com.ou.mailservice.pojo.OrderPlacedEvent
 
 #JPA/Hibernate
 server:
@@ -32,3 +47,4 @@ logging:
     org:
       springframework:
         security: INFO
+

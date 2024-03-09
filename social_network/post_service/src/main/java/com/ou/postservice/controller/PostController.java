@@ -1,5 +1,6 @@
 package com.ou.postservice.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -101,4 +102,16 @@ public class PostController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping(path = "/profile")
+    public List<Post> loadPost(@RequestParam Long profileId,
+     @RequestParam Long currentUserId, 
+     @RequestParam Map<String, String> params) {
+        try {
+            return postService.loadPost(profileId, currentUserId, params);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+    
 }
