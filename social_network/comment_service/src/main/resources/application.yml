@@ -20,20 +20,18 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
-  mail:
-    host: cp03hn.emailserver.net.vn
-    port: 465
-    username: ousocialnetwork@ousocialnetwork.id.vn
-    password: Vo2Z%)nF_+,{
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            enable: true
-            protocols: TLSv1.2
-            trust: "*"
-        debug: true
+  application:
+    name: comment-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: event:com.ou.commentservice.event.OrderPlacedEvent 
 
 #JPA/Hibernate
 server:

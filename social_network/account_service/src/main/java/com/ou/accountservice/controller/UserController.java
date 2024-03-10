@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ou.accountservice.configs.JwtService;
+import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.service.interfaces.UserService;
 
@@ -69,6 +70,15 @@ public class UserController {
             return ResponseEntity.ok().body(userService.loadProfile(userId, currentUserId, params));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping()
+    public User getUser(@RequestParam Long userId) {
+        try {
+            return userService.retrieve(userId);
+        } catch (Exception e) {
+            return null;
         }
     }
 }
