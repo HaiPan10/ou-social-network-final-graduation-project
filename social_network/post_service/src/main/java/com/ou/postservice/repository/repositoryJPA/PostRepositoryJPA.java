@@ -8,16 +8,18 @@ import org.springframework.data.repository.query.Param;
 import com.ou.postservice.pojo.Post;
 
 public interface PostRepositoryJPA extends JpaRepository<Post, Long> {
-    @Query("SELECT COUNT(*) FROM Post p " +
-            "JOIN p.userId u " +
-            "WHERE LOWER(CONCAT(u.id, u.lastName, ' ', u.firstName)) " +
-            "LIKE %?1% ")
+    // @Query("SELECT COUNT(*) FROM Post p " +
+    //         "JOIN p.userId u " +
+    //         "WHERE LOWER(CONCAT(u.id, u.lastName, ' ', u.firstName)) " +
+    //         "LIKE %?1% ")
+    @Query("SELECT COUNT(p) FROM Post p WHERE CAST(p.userId AS string) LIKE %?1%")
     Long countPosts(String kw);
 
-    @Query("SELECT p FROM Post p " +
-            "JOIN p.userId u " +
-            "WHERE LOWER(CONCAT(u.id, u.lastName, ' ', u.firstName)) " +
-            "LIKE %?1% ")
+    // @Query("SELECT p FROM Post p " +
+    //         "JOIN p.userId u " +
+    //         "WHERE LOWER(CONCAT(u.id, u.lastName, ' ', u.firstName)) " +
+    //         "LIKE %?1% ")
+    @Query("SELECT p FROM Post p WHERE CAST(p.userId AS string) LIKE %?1%")
     List<Post> search(String kw, Pageable pageable);
 
     @Query("SELECT " +

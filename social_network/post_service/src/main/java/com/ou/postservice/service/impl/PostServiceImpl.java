@@ -3,6 +3,7 @@ package com.ou.postservice.service.impl;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.postservice.pojo.NotificationFirebaseModal;
+import com.ou.postservice.event.OrderPlacedEvent;
 import com.ou.postservice.pojo.ImageInPost;
 import com.ou.postservice.pojo.InvitationGroup;
 import com.ou.postservice.pojo.NotificationFirebaseModal;
@@ -38,20 +42,21 @@ import com.ou.postservice.pojo.User;
 import com.ou.postservice.repository.interfaces.PostRepository;
 import com.ou.postservice.repository.repositoryJPA.PostRepositoryJPA;
 import com.ou.postservice.service.interfaces.CloudinaryService;
-import com.ou.postservice.service.interfaces.CommentService;
-import com.ou.postservice.service.interfaces.FirebaseService;
-import com.ou.postservice.service.interfaces.GroupService;
 import com.ou.postservice.service.interfaces.ImageInPostService;
-import com.ou.postservice.service.interfaces.MailService;
 import com.ou.postservice.service.interfaces.PostInvitationService;
 import com.ou.postservice.service.interfaces.PostReactionService;
 import com.ou.postservice.service.interfaces.PostService;
 import com.ou.postservice.service.interfaces.PostSurveyService;
 import com.ou.postservice.service.interfaces.QuestionService;
-import com.ou.postservice.service.interfaces.SocketService;
-import com.ou.postservice.service.interfaces.UserService;
-import com.ou.postservice.socketModal.SocketPostModal;
 import com.ou.postservice.utils.CloudinaryUtils;
+
+// import com.ou.postservice.service.interfaces.SocketService;
+// import com.ou.postservice.service.interfaces.UserService;
+// import com.ou.postservice.pojo.SocketPostModal;
+// import com.ou.postservice.service.interfaces.CommentService;
+// import com.ou.postservice.service.interfaces.FirebaseService;
+// import com.ou.postservice.service.interfaces.GroupService;
+// import com.ou.postservice.service.interfaces.MailService;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -68,29 +73,32 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostReactionService postReactionService;
     @Autowired
-    private CommentService commentService;
-    @Autowired
     private CloudinaryService cloudinaryService;
     @Autowired
     private PostSurveyService postSurveyService;
     @Autowired
     private QuestionService questionService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private PostInvitationService postInvitationService;
-    @Autowired
-    private GroupService groupService;
-    @Autowired
-    private MailService mailService;
-    @Autowired
-    private FirebaseService firebaseService;
     @Autowired
     private Environment env;
     @Autowired
-    private SocketService socketService;
-    @Autowired
     private WebClient.Builder webClientBuilder;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    // @Autowired
+    // private SocketService socketService;
+    // @Autowired
+    // private GroupService groupService;
+    // @Autowired
+    // private MailService mailService;
+    // @Autowired
+    // private FirebaseService firebaseService;
+    // @Autowired
+    // private UserService userService;
+    // @Autowired
+    // private CommentService commentService;
 
     @Override
     public Post uploadPost(String postContent, Long userId, List<MultipartFile> images, boolean isActiveComment)
@@ -109,7 +117,14 @@ public class PostServiceImpl implements PostService {
             newPost.setImageInPostList(imageInPostService.uploadImageInPost(images, newPost));
         }
         postReactionService.countReaction(newPost, userId);
-        newPost.setCommentTotal(commentService.countComment(newPost.getId()));
+
+        Integer commentTotal = webClientBuilder.build().get()
+            .uri("http://comment-service/api/comments/count",
+            uriBuilder -> uriBuilder.queryParam("postId", newPost.getId()).build())
+            .retrieve()
+            .bodyToMono(Integer.class)
+            .block();
+        newPost.setCommentTotal(commentTotal);
 
         if (userId.equals(Long.valueOf(1))) {
             NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
@@ -117,23 +132,34 @@ public class PostServiceImpl implements PostService {
             notificationDoc.setContent(postContent);
             notificationDoc.setPostId(newPost.getId());
             notificationDoc.setSeen(true);
-            firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
+            // firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
+            applicationEventPublisher.publishEvent(
+                new OrderPlacedEvent(this, "realtimeTopic", "notification"));
         }
         
-        socketService.realtimePost(new SocketPostModal(newPost, "create"));
-        socketService.realtimeProfile(new SocketPostModal(newPost, "create"));
+        // socketService.realtimePost(new SocketPostModal(newPost, "create"));
+        applicationEventPublisher.publishEvent(
+            new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
+        // socketService.realtimeProfile(new SocketPostModal(newPost, "create"));
+        applicationEventPublisher.publishEvent(
+            new OrderPlacedEvent(this, "realtimeTopic", "realtimeProfile"));
         return newPost;
     }
 
     @Override
     public List<Post> loadPost(Long userId, Long currentUserId, Map<String, String> params) throws Exception {
         Optional<List<Post>> listPostOptional = postRepository.loadPost(userId, params, currentUserId);
-        System.out.println("OUT POST REPOSITORY");
         if (listPostOptional.isPresent()) {
             List<Post> posts = listPostOptional.get();
             posts.forEach(p -> {
                 postReactionService.countReaction(p, currentUserId);
-                p.setCommentTotal(commentService.countComment(p.getId()));
+                Integer commentTotal = webClientBuilder.build().get()
+                    .uri("http://comment-service/api/comments/count",
+                    uriBuilder -> uriBuilder.queryParam("postId", p.getId()).build())
+                    .retrieve()
+                    .bodyToMono(Integer.class)
+                    .block();
+                p.setCommentTotal(commentTotal);
                 // p.setTwoComments(commentService.loadTwoComments(p.getId()));
                 p.getImageInPostList().forEach(img -> img
                         .setContentType(String.format("image/%s", CloudinaryUtils.getImageType(img.getImageUrl()))));
@@ -224,7 +250,13 @@ public class PostServiceImpl implements PostService {
             List<Post> posts = listPostOptional.get();
             posts.forEach(p -> {
                 postReactionService.countReaction(p, currentUserId);
-                p.setCommentTotal(commentService.countComment(p.getId()));
+                Integer commentTotal = webClientBuilder.build().get()
+                    .uri("http://comment-service/api/comments/count",
+                    uriBuilder -> uriBuilder.queryParam("postId", p.getId()).build())
+                    .retrieve()
+                    .bodyToMono(Integer.class)
+                    .block();
+                p.setCommentTotal(commentTotal);
                 // p.setTwoComments(commentService.loadTwoComments(p.getId()));
                 p.getImageInPostList().forEach(img -> img
                         .setContentType(String.format("image/%s", CloudinaryUtils.getImageType(img.getImageUrl()))));
@@ -311,13 +343,25 @@ public class PostServiceImpl implements PostService {
         notificationDoc.setContent(postSurvey.getSurveyTitle());
         notificationDoc.setPostId(post.getId());
         notificationDoc.setSeen(true);
-        firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
+        // firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
+        applicationEventPublisher.publishEvent(
+            new OrderPlacedEvent(this, "realtimeTopic", "notification"));
 
         postReactionService.countReaction(post, userId);
-        post.setCommentTotal(commentService.countComment(post.getId()));
+        Integer commentTotal = webClientBuilder.build().get()
+            .uri("http://comment-service/api/comments/count",
+            uriBuilder -> uriBuilder.queryParam("postId", post.getId()).build())
+            .retrieve()
+            .bodyToMono(Integer.class)
+            .block();
+        post.setCommentTotal(commentTotal);
 
-        socketService.realtimePost(new SocketPostModal(post, "create"));
-        socketService.realtimeProfile(new SocketPostModal(post, "create"));
+        // socketService.realtimePost(new SocketPostModal(post, "create"));
+        applicationEventPublisher.publishEvent(
+            new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
+        // socketService.realtimeProfile(new SocketPostModal(post, "create"));
+        applicationEventPublisher.publishEvent(
+            new OrderPlacedEvent(this, "realtimeTopic", "realtimeProfile"));
         return post;
     }
 
@@ -332,7 +376,7 @@ public class PostServiceImpl implements PostService {
         post.setUserId(userId);
         postRepositoryJPA.save(post);
 
-        List<Long> listUserId = null;
+        List<Long> listUserId;
         List<PostInvitationUser> list = postInvitation.getPostInvitationUsers();
         if (list != null) {
             if (list.size() > 0) {
@@ -341,22 +385,41 @@ public class PostServiceImpl implements PostService {
             } else {
                 throw new Exception("Empty invitation user!");
             }
+        } else {
+            throw new Exception("Null invitation user list!");
         }
 
-        List<User> listUsers = userService.list(listUserId);
+        // List<User> listUsers = userService.list(listUserId);
+        List<User> listUsers = webClientBuilder.build().get()
+            .uri("http://account-service/api/users/list",
+            uriBuilder -> uriBuilder.queryParam("listUserId", listUserId).build())
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<List<User>>() {})
+            .block();
+
         postInvitation.setPostInvitationUsers(null);
-        InvitationGroup group = postInvitation.getGroupId();
-        postInvitation.setGroupId(null);
+        Long groupId = postInvitation.getGroupId().getId();
+
+        // InvitationGroup group = postInvitation.getGroupId();
+        InvitationGroup group = webClientBuilder.build().get()
+            .uri("http://account-service/api/groups",
+            uriBuilder -> uriBuilder.queryParam("invitationGroupId", groupId).build())
+            .retrieve()
+            .bodyToMono(InvitationGroup.class)
+            .block();
+        // postInvitation.setGroupId(null);
         postInvitation = postInvitationService.create(post.getId(), postInvitation, listUsers);
 
         if (group != null && listUsers != null) {
-            group = groupService.create(group);
-            groupService.addUsers(group.getId(), listUsers);
+            // Hải handle this
+            // group = groupService.create(group);
+            // groupService.addUsers(group.getId(), listUsers);
         }
 
         if (listUsers == null || listUsers.isEmpty()) {
             // fetch all user
-            listUsers = userService.list();
+            // Hải handle this
+            // listUsers = userService.list();
         }
 
         postInvitation.setPost(post);
@@ -365,7 +428,9 @@ public class PostServiceImpl implements PostService {
         final PostInvitation finalInvitation = postInvitation;
 
         Runnable runnable = () -> {
-            mailService.sendMultipleEmail(finalList, finalInvitation);
+            // mailService.sendMultipleEmail(finalList, finalInvitation);
+            applicationEventPublisher.publishEvent(
+                new OrderPlacedEvent(this, "mailTopic", "sendMultipleEmail"));
         };
 
         executorService.execute(runnable);
@@ -373,23 +438,23 @@ public class PostServiceImpl implements PostService {
         post.setPostInvitation(postInvitation);
         System.out.println("[DEBUG] - FINISH CALLING SEND MAIL AT " + Calendar.getInstance().getTimeInMillis());
 
-        NotificationFirebaseModal notificationDoc = new NotificationDoc();
+        NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
         notificationDoc.setNotificationType("invitation");
         notificationDoc.setPostId(post.getId());
         notificationDoc.setContent(postInvitation.getEventName());
 
         if (listUserId != null) {
             listUserId.forEach(id -> {
-                try {
-                    notificationDoc.setSeen(false);
-                    firebaseService.notification(userId, id, notificationDoc);
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
+                notificationDoc.setSeen(false);
+                // firebaseService.notification(userId, id, notificationDoc);
+                applicationEventPublisher.publishEvent(
+                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
             });
         } else {
             notificationDoc.setSeen(true);
-            firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
+            // firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
+            applicationEventPublisher.publishEvent(
+                new OrderPlacedEvent(this, "realtimeTopic", "notification"));
         }
 
         // socketService.realtimePost(new SocketPostModal(post, "create"));
@@ -409,7 +474,13 @@ public class PostServiceImpl implements PostService {
     public Post getDetail(Long postId, Long userId) throws Exception {
         Post post = retrieve(postId);
         postReactionService.countReaction(post, userId);
-        post.setCommentTotal(commentService.countComment(postId));
+        Integer commentTotal = webClientBuilder.build().get()
+            .uri("http://comment-service/api/comments/count",
+            uriBuilder -> uriBuilder.queryParam("postId", postId).build())
+            .retrieve()
+            .bodyToMono(Integer.class)
+            .block();
+        post.setCommentTotal(commentTotal);
         // post.setTwoComments(commentService.loadTwoComments(postId));
         post.getImageInPostList().forEach(img -> img
             .setContentType(String.format("image/%s", CloudinaryUtils.getImageType(img.getImageUrl()))));

@@ -29,7 +29,6 @@ public class ResponseController {
         try {
             Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
             response.setUserId(userId);
-            System.out.println(response);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseService.create(response));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

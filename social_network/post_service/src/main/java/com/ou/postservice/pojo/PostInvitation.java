@@ -56,8 +56,6 @@ public class PostInvitation implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "postInvitationId")
     private List<PostInvitationUser> postInvitationUsers;
 
-    // @JoinColumn(name = "group_id", referencedColumnName = "id")
-    // @ManyToOne
     @Transient
     private InvitationGroup groupId;
 

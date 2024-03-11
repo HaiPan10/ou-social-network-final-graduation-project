@@ -44,19 +44,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Integer countComment(Long postId) {
-        System.out.println("IN COMMENT SERVICE");
         return commentRepositoryJPA.countComment(postId);
     }
 
     @Override
     public Comment create(Comment comment, Long postId, Long userId) throws Exception {
-        // User persistUser = userService.retrieve(userId);
-        User persistUser = webClientBuilder.build().get()
-            .uri("http://account-service/api/users",
-            uriBuilder -> uriBuilder.queryParam("userId", userId).build())
-            .retrieve()
-            .bodyToMono(User.class)
-            .block();
         // Post persistPost = postService.retrieve(postId);
         Post persistPost = webClientBuilder.build().get()
             .uri("http://account-service/api/posts",
@@ -168,6 +160,13 @@ public class CommentServiceImpl implements CommentService {
         Optional<Comment> commentOptional = commentRepositoryJPA.findById(commentId);
         if (commentOptional.isPresent()) {
             Comment comment = commentOptional.get();
+            User user = webClientBuilder.build().get()
+                .uri("http://account-service/api/users",
+                uriBuilder -> uriBuilder.queryParam("userId", comment.getUserId()).build())
+                .retrieve()
+                .bodyToMono(User.class)
+                .block();
+            comment.setUser(user);
             User repliedUser = webClientBuilder.build().get()
                 .uri("http://account-service/api/users",
                 uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())

@@ -46,5 +46,15 @@ public class GroupServiceImpl implements GroupService{
     public List<Object[]> getUsers(Long groupId) {
         return groupRepositoryJPA.getUsers(groupId);
     }
+
+    @Override
+    public InvitationGroup retrieve(Long id) throws Exception {
+        Optional<InvitationGroup> groupOptional = groupRepositoryJPA.findById(id);
+        if (groupOptional.isPresent()) {
+            return groupOptional.get();
+        } else {
+            throw new Exception("Không tìm thấy group");
+        }
+    }
     
 }

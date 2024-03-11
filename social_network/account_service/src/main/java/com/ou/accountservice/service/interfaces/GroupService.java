@@ -10,4 +10,5 @@ public interface GroupService {
     InvitationGroup create(InvitationGroup group);
     void addUsers(Long groupId, List<User> users) throws Exception;
     List<Object[]> getUsers(Long groupId);
+    InvitationGroup retrieve(Long id) throws Exception;
 }

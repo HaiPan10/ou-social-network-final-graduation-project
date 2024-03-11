@@ -16,12 +16,12 @@ public interface PostReactionRepositoryJPA extends JpaRepository<PostReaction, L
     List<PostReaction> findByPostId(Post postId);
     @Query("SELECT pr " +
            "FROM PostReaction pr " +
-           "WHERE pr.userId.id = :userId AND pr.postId.id = :postId")
+           "WHERE pr.userId = :userId AND pr.postId.id = :postId")
     Optional<PostReaction> findUserReaction(@Param("userId") Long userId, @Param("postId") Long postId);
   
     @Modifying
     @Query("DELETE FROM PostReaction pr " +
-           "WHERE pr.userId.id = :userId AND pr.postId.id = :postId")
+           "WHERE pr.userId = :userId AND pr.postId.id = :postId")
     void delete(@Param("postId") Long postId, @Param("userId") Long userId);
 
     @Query("SELECT p.userId FROM PostReaction p WHERE p.reactionId.id = :reactionId AND p.postId.id = :postId")

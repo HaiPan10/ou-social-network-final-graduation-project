@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.ou.social_network.docs.NotificationDoc;
 import com.ou.social_network.pojo.Comment;
 import com.ou.social_network.pojo.Post;
-import com.ou.social_network.pojo.SocketClient;
 import com.ou.social_network.pojo.User;
 import com.ou.social_network.repository.repositoryJPA.CommentRepositoryJPA;
 import com.ou.social_network.service.interfaces.CommentService;

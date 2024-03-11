@@ -25,7 +25,7 @@ import com.ou.postservice.repository.repositoryJPA.QuestionRepositoryJPA;
 import com.ou.postservice.repository.repositoryJPA.ResponseRepositoryJPA;
 import com.ou.postservice.service.interfaces.PostService;
 import com.ou.postservice.service.interfaces.ResponseService;
-import com.ou.postservice.service.interfaces.UserService;
+// import com.ou.postservice.service.interfaces.UserService;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -44,17 +44,16 @@ public class ResponseServiceImpl implements ResponseService {
     private AnswerOptionRepositoryJPA answerOptionRepositoryJPA;
     @Autowired
     private PostService postService;
-    @Autowired
-    private UserService userService;
+    // @Autowired
+    // private UserService userService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public Response create(Response response) throws Exception {
         try {
             Post persistPost = postService.retrieve(response.getSurveyId().getId());
-            User persistUser = userService.retrieve(response.getUserId());
             Response transientResponse = new Response();
-            transientResponse.setUserId(persistUser.getId());
+            transientResponse.setUserId(response.getUserId());
             transientResponse.setSurveyId(persistPost.getPostSurvey());
             transientResponse.setCreatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
             // session.save(transientResponse);

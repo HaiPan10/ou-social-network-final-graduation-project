@@ -8,9 +8,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import com.ou.postservice.event.OrderPlacedEvent;
 import com.ou.postservice.pojo.NotificationFirebaseModal;
 import com.ou.postservice.pojo.Post;
 import com.ou.postservice.pojo.PostReaction;
@@ -19,10 +22,10 @@ import com.ou.postservice.pojo.User;
 import com.ou.postservice.repository.repositoryJPA.PostReactionRepositoryJPA;
 import com.ou.postservice.repository.repositoryJPA.PostRepositoryJPA;
 import com.ou.postservice.repository.repositoryJPA.ReactionRepositoryJPA;
-import com.ou.postservice.repository.repositoryJPA.UserRepositoryJPA;
-import com.ou.postservice.service.interfaces.FirebaseService;
+// import com.ou.postservice.repository.repositoryJPA.UserRepositoryJPA;
+// import com.ou.postservice.service.interfaces.FirebaseService;
+// import com.ou.postservice.service.interfaces.SocketService;
 import com.ou.postservice.service.interfaces.PostReactionService;
-import com.ou.postservice.service.interfaces.SocketService;
 import jakarta.persistence.NoResultException;
 
 
@@ -33,22 +36,23 @@ public class PostReactionServiceImpl implements PostReactionService {
     @Autowired
     private PostReactionRepositoryJPA postReactionRepositoryJPA;
     @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
     private PostRepositoryJPA postRepositoryJPA;
     @Autowired
-    private UserRepositoryJPA userRepositoryJPA;
-    @Autowired
     private ReactionRepositoryJPA reactionRepositoryJPA;
-    @Autowired
-    private FirebaseService firebaseService;
-    @Autowired
-    private SocketService socketService;
+    // @Autowired
+    // private UserRepositoryJPA userRepositoryJPA;
+    // @Autowired
+    // private FirebaseService firebaseService;
+    // @Autowired
+    // private SocketService socketService;
 
     @Override
     public void countReaction(Post returnPost, Long currentUser) {
-        System.out.println("IN POST REACTION SERVICE");
         // List<PostReaction> postReactions = postReactionRepository.countReaction(returnPost.getId());
         List<PostReaction> postReactions = postReactionRepositoryJPA.findByPostId(returnPost);
-        Optional<PostReaction> reactionOptional = postReactions.stream().filter(p -> p.getUserId().getId().equals(currentUser)).findFirst();
+        Optional<PostReaction> reactionOptional = postReactions.stream().filter(p -> p.getUserId().equals(currentUser)).findFirst();
         if (reactionOptional.isPresent()) {
             returnPost.setCurrentReaction(reactionOptional.get().getReactionId());
         }
@@ -82,28 +86,31 @@ public class PostReactionServiceImpl implements PostReactionService {
             persistPostReaction.get().setCreatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
             if (!optionalPost.get().getUserId().equals(userId)) {
-                firebaseService.notification(userId, optionalPost.get().getUserId(), notificationDoc);
+                // firebaseService.notification(userId, optionalPost.get().getUserId(), notificationDoc);
+                applicationEventPublisher.publishEvent(
+                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
             }
             PostReaction postReaction = postReactionRepositoryJPA.save(persistPostReaction.get());
-            socketService.realtimePostReaction(postId, userId);
+            // socketService.realtimePostReaction(postId, userId);
+            applicationEventPublisher.publishEvent(
+                new OrderPlacedEvent(this, "realtimeTopic", "realtimePostReaction"));
             return postReaction;
         } catch (NoResultException e) {
             PostReaction postReaction = new PostReaction();
             postReaction.setPostId(optionalPost.get());
-            Optional<User> optionalUser = userRepositoryJPA.findById(userId);
-            if (optionalUser.isPresent()) {
-                postReaction.setUserId(optionalUser.get().getId());
-            } else {
-                throw new Exception("User is unavailable!");
-            }
+            postReaction.setUserId(userId);
             postReaction.setCreatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
             postReaction.setReactionId(persistReaction);
 
             if (!optionalPost.get().getUserId().equals(userId)) {
-                firebaseService.notification(userId, optionalPost.get().getUserId(), notificationDoc);
+                // firebaseService.notification(userId, optionalPost.get().getUserId(), notificationDoc);
+                applicationEventPublisher.publishEvent(
+                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
             }           
             PostReaction returnPostReaction = postReactionRepositoryJPA.save(postReaction);
-            socketService.realtimePostReaction(postId, userId);
+            // socketService.realtimePostReaction(postId, userId);
+            applicationEventPublisher.publishEvent(
+                new OrderPlacedEvent(this, "realtimeTopic", "realtimePostReaction"));
             return returnPostReaction;
         }
     }
@@ -113,7 +120,9 @@ public class PostReactionServiceImpl implements PostReactionService {
         // return postReactionRepository.delete(postId, userId);
         try {
             postReactionRepositoryJPA.delete(postId, userId);
-            socketService.realtimePostReaction(postId, userId);
+            // socketService.realtimePostReaction(postId, userId);
+            applicationEventPublisher.publishEvent(
+                new OrderPlacedEvent(this, "realtimeTopic", "realtimePostReaction"));
             return true;
         } catch (Exception e) {
             System.out.println("[DEBUG] - " + e.getMessage());

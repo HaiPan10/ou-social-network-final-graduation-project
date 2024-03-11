@@ -1,6 +1,7 @@
 package com.ou.accountservice.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,4 +82,10 @@ public class UserController {
             return null;
         }
     }
+
+    @GetMapping("/list")
+    public List<User> listUser(@RequestParam List<Long> listUserId) {
+        return userService.list(listUserId);
+    }
+    
 }

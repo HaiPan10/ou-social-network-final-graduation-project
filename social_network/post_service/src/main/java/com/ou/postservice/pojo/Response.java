@@ -23,6 +23,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,8 +60,8 @@ public class Response implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    // @Transient
-    // private User user;
+    @Transient
+    private User user;
 
     // @Override
     // public String toString() {

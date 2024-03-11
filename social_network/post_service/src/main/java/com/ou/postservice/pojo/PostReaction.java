@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,8 +53,8 @@ public class PostReaction implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    // @Transient
-    // private User user;
+    @Transient
+    private User user;
 
     @Override
     public String toString() {
