@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +22,6 @@ import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.service.interfaces.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @RestController
 // @CrossOrigin(origins = "http://localhost:3000")
 // @CrossOrigin(origins = "http://ousocialnetwork.id.vn/")
@@ -35,7 +34,7 @@ public class UserController {
     private JwtService jwtService;
 
     @PostMapping(value = "/update_avatar")
-    public ResponseEntity<Object> updateAvatar(MultipartFile uploadAvatar, HttpServletRequest httpServletRequest) throws Exception{
+    public ResponseEntity<Object> updateAvatar(MultipartFile uploadAvatar, ServerHttpRequest httpServletRequest) throws Exception{
         try {
             Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
             return ResponseEntity.ok().body(userService.uploadAvatar(uploadAvatar, userId));
@@ -45,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/update_cover")
-    public ResponseEntity<Object> updateCover(MultipartFile uploadCover, HttpServletRequest httpServletRequest) throws Exception{
+    public ResponseEntity<Object> updateCover(MultipartFile uploadCover, ServerHttpRequest httpServletRequest) throws Exception{
         try {
             Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
             return ResponseEntity.ok().body(userService.uploadCover(uploadCover, userId));
@@ -55,7 +54,7 @@ public class UserController {
     }
 
     @PatchMapping(value = "/update_information")
-    public ResponseEntity<Object> updateInformation(@RequestBody User user, HttpServletRequest httpServletRequest){
+    public ResponseEntity<Object> updateInformation(@RequestBody User user, ServerHttpRequest httpServletRequest){
         try {
             Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
             return ResponseEntity.ok().body(userService.updateUser(user, userId));
@@ -65,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<Object> loadProfile(@PathVariable Long userId, HttpServletRequest httpServletRequest, @RequestParam Map<String, String> params) {
+    public ResponseEntity<Object> loadProfile(@PathVariable Long userId, ServerHttpRequest httpServletRequest, @RequestParam Map<String, String> params) {
         try {
             Long currentUserId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
             return ResponseEntity.ok().body(userService.loadProfile(userId, currentUserId, params));

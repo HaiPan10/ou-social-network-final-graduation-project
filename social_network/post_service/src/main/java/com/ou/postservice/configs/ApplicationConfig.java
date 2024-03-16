@@ -6,11 +6,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.cloudinary.Cloudinary;
@@ -21,6 +23,13 @@ import com.cloudinary.utils.ObjectUtils;
 // @ComponentScan("com.ou.social_network")
 @EnableTransactionManagement
 public class ApplicationConfig implements WebMvcConfigurer {
+
+    @Bean
+    @LoadBalanced
+    public WebClient.Builder getWebClient(){
+        return WebClient.builder();
+    }
+
     @Autowired
     private Environment environment;
 

@@ -15,6 +15,7 @@ import com.ou.accountservice.pojo.UserStudent;
 
 public interface AccountService{
     Account retrieve(Long id) throws Exception;
+    Account retrieve(String email) throws Exception;
     List<Account> search(Map<String, String> params);
     Account create(Account account) throws Exception;
     AuthResponse create(Account account, User user, UserStudent userStudent) throws Exception;
@@ -30,4 +31,5 @@ public interface AccountService{
     Long countAccounts(Map<String, String> params);
     List<Object[]> list();
     List<Object[]> stat(Map<String, String> params) throws Exception;
+    Boolean validateToken(String token);
 }

@@ -11,6 +11,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,9 +36,9 @@ import com.ou.accountservice.utils.ValidationUtils;
 import com.ou.accountservice.validator.MapValidator;
 import com.ou.accountservice.validator.WebAppValidator;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import reactor.core.publisher.Mono;
+import reactor.netty.http.server.HttpServerRequest;
 
 @RestController
 // @CrossOrigin(origins = "http://localhost:3000")
@@ -93,7 +95,7 @@ public class AccountController {
     
     @GetMapping(path = "/verify/{accountId}/{verificationCode}")
     public ResponseEntity<Object> verifyAccount(@PathVariable Long accountId, 
-    @PathVariable String verificationCode, HttpServletResponse response) throws Exception {
+    @PathVariable String verificationCode, ServerHttpResponse response) throws Exception {
         try {            
             if (accountService.verifyEmail(accountId, verificationCode)) {
                 HttpHeaders headers = new HttpHeaders();
@@ -109,7 +111,7 @@ public class AccountController {
 
     @PostMapping(path="/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest requestBody,
-        BindingResult bindingResult) throws AccountNotFoundException {
+        BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
                 return ResponseEntity.badRequest().body(ValidationUtils.getInvalidMessage(bindingResult));
@@ -127,7 +129,7 @@ public class AccountController {
     }
 
     @GetMapping(path="/status")
-    public ResponseEntity<Object> getStatus(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Object> getStatus(ServerHttpRequest httpServletRequest) {
         try {
             Long accountId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
             return ResponseEntity.ok().body(accountService.getStatus(accountId));
@@ -170,10 +172,26 @@ public class AccountController {
     public Account getAccount(@RequestParam Long accountId) {
         try {
             return accountService.retrieve(accountId);
+            
         } catch (Exception e) {
             return null;
         }
     }
-    
+
+    @GetMapping("/email")
+    public Account getAccount(@RequestParam String email) {
+        try {
+            return accountService.retrieve(email);
+            
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // This API will be called by the api gateway for access permit
+    @GetMapping("/validate")
+    public Mono<Boolean> validateToken(@RequestParam String token){
+        return Mono.just(accountService.validateToken(token));
+    }
 
 }

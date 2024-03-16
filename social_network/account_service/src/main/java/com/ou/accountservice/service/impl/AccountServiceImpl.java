@@ -14,6 +14,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 // import org.springframework.security.authentication.AuthenticationManager;
 // import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 // import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.netflix.discovery.converters.Auto;
 import com.ou.accountservice.configs.JwtService;
 import com.ou.accountservice.event.OrderPlacedEvent;
 import com.ou.accountservice.pojo.UserDoc;
@@ -47,13 +50,12 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepositoryJPA accountRepositoryJPA;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     // @Autowired
     // private AccountRepository accountRepository;
 
-    // @Autowired
-    // private BCryptPasswordEncoder bCryptPasswordEncoder;
-    // @Autowired
-    // private AuthenticationManager authenticationManager;
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -129,9 +131,9 @@ public class AccountServiceImpl implements AccountService {
             throw new Exception("Email này đã được sử dụng!");
         }
         account.setCreatedDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-        // String encoded = bCryptPasswordEncoder.encode(account.getPassword());
-        // account.setPassword(encoded);
-        // account.setConfirmPassword(encoded);
+        String encoded = bCryptPasswordEncoder.encode(account.getPassword());
+        account.setPassword(encoded);
+        account.setConfirmPassword(encoded);
         return accountRepositoryJPA.save(account);
     }
 
@@ -154,7 +156,7 @@ public class AccountServiceImpl implements AccountService {
             account.setUser(user);
             // mailService.sendVerificationEmail(account.getId());
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "mailTopic", "sendVerificationEmail"));
+                    new OrderPlacedEvent(this, "mailTopic", "sendVerificationEmail"));
             String token = jwtService.generateAccessToken(account);
             return new AuthResponse(account.getRoleId(), user, token);
         } catch (Exception e) {
@@ -204,14 +206,14 @@ public class AccountServiceImpl implements AccountService {
                         userDoc.setActiveStatus("offline");
                         // firebaseService.saveOrUpdate(userDoc);
                         applicationEventPublisher.publishEvent(
-                            new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
+                                new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
                         // mailService.sendAcceptedMail(account);
                         applicationEventPublisher.publishEvent(
-                            new OrderPlacedEvent(this, "mailTopic", "sendAcceptedMail"));
+                                new OrderPlacedEvent(this, "mailTopic", "sendAcceptedMail"));
                     } else if (account.getStatus().equals(Status.LOCKED.toString())) {
                         // mailService.sendUnlockMail(account);
                         applicationEventPublisher.publishEvent(
-                            new OrderPlacedEvent(this, "mailTopic", "sendUnlockMail"));
+                                new OrderPlacedEvent(this, "mailTopic", "sendUnlockMail"));
                     }
                     break;
                 case "REJECT":
@@ -241,7 +243,7 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -266,20 +268,19 @@ public class AccountServiceImpl implements AccountService {
                 throw new Exception("Email không tồn tại!");
             }
 
-            // Authentication authentication = authenticationManager.authenticate(
-            //         new UsernamePasswordAuthenticationToken(
-            //                 account.getEmail(), account.getPassword()));
-
             Account authenticationAccount = accountOptional.get();
 
-            // SecurityContextHolder.getContext().setAuthentication(authentication);
-            String token = jwtService.generateAccessToken(authenticationAccount);
+            if (!account.getPassword().trim().isEmpty() &&
+                bCryptPasswordEncoder.matches(account.getPassword(), authenticationAccount.getPassword())) {
+                String token = jwtService.generateAccessToken(authenticationAccount);
 
-            return new AuthResponse(authenticationAccount.getRoleId(), authenticationAccount.getUser(), token);
-        // } catch (AuthenticationException exception) {
-        //     throw new Exception("Email hoặc mật khẩu không đúng.");
+                return new AuthResponse(authenticationAccount.getRoleId(), authenticationAccount.getUser(), token);
+            } else {
+                throw new Exception("User not found");
+            }
+
         } catch (Exception e) {
-            return null;
+            throw new Exception("Email hoặc mật khẩu không đúng.");
         }
     }
 
@@ -306,14 +307,14 @@ public class AccountServiceImpl implements AccountService {
             userDoc.setActiveStatus("offline");
             // firebaseService.saveOrUpdate(userDoc);
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
+                    new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
             // UserRecord.CreateRequest request = new UserRecord.CreateRequest()
             // .setEmail(account.getEmail())
             // .setPassword(env.getProperty("DEFAULT_PASSWORD").toString());
             // firebaseAuth.createUser(request);
             // mailService.sendGrantedAccount(account);
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "mailTopic", "sendGrantedAccount"));
+                    new OrderPlacedEvent(this, "mailTopic", "sendGrantedAccount"));
             scheduleService.changePasswordRequiredSchedule(account.getEmail());
             return account;
         } catch (Exception e) {
@@ -324,10 +325,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account changePassword(String changedPassword, String authPassword) throws Exception {
         try {
-            // String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            // String email =
+            // SecurityContextHolder.getContext().getAuthentication().getName();
             // Authentication authentication = authenticationManager.authenticate(
-            //         new UsernamePasswordAuthenticationToken(
-            //                 email, authPassword));
+            // new UsernamePasswordAuthenticationToken(
+            // email, authPassword));
             // SecurityContextHolder.getContext().setAuthentication(authentication);
             // Account authAccount = accountRepositoryJPA.findByEmail(email).get();
             // String encoded = bCryptPasswordEncoder.encode(changedPassword);
@@ -336,9 +338,9 @@ public class AccountServiceImpl implements AccountService {
             // accountRepository.updateAccount(authAccount);
             // return accountRepositoryJPA.save(authAccount);
             return null;
-        // } catch (AuthenticationException exception) {
-        //     throw new Exception("Mật khẩu không đúng.");
-        // }
+            // } catch (AuthenticationException exception) {
+            // throw new Exception("Mật khẩu không đúng.");
+            // }
         } catch (Exception exception) {
             return null;
         }
@@ -391,6 +393,21 @@ public class AccountServiceImpl implements AccountService {
             System.out.println("[DEBUG] - " + exception.getMessage());
             throw new Exception("Some things wrong");
         }
+    }
+
+    @Override
+    public Account retrieve(String email) throws Exception {
+        Optional<Account> accountOptional = accountRepositoryJPA.findByEmail(email);
+        if (accountOptional.isPresent()) {
+            return accountOptional.get();
+        } else {
+            throw new Exception("Account not found");
+        }
+    }
+
+    @Override
+    public Boolean validateToken(String token) {
+        return jwtService.isValidAccessToken(token);
     }
 
 }

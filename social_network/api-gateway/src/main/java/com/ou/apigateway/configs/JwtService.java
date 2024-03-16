@@ -1,4 +1,4 @@
-package com.ou.accountservice.configs;
+package com.ou.apigateway.configs;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -16,7 +16,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.ou.accountservice.pojo.Account;
+import com.ou.apigateway.pojo.Account;
 
 @Service
 public class JwtService {

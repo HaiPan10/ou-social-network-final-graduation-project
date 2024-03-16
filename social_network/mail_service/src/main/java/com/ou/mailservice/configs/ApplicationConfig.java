@@ -52,6 +52,7 @@ import jakarta.annotation.PostConstruct;
 // @ComponentScan("com.ou.social_network")
 // @EnableTransactionManagement
 public class ApplicationConfig implements WebMvcConfigurer {
+
     @Autowired
     private Environment environment;
 
