@@ -5,12 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import com.ou.apigateway.components.AuthenticationManager;
 import com.ou.apigateway.components.SecurityContextHolder;
+import com.ou.apigateway.filter.CustomFilter;
 
 import reactor.core.publisher.Mono;
 
@@ -28,6 +30,9 @@ public class SpringSecurityConfig {
 
     @Autowired
     private SecurityContextHolder securityContextHolder;
+
+    @Autowired
+    private CustomFilter customFilter;
 
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
@@ -47,11 +52,13 @@ public class SpringSecurityConfig {
                                 .pathMatchers(
                                         "/api/accounts/login",
                                         "/api/accounts/register",
-                                        // "/api/accounts/validate",
                                         "/api/accounts/verify/**")
                                 .permitAll()
+                                .pathMatchers("/admin/**")
+                                .denyAll()
                                 .anyExchange().authenticated());
 
+        http.addFilterAfter(customFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION);
         return http.build();
     }
 }

@@ -5,3 +5,11 @@ spring:
 #           max-request-size: 10MB
   main:
     allow-circular-references: true
+    
+#Logging
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        security: TRACE

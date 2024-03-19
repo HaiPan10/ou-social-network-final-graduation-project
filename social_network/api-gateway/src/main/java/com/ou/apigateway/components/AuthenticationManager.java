@@ -27,11 +27,13 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
         return Mono.just(jwtService.isValidAccessToken(token))
                 .switchIfEmpty(Mono.empty())
                 .map(authen -> {
+                    // Set the credentials is the user id for easy use
                     String roleName = jwtService.getRoleNameFromToken(token);
                     String email = jwtService.getEmailFromToken(token);
+                    Long id = jwtService.getIdFromToken(token);
                     Set<GrantedAuthority> authorities = new HashSet<>();
                     authorities.add(new SimpleGrantedAuthority(roleName));
-                    return new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    return new UsernamePasswordAuthenticationToken(email, id, authorities);
                 });
     }
 

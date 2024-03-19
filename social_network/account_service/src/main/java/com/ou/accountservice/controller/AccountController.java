@@ -4,8 +4,6 @@ import java.net.URI;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.security.auth.login.AccountNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -20,9 +18,11 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ou.accountservice.configs.JwtService;
@@ -38,7 +38,6 @@ import com.ou.accountservice.validator.WebAppValidator;
 
 import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.server.HttpServerRequest;
 
 @RestController
 // @CrossOrigin(origins = "http://localhost:3000")
@@ -138,10 +137,11 @@ public class AccountController {
         }
     }
 
-    @PostMapping(path="/change_password")
+    @PostMapping(path="/change-password")
     public ResponseEntity<Object> changePassword(@RequestBody Map<String, Object> params,
-        BindingResult bindingResult){
+        BindingResult bindingResult, @RequestHeader HttpHeaders headers){
         try {
+            Long id = Long.parseLong(headers.getFirst("AccountID"));
             String password = mapper.convertValue(params.get("password"), String.class);
             String authPassword = mapper.convertValue(params.get("authPassword"), String.class);
             String confirmPassword = mapper.convertValue(params.get("confirmPassword"), String.class);
@@ -149,7 +149,7 @@ public class AccountController {
             if (bindingResult.hasErrors() || !password.equals(confirmPassword)) {
                 return ResponseEntity.badRequest().body("Mật khẩu không khớp");
             }
-            accountService.changePassword(password, authPassword);
+            accountService.changePassword(id, password, authPassword);
             
             return ResponseEntity.ok().body("Change Password Successfully");
         } catch (Exception e) {

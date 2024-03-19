@@ -18,7 +18,10 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.ou.apigateway.pojo.Account;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class JwtService {
     private static final String SECRECT = "ajfipupieuqwpieuasipdhfajlbfljh3y012637018274hfajlsdadfqweasdadfa3123123123123";
     private static final long HOUR = 365;
@@ -28,9 +31,9 @@ public class JwtService {
     private static final long EXPIRE_DURATION = HOUR * MINUTE * SECOND * MILISECOND;
     private static final byte[] BYTES = SECRECT.getBytes();
 
-    public String generateAccessToken(Account account){
+    public String generateAccessToken(Account account) {
         String token = null;
-        if(account != null){
+        if (account != null) {
             try {
                 JWSSigner signer = new MACSigner(BYTES);
                 JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
@@ -39,7 +42,7 @@ public class JwtService {
                 builder.claim("roleName", account.getRoleId().getName());
                 builder.issueTime(new Date(System.currentTimeMillis()));
                 builder.expirationTime(new Date(System.currentTimeMillis() + EXPIRE_DURATION));
-                
+
                 JWTClaimsSet claimsSet = builder.build();
                 SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
                 signedJWT.sign(signer);
@@ -53,12 +56,12 @@ public class JwtService {
         return token;
     }
 
-    private JWTClaimsSet getClaimsSet(String token){
+    private JWTClaimsSet getClaimsSet(String token) {
         JWTClaimsSet claimsSet = null;
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             JWSVerifier verifier = new MACVerifier(BYTES);
-            if(signedJWT.verify(verifier)){
+            if (signedJWT.verify(verifier)) {
                 claimsSet = signedJWT.getJWTClaimsSet();
             }
         } catch (JOSEException | ParseException e) {
@@ -67,14 +70,13 @@ public class JwtService {
         return claimsSet;
     }
 
-    private Date getExpirationDate(String token){
+    private Date getExpirationDate(String token) {
         JWTClaimsSet claimsSet = getClaimsSet(token);
-        Date expirationDate = claimsSet.getExpirationTime();
-        return expirationDate;
+        return claimsSet != null ? claimsSet.getExpirationTime() : null;
     }
 
-    public boolean isValidAccessToken(String token){
-        if(token == null || token.trim().length() == 0){
+    public boolean isValidAccessToken(String token) {
+        if (token == null || token.trim().length() == 0) {
             return false;
         }
 
@@ -84,8 +86,10 @@ public class JwtService {
         // System.out.println("[DEBUG] - " + email);
         // System.out.println("[DEBUG] - " + id);
         // System.out.println("[DEBUG] - " + expirationDate);
-        // System.out.println("[DEBUG] - " + !(email == null || email.isEmpty() || id == null || expirationDate.before(new Date())));
-        return !(email == null || email.isEmpty() || id == null || expirationDate.before(new Date()));
+        // System.out.println("[DEBUG] - " + !(email == null || email.isEmpty() || id ==
+        // null || expirationDate.before(new Date())));
+        return !(email == null || email.isEmpty() || id == null || expirationDate == null
+                || expirationDate.before(new Date()));
     }
 
     /**
@@ -93,35 +97,35 @@ public class JwtService {
      * @param token
      * @return a string with format [id,email]
      */
-    public String getEmailFromToken(String token){
+    public String getEmailFromToken(String token) {
         JWTClaimsSet claimsSet = getClaimsSet(token);
         String value = null;
         try {
             value = claimsSet.getStringClaim("email");
-        } catch (ParseException e) {
-            System.out.println("[ERROR] - " + e.getMessage());
+        } catch (Exception e) {
+            log.info(e.getMessage());
         }
         return value;
     }
 
-    public Long getIdFromToken(String token){
+    public Long getIdFromToken(String token) {
         JWTClaimsSet claimsSet = getClaimsSet(token);
         Long value = null;
         try {
             value = claimsSet.getLongClaim("id");
-        } catch (ParseException e) {
-            System.out.println("[ERROR] - " + e.getMessage());
+        } catch (Exception e) {
+            log.info(e.getMessage());
         }
         return value;
     }
 
-    public String getRoleNameFromToken(String token){
+    public String getRoleNameFromToken(String token) {
         JWTClaimsSet claimsSet = getClaimsSet(token);
         String value = null;
         try {
             value = claimsSet.getStringClaim("roleName");
-        } catch (ParseException e) {
-            System.out.println("[ERROR] - " + e.getMessage());
+        } catch (Exception e) {
+            log.info(e.getMessage());
         }
         return value;
     }
@@ -140,14 +144,14 @@ public class JwtService {
 
     public String getAccessToken(ServerHttpRequest request) {
         String header = getAuthorization(request);
-        if(header == null){
+        if (header == null) {
             return null;
         }
         String token = header.split(" ")[1].trim();
         return token;
     }
 
-    public String getAccountId(ServerHttpRequest request){
+    public String getAccountId(ServerHttpRequest request) {
         String token = getAccessToken(request);
         Long id = getIdFromToken(token);
         return String.valueOf(id);

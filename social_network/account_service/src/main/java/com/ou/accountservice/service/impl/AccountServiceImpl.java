@@ -15,7 +15,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 // import org.springframework.security.authentication.AuthenticationManager;
 // import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 // import org.springframework.security.core.Authentication;
@@ -25,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.netflix.discovery.converters.Auto;
 import com.ou.accountservice.configs.JwtService;
 import com.ou.accountservice.event.OrderPlacedEvent;
 import com.ou.accountservice.pojo.UserDoc;
@@ -323,26 +321,26 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account changePassword(String changedPassword, String authPassword) throws Exception {
-        try {
-            // String email =
-            // SecurityContextHolder.getContext().getAuthentication().getName();
-            // Authentication authentication = authenticationManager.authenticate(
-            // new UsernamePasswordAuthenticationToken(
-            // email, authPassword));
-            // SecurityContextHolder.getContext().setAuthentication(authentication);
-            // Account authAccount = accountRepositoryJPA.findByEmail(email).get();
-            // String encoded = bCryptPasswordEncoder.encode(changedPassword);
-            // authAccount.setPassword(encoded);
-            // authAccount.setConfirmPassword(encoded);
-            // accountRepository.updateAccount(authAccount);
-            // return accountRepositoryJPA.save(authAccount);
-            return null;
-            // } catch (AuthenticationException exception) {
-            // throw new Exception("Mật khẩu không đúng.");
-            // }
-        } catch (Exception exception) {
-            return null;
+    public Account changePassword(Long id, String changedPassword, String authPassword) throws Exception {
+        try{
+            Optional<Account> account = accountRepositoryJPA.findById(id);
+            
+            if(!account.isPresent()){
+                throw new Exception("Tài khoản không tồn tại");
+            }
+
+            if(authPassword.trim().isEmpty() || !bCryptPasswordEncoder.matches(authPassword, account.get().getPassword())){
+                throw new Exception("Mật khẩu không đúng");
+            }
+
+            Account authAccount = account.get();
+
+            String encoded = bCryptPasswordEncoder.encode(changedPassword);
+            authAccount.setPassword(encoded);
+            authAccount.setConfirmPassword(encoded);
+            return accountRepositoryJPA.save(authAccount);
+        } catch (Exception exception){
+            throw new Exception(exception);
         }
     }
 

@@ -26,7 +26,7 @@ public interface AccountService{
     AuthResponse login(AuthRequest account) throws AccountNotFoundException, Exception;
     String getStatus(Long accountId) throws InterruptedException, ExecutionException;
     Account create(Account account, User user) throws Exception;
-    Account changePassword(String changedPassword, String authPassword)throws Exception;
+    Account changePassword(Long id, String changedPassword, String authPassword)throws Exception;
     Account loadAccountByEmail(String email);
     Long countAccounts(Map<String, String> params);
     List<Object[]> list();
