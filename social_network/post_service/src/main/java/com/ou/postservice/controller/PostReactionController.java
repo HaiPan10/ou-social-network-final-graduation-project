@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ou.postservice.configs.JwtService;
 import com.ou.postservice.pojo.Reaction;
 import com.ou.postservice.service.interfaces.PostReactionService;
 
@@ -27,9 +26,6 @@ import com.ou.postservice.service.interfaces.PostReactionService;
 public class PostReactionController {
     @Autowired 
     private PostReactionService postReactionService;
-
-    @Autowired
-    private JwtService jwtService;
 
     @GetMapping(path = "{postId}/{reactionId}")
     public ResponseEntity<Object> getReactionUsers(@PathVariable Long postId, @PathVariable Long reactionId) throws Exception {
