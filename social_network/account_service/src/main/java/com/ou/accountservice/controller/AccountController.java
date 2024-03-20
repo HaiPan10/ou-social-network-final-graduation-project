@@ -9,7 +9,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -22,10 +21,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ou.accountservice.configs.JwtService;
 import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.AuthRequest;
 import com.ou.accountservice.pojo.AuthResponse;
@@ -59,9 +55,6 @@ public class AccountController {
 
     @Autowired
     private Environment env;
-
-    @Autowired
-    private JwtService jwtService;
 
     @InitBinder("params")
     public void initBinderMap(WebDataBinder binder) {
@@ -128,9 +121,9 @@ public class AccountController {
     }
 
     @GetMapping(path="/status")
-    public ResponseEntity<Object> getStatus(ServerHttpRequest httpServletRequest) {
+    public ResponseEntity<Object> getStatus(@RequestHeader HttpHeaders headers) {
         try {
-            Long accountId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long accountId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.ok().body(accountService.getStatus(accountId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

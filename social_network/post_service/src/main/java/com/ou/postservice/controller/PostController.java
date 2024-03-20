@@ -6,6 +6,7 @@ import java.util.Map;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -13,18 +14,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ou.postservice.configs.JwtService;
 import com.ou.postservice.pojo.Post;
-import com.ou.postservice.pojo.User;
 import com.ou.postservice.service.interfaces.PostService;
 import com.ou.postservice.utils.ValidationUtils;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -43,14 +42,12 @@ public class PostController {
     // public void initBinderWeb(WebDataBinder binder) {
     //     binder.setValidator(webAppValidator);
     // }
-    @Autowired
-    private JwtService jwtService;
 
     @PostMapping(path = "/upload")
     public ResponseEntity<Object> upLoadPost(String postContent,
-     List<MultipartFile> images, boolean isActiveComment, HttpServletRequest httpServletRequest) throws Exception {
+     List<MultipartFile> images, boolean isActiveComment, @RequestHeader HttpHeaders headers) throws Exception {
         try {
-            Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.status(HttpStatus.CREATED).body(postService.uploadPost(postContent, userId, images, isActiveComment));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -59,13 +56,13 @@ public class PostController {
 
     @PostMapping
     ResponseEntity<Object> update(List<MultipartFile> images, @Valid Post post, boolean isEditImage,
-     BindingResult bindingResult, HttpServletRequest httpServletRequest) throws Exception {
+     BindingResult bindingResult, @RequestHeader HttpHeaders headers) throws Exception {
         // webAppValidator.validate(post, bindingResult);
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(ValidationUtils.getInvalidMessage(bindingResult));
         }
         try {
-            Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
             post.setUserId(userId);
             return ResponseEntity.ok(postService.update(post, images, isEditImage));
         } catch (Exception e) {
@@ -74,9 +71,9 @@ public class PostController {
     }
 
     @DeleteMapping(path = "{postId}")
-    ResponseEntity<Object> delete(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
+    ResponseEntity<Object> delete(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
         try {
-            Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(postService.delete(postId, userId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -84,9 +81,9 @@ public class PostController {
     }
 
     @GetMapping()
-    ResponseEntity<Object> loadNewFeed(HttpServletRequest httpServletRequest, @RequestParam Map<String, String> params) {
+    ResponseEntity<Object> loadNewFeed(@RequestHeader HttpHeaders headers, @RequestParam Map<String, String> params) {
         try {
-            Long currentUserId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long currentUserId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.ok(postService.loadNewFeed(currentUserId, params));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -94,9 +91,9 @@ public class PostController {
     }
 
     @GetMapping(path = "{id}")
-    public ResponseEntity<?> getPost(HttpServletRequest httpServletRequest, @PathVariable Long id) {
+    public ResponseEntity<?> getPost(@RequestHeader HttpHeaders headers, @PathVariable Long id) {
         try {
-            Long currentUserId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long currentUserId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.ok().body(postService.getDetail(id, currentUserId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

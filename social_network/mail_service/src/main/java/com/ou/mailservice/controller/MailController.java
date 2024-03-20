@@ -3,13 +3,12 @@ package com.ou.mailservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
 
-import com.ou.mailservice.configs.JwtService;
 import com.ou.mailservice.service.interfaces.MailService;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -21,13 +20,11 @@ import jakarta.servlet.http.HttpServletRequest;
 public class MailController {
     @Autowired
     private MailService mailService;
-    @Autowired
-    private JwtService jwtService;
 
     @GetMapping(path = "/verify")
-    public void SendVerificationEmail(HttpServletRequest httpServletRequest) throws Exception {
+    public void SendVerificationEmail(@RequestHeader HttpHeaders headers) throws Exception {
         try {
-            Long accountId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long accountId = Long.parseLong(headers.getFirst("AccountID"));
             mailService.sendVerificationEmail(accountId);
         } catch (Exception e) {
             return ;

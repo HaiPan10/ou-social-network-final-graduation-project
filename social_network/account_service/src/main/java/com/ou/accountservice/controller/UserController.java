@@ -5,20 +5,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ou.accountservice.configs.JwtService;
-import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.service.interfaces.UserService;
 
@@ -30,13 +29,11 @@ import com.ou.accountservice.service.interfaces.UserService;
 public class UserController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private JwtService jwtService;
 
     @PostMapping(value = "/update_avatar")
-    public ResponseEntity<Object> updateAvatar(MultipartFile uploadAvatar, ServerHttpRequest httpServletRequest) throws Exception{
+    public ResponseEntity<Object> updateAvatar(MultipartFile uploadAvatar, @RequestHeader HttpHeaders headers) throws Exception{
         try {
-            Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.ok().body(userService.uploadAvatar(uploadAvatar, userId));
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -44,9 +41,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/update_cover")
-    public ResponseEntity<Object> updateCover(MultipartFile uploadCover, ServerHttpRequest httpServletRequest) throws Exception{
+    public ResponseEntity<Object> updateCover(MultipartFile uploadCover, @RequestHeader HttpHeaders headers) throws Exception{
         try {
-            Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.ok().body(userService.uploadCover(uploadCover, userId));
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -54,9 +51,9 @@ public class UserController {
     }
 
     @PatchMapping(value = "/update_information")
-    public ResponseEntity<Object> updateInformation(@RequestBody User user, ServerHttpRequest httpServletRequest){
+    public ResponseEntity<Object> updateInformation(@RequestBody User user, @RequestHeader HttpHeaders headers){
         try {
-            Long userId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.ok().body(userService.updateUser(user, userId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -64,9 +61,9 @@ public class UserController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<Object> loadProfile(@PathVariable Long userId, ServerHttpRequest httpServletRequest, @RequestParam Map<String, String> params) {
+    public ResponseEntity<Object> loadProfile(@PathVariable Long userId, @RequestHeader HttpHeaders headers, @RequestParam Map<String, String> params) {
         try {
-            Long currentUserId = Long.parseLong(jwtService.getAccountId(httpServletRequest));
+            Long currentUserId = Long.parseLong(headers.getFirst("AccountID"));
             return ResponseEntity.ok().body(userService.loadProfile(userId, currentUserId, params));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

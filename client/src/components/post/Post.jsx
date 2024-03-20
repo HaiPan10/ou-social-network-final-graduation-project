@@ -206,7 +206,7 @@ export const Post = ({ post, posts, setPosts, postInView, focusComment, focusPar
         let res = await authAPI().post(endpoints['post_reactions'] + `/${post.id}`, {
           "id": reaction_id
         })
-        if (res.status === 201) {
+        if (res.status === 200) {
           setReloadReaction(!reloadReaction)
         }
       } catch (ex) {
