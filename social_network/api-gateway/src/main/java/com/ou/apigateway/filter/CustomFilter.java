@@ -17,6 +17,7 @@ public class CustomFilter implements WebFilter{
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         return ReactiveSecurityContextHolder.getContext().doOnNext(auth -> {
             if(auth != null && auth.getAuthentication().isAuthenticated()){
+                System.out.println("============AUTHENTICATED USER: " + auth.getAuthentication().getName());
                 String id = auth.getAuthentication().getCredentials().toString();
                 ServerHttpRequest request = exchange.getRequest();
                 HttpHeaders httpHeaders = HttpHeaders.writableHttpHeaders(request.getHeaders());
@@ -29,6 +30,7 @@ public class CustomFilter implements WebFilter{
                 }
 
             }
+            System.out.println("====================TESTING=================");
         }).then(chain.filter(exchange));
     }
     

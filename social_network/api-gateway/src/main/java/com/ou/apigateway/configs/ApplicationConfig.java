@@ -35,6 +35,7 @@ public class ApplicationConfig {
         corsConfig.setMaxAge(3000L);
         corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE", "OPTION"));
         corsConfig.setAllowedHeaders(List.of("*"));
+        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);

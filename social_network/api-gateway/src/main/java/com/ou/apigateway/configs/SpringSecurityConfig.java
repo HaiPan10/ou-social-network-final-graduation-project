@@ -56,7 +56,8 @@ public class SpringSecurityConfig {
                                 .pathMatchers(
                                         "/api/accounts/login",
                                         "/api/accounts/register",
-                                        "/api/accounts/verify/**")
+                                        "/api/accounts/verify/**",
+                                        "/api/ws/**")
                                 .permitAll()
                                 .pathMatchers("/admin/**")
                                 .denyAll()
