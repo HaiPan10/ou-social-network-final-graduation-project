@@ -1,11 +1,17 @@
 package com.ou.apigateway.configs;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -19,6 +25,21 @@ public class ApplicationConfig {
     @LoadBalanced
     public WebClient.Builder getWebClient() {
         return WebClient.builder();
+    }
+
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        String clientHostName = environment.getProperty("CLIENT_HOSTNAME");
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(Arrays.asList(clientHostName));
+        corsConfig.setMaxAge(3000L);
+        corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE", "OPTION"));
+        corsConfig.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+
+        return new CorsWebFilter(source);
     }
 
 }

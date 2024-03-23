@@ -23,8 +23,8 @@ import com.ou.realtimeservice.service.interfaces.SocketService;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-	@Autowired
-	private JwtService jwtService;
+	// @Autowired
+	// private JwtService jwtService;
 
 	@Autowired
 	private SocketService socketService;
@@ -48,7 +48,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 		String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
 		String jwtToken = authorizationHeader.substring(7);
-		Long userId = jwtService.getIdFromToken(jwtToken);
+		// Long userId = jwtService.getIdFromToken(jwtToken);
+		Long userId = Long.parseLong(headerAccessor.getFirstNativeHeader("AccountId"));
 		SocketClient socketClient = new SocketClient(headerAccessor.getSessionId(), userId);
 		socketService.addOnlineClient(socketClient);
 	}
@@ -58,7 +59,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 		String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
 		String jwtToken = authorizationHeader.substring(7);
-		Long id = jwtService.getIdFromToken(jwtToken);
+		// Long id = jwtService.getIdFromToken(jwtToken);
+		Long id = Long.parseLong(headerAccessor.getFirstNativeHeader("AccountId"));
 		SocketClient socketClient = new SocketClient(headerAccessor.getSessionId(), id);
 		socketService.addSocketClient(headerAccessor.getDestination(), socketClient);
 
