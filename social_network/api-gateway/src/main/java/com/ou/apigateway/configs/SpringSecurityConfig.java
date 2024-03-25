@@ -9,6 +9,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.reactive.CorsWebFilter;
 
 import com.ou.apigateway.components.AuthenticationManager;
 import com.ou.apigateway.components.SecurityContextHolder;
@@ -34,6 +35,9 @@ public class SpringSecurityConfig {
     @Autowired
     private CustomFilter customFilter;
 
+    @Autowired
+    private CorsWebFilter corsWebFilter;
+
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
         http.csrf(csrf -> csrf.disable())
@@ -52,13 +56,15 @@ public class SpringSecurityConfig {
                                 .pathMatchers(
                                         "/api/accounts/login",
                                         "/api/accounts/register",
-                                        "/api/accounts/verify/**")
+                                        "/api/accounts/verify/**",
+                                        "/api/ws/**")
                                 .permitAll()
                                 .pathMatchers("/admin/**")
                                 .denyAll()
                                 .anyExchange().authenticated());
 
-        http.addFilterAfter(customFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION);
+        http.addFilterBefore(corsWebFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION)
+            .addFilterAfter(customFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION);
         return http.build();
     }
 }
