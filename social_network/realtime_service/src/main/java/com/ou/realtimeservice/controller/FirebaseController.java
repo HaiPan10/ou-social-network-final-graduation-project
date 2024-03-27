@@ -18,7 +18,7 @@ import com.ou.realtimeservice.pojo.MessageFirebaseModal;
 import com.ou.realtimeservice.service.interfaces.FirebaseService;
 
 @RestController
-@RequestMapping("api/firebase")
+@RequestMapping("api/realtime")
 public class FirebaseController {
     @Autowired
     private FirebaseService firebaseService;

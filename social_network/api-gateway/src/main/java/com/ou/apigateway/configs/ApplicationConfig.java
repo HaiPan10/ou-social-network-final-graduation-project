@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -35,6 +37,7 @@ public class ApplicationConfig {
         corsConfig.setMaxAge(3000L);
         corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE", "OPTION"));
         corsConfig.setAllowedHeaders(List.of("*"));
+
         corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -43,4 +46,12 @@ public class ApplicationConfig {
         return new CorsWebFilter(source);
     }
 
+    // @Bean
+    // public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+    //     return builder.routes()
+    //             .route(p -> p
+    //                 .path("/api/ws/**")
+    //                 .uri("http://127.0.0.1:8080/api/ws"))
+    //             .build();
+    // }
 }
