@@ -33,6 +33,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                     Long id = jwtService.getIdFromToken(token);
                     Set<GrantedAuthority> authorities = new HashSet<>();
                     authorities.add(new SimpleGrantedAuthority(roleName));
+                    System.out.println("Hello world again");
                     return new UsernamePasswordAuthenticationToken(email, id, authorities);
                 });
     }

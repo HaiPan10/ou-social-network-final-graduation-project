@@ -1,8 +1,11 @@
 package com.ou.apigateway.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -18,7 +21,7 @@ import com.ou.apigateway.filter.CustomFilter;
 import reactor.core.publisher.Mono;
 
 @Configuration
-@EnableWebFluxSecurity
+@EnableWebFluxSecurity()
 public class SpringSecurityConfig {
 
     @Bean
@@ -38,7 +41,7 @@ public class SpringSecurityConfig {
     @Autowired
     private CorsWebFilter corsWebFilter;
 
-    @Bean
+    @Bean 
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
         http.csrf(csrf -> csrf.disable())
                 .formLogin(login -> login.disable())
@@ -59,8 +62,6 @@ public class SpringSecurityConfig {
                                         "/api/accounts/verify/**",
                                         "/api/ws/**")
                                 .permitAll()
-                                .pathMatchers("/admin/**")
-                                .denyAll()
                                 .anyExchange().authenticated());
 
         http.addFilterBefore(corsWebFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION)
