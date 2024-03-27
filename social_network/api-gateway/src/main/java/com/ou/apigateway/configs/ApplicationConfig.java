@@ -46,12 +46,12 @@ public class ApplicationConfig {
         return new CorsWebFilter(source);
     }
 
-    @Bean
-    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-        return builder.routes()
-                .route(p -> p
-                    .path("/api/ws/**")
-                    .uri("http://127.0.0.1:8080/api/ws"))
-                .build();
-    }
+    // @Bean
+    // public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+    //     return builder.routes()
+    //             .route(p -> p
+    //                 .path("/api/ws/**")
+    //                 .uri("http://127.0.0.1:8080/api/ws"))
+    //             .build();
+    // }
 }

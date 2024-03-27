@@ -26,7 +26,7 @@ export const Login = () => {
         try {
             let res = await Api.post(endpoints['login'], {
               "email": account.email,
-              "password": account.password,
+              "password": account.password
             })
             save('access-token', res.data.accessToken)
             save('current-user', res.data.user)
