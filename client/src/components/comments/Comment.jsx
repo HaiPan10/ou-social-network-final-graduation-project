@@ -151,7 +151,7 @@ export const Comment = (props) => {
         } else {
           setComments(prevData => prevData.filter(item => item.id !== newComment.id))
         }
-      }, { id: `comment-${props.post.id}`, Authorization: `Bearer ${load("access-token")}` })
+      }, { id: `comment-${props.post.id}`, user: user.id })
 
       return () => {
         socketClient.unsubscribe(`comment-${props.post.id}`)

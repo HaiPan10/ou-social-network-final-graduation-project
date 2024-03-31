@@ -33,9 +33,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ou.adminservice.components.DateFormatter;
 // import com.cloudinary.Cloudinary;
 // import com.cloudinary.utils.ObjectUtils;
 // import com.google.auth.oauth2.GoogleCredentials;
@@ -51,8 +54,9 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @PropertySource("classpath:configs.properties")
 @Slf4j
+@EnableWebFlux
 // @ComponentScan("com.ou.social_network")
-public class ApplicationConfig implements WebMvcConfigurer {
+public class ApplicationConfig implements WebFluxConfigurer {
     @Autowired
     private Environment environment;
 
@@ -68,8 +72,8 @@ public class ApplicationConfig implements WebMvcConfigurer {
     // @Autowired
     // private AccountRepositoryJPA accountRepository;
 
-    // @Autowired
-    // private DateFormatter dateFormatter;
+    @Autowired
+    private DateFormatter dateFormatter;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -155,15 +159,15 @@ public class ApplicationConfig implements WebMvcConfigurer {
     // return executor;
     // }
 
-    // @Override
-    // public void addFormatters(FormatterRegistry registry) {
-    // // registry.addFormatter(new CategoryFormatter());
-    // // In case of needed to format fields of pojo
-    // // create new class and
-    // // implements the Formatter<T> interface
-    // // might not necessary
-    // registry.addFormatter(dateFormatter);
-    // }
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+    // registry.addFormatter(new CategoryFormatter());
+    // In case of needed to format fields of pojo
+    // create new class and
+    // implements the Formatter<T> interface
+    // might not necessary
+    registry.addFormatter(dateFormatter);
+    }
 
     @Bean(name = "validator")
     public LocalValidatorFactoryBean validator() {

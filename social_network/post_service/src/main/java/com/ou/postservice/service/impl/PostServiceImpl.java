@@ -248,6 +248,7 @@ public class PostServiceImpl implements PostService {
         Optional<List<Post>> listPostOptional = postRepository.loadNewFeed(currentUserId, params);
         if (listPostOptional.isPresent() && listPostOptional.get().size() != 0) {
             List<Post> posts = listPostOptional.get();
+
             posts.forEach(p -> {
                 postReactionService.countReaction(p, currentUserId);
                 Integer commentTotal = webClientBuilder.build().get()
@@ -257,6 +258,13 @@ public class PostServiceImpl implements PostService {
                     .bodyToMono(Integer.class)
                     .block();
                 p.setCommentTotal(commentTotal);
+                User user = webClientBuilder.build().get()
+                    .uri("http://account-service/api/users",
+                    uriBuilder -> uriBuilder.queryParam("userId", p.getUserId()).build())
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block();
+                p.setUser(user);
                 // p.setTwoComments(commentService.loadTwoComments(p.getId()));
                 p.getImageInPostList().forEach(img -> img
                         .setContentType(String.format("image/%s", CloudinaryUtils.getImageType(img.getImageUrl()))));

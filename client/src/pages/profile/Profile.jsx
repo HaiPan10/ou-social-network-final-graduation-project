@@ -404,7 +404,7 @@ export const Profile = () => {
         if (newPost.userId.id !== user.id) {
           setPosts(prevPosts => [newPost, ...prevPosts])
         }
-      }, { id: `profile-${id}`, Authorization: `Bearer ${load("access-token")}` })
+      }, { id: `profile-${id}`, user: user.id })
     }
   }, [socketClient, posts])
 
@@ -424,7 +424,7 @@ export const Profile = () => {
         setPosts(res.data.posts)
       } catch (ex) {
         setValidUser(false)
-        console.clear()
+        // console.clear()
       } finally {
         setIsLoading(false)
       }

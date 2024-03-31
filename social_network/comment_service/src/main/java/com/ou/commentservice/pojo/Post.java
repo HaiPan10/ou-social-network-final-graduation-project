@@ -25,10 +25,13 @@ import lombok.ToString;
 public class Post implements Serializable {
     private Long id;
     private String content;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date createdAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedAt;
     private Boolean isActiveComment;
-    private User userId;
+    private Long userId;
+    private User user;
     private List<Comment> commentList;
     private Map<Long, Long> reactionTotal;
     private Integer commentTotal;

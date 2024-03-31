@@ -186,5 +186,4 @@ public class AccountController {
     public Mono<Boolean> validateToken(@RequestParam String token){
         return Mono.just(accountService.validateToken(token));
     }
-
 }

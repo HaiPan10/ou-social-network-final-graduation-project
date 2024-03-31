@@ -43,10 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@EventListener
 	public void handleWebSocketConnectListener(SessionConnectEvent event) throws InterruptedException, ExecutionException {
 		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-		String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
-		// String jwtToken = authorizationHeader.substring(7);
-		// Long userId = jwtService.getIdFromToken(jwtToken);
-		Long userId = Long.parseLong(headerAccessor.getFirstNativeHeader("AccountId"));
+		Long userId = Long.parseLong(headerAccessor.getFirstNativeHeader("user"));
 		SocketClient socketClient = new SocketClient(headerAccessor.getSessionId(), userId);
 		socketService.addOnlineClient(socketClient);
 	}
@@ -54,11 +51,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@EventListener
     public void handleWebSocketSubscribeListener(SessionSubscribeEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-		String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
-		// String jwtToken = authorizationHeader.substring(7);
-		// Long id = jwtService.getIdFromToken(jwtToken);
-		Long id = Long.parseLong(headerAccessor.getFirstNativeHeader("AccountId"));
-		SocketClient socketClient = new SocketClient(headerAccessor.getSessionId(), id);
+		Long userId = Long.parseLong(headerAccessor.getFirstNativeHeader("user"));
+		System.out.println("ws headerAccessor " + headerAccessor.toString());
+		SocketClient socketClient = new SocketClient(headerAccessor.getSessionId(), userId);
 		socketService.addSocketClient(headerAccessor.getDestination(), socketClient);
 
 		Pattern reactionPath = Pattern.compile("/reaction/(.*)");

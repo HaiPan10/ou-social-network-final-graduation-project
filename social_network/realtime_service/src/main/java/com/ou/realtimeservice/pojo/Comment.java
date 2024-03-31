@@ -22,11 +22,21 @@ import lombok.Setter;
 public class Comment implements Serializable {
     private Long id;
     private String content;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date createdDate;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedDate;
-    private Post postId;
-    private User userId;
+    private Long postId;
+    private Post post;
+    private Long userId;
+    private User user;
+    private Comment parentComment;
+    private Long repliedUserId;
+    private User repliedUser;
+    private List<Comment> replies;
     private Integer level;
+    private Long repliesTotal;
+    private Comment firstReply;
 
     public Comment(Long id, String content) {
         this.id = id;
@@ -37,6 +47,10 @@ public class Comment implements Serializable {
         this.id = id;
     }
 
-    
-    
+    @Override
+    public String toString() {
+        return "Comment [id=" + id + ", content=" + content + ", createdDate=" + createdDate + ", updatedDate="
+                + updatedDate + ", postId=" + postId + ", userId=" + userId + ", user=" + user + ", level=" + level
+                + "]";
+    }
 }

@@ -173,19 +173,22 @@ public class PostRepositoryImpl implements PostRepository {
         //     )
         // ));
 
-        Subquery<Date> subquery = criteriaQuery.subquery(Date.class);
-        Root<Comment> rComment = subquery.from(Comment.class);
-        List<Predicate> subPredicates = new ArrayList<>();
-        subPredicates.add(builder.equal(rComment.get("postId").as(Long.class), rPost.get("id")));
-        subquery.where(subPredicates.toArray(Predicate[]::new));
-        subquery.select((Expression) builder.max(rComment.get("updatedDate")));
+        // Subquery<Date> subquery = criteriaQuery.subquery(Date.class);
+        // Root<Comment> rComment = subquery.from(Comment.class);
+        // List<Predicate> subPredicates = new ArrayList<>();
+        // subPredicates.add(builder.equal(rComment.get("postId").as(Long.class), rPost.get("id")));
+        // subquery.where(subPredicates.toArray(Predicate[]::new));
+        // subquery.select((Expression) builder.max(rComment.get("updatedDate")));
 
+        // criteriaQuery.orderBy(
+        //         builder.desc(
+        //                 builder.coalesce(
+        //                         subquery,
+        //                         rPost.get("createdAt"))),
+        //         builder.desc(rPost.get("createdAt")));
+        
         criteriaQuery.orderBy(
-                builder.desc(
-                        builder.coalesce(
-                                subquery,
-                                rPost.get("createdAt"))),
-                builder.desc(rPost.get("createdAt")));
+            builder.desc(rPost.get("createdAt")));
 
         criteriaQuery.where(predicates.toArray(Predicate[]::new));
         Query query = session.createQuery(criteriaQuery);
@@ -228,7 +231,7 @@ public class PostRepositoryImpl implements PostRepository {
     public boolean isResponse(Long postId, Long userId) {
         Session session = entityManager.unwrap(Session.class);
         try {
-            Query query = session.createQuery("SELECT ps FROM PostSurvey ps WHERE ps.id = :postId AND :userId IN (SELECT r.userId.id FROM Response r WHERE r.surveyId = ps)");
+            Query query = session.createQuery("SELECT ps FROM PostSurvey ps WHERE ps.id = :postId AND :userId IN (SELECT r.userId FROM Response r WHERE r.surveyId = ps)");
             query.setParameter("postId", postId);
             query.setParameter("userId", userId);
             PostSurvey postSurvey = (PostSurvey) query.getSingleResult();

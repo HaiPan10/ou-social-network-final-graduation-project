@@ -1,6 +1,8 @@
 package com.ou.commentservice.controller;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -123,5 +125,14 @@ public class CommentController {
     public Integer countComment(@RequestParam Long postId) {
         return commentService.countComment(postId);
     }
+
+    @GetMapping("/loadTwoComments")
+    public List<Comment> loadTwoComments(@RequestParam Long postId) {
+        return commentService.loadTwoComments(postId);
+    }
     
+    @GetMapping("/getReplyInfo")
+    public Comment getReplyInfo(@RequestParam Comment comment) {
+        return commentService.getReplyInfo(comment);
+    }
 }

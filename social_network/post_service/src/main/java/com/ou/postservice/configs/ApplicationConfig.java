@@ -11,18 +11,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.ou.postservice.components.DateFormatter;
 
 @Configuration
 @PropertySource("classpath:configs.properties")
 // @ComponentScan("com.ou.social_network")
 @EnableTransactionManagement
-public class ApplicationConfig implements WebMvcConfigurer {
+public class ApplicationConfig implements WebFluxConfigurer {
 
     @Bean
     @LoadBalanced
@@ -32,6 +34,9 @@ public class ApplicationConfig implements WebMvcConfigurer {
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    private DateFormatter dateFormatter;
 
     @Bean
     public SimpleDateFormat getSimpleDate() {
@@ -59,6 +64,16 @@ public class ApplicationConfig implements WebMvcConfigurer {
         int threadNumber = Integer.parseInt(environment.getProperty("THREAD_NUMBER"));
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         return executor;
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        // registry.addFormatter(new CategoryFormatter());
+        // In case of needed to format fields of pojo
+        // create new class and
+        // implements the Formatter<T> interface
+        // might not necessary
+        registry.addFormatter(dateFormatter);
     }
 
 }

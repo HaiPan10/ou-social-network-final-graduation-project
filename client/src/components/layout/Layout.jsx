@@ -41,8 +41,8 @@ export const Layout = () => {
         if (user !== null && socketClient === null) {
             const socket = new SockJS(socketUrl)
             const client = Stomp.over(socket)
-            // client.debug = null
-            client.connect({Authorization: `Bearer ${ load("access-token") }`}, () => {
+            client.debug = null
+            client.connect({user: user.id}, () => {
               setSocketClient(client);
               getStatus()
             })

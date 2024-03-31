@@ -7,8 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.realtimeservice.pojo.Comment;
 import com.ou.realtimeservice.pojo.Post;
@@ -28,10 +30,8 @@ public class SocketServiceImpl implements SocketService {
     private SimpMessagingTemplate template;
     @Autowired
     private FirebaseService firebaseService;
-    // @Autowired
-    // private PostReactionService postReactionService;
-    // @Autowired
-    // private CommentService commentService;
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     private Map<String, List<SocketClient>> socketClients = new ConcurrentHashMap<>();
     private List<SocketClient> onlineClients = new ArrayList();
@@ -74,26 +74,45 @@ public class SocketServiceImpl implements SocketService {
     
     @Override
     public void realtimeComment(Comment comment, Long postId, String action) {
-        System.out.println(" ACTION : " + action + " COMMENT: " + comment);
-        // commentService.getReplyInfo(comment);
-        CommentSocketModal socketCommentModal = new CommentSocketModal(comment, action);
+        Comment newComment = webClientBuilder.build().get()
+            .uri("http://comment-service/api/comments/getReplyInfo",
+            uriBuilder -> uriBuilder.queryParam("comment", comment).build())
+            .retrieve()
+            .bodyToMono(Comment.class)
+            .block();
+        CommentSocketModal socketCommentModal = new CommentSocketModal(newComment, action);
         template.convertAndSend(String.format("/comment/%s", postId), socketCommentModal);
     }
 
 
     @Override
     public void realtimePostReaction(Long postId, Long userId) {
-        Post post = new Post(postId);
-        // postReactionService.countReaction(post, Long.valueOf(0));
-        ReactionSocketModal socketReactionModal = new ReactionSocketModal(userId, post.getReactionTotal());
+        Post newPost = webClientBuilder.build().get()
+            .uri("http://post-service/api/post_reactions/countReaction",
+                uriBuilder -> uriBuilder.queryParam("postId", postId).build())
+            .retrieve()
+            .bodyToMono(Post.class)
+            .block();
+        ReactionSocketModal socketReactionModal = new ReactionSocketModal(userId, newPost.getReactionTotal());
         template.convertAndSend(String.format("/reaction/%s", postId), socketReactionModal);
     }
 
     @Override
     public void realtimeCommentTotal(Long postId) {
-        // CommentTotalSocketModal socketCommentTotalModal = new CommentTotalSocketModal(
-            // commentService.countComment(postId), commentService.loadTwoComments(postId));
-        // template.convertAndSend(String.format("/comment-total/%s", postId), socketCommentTotalModal);
+        CommentTotalSocketModal socketCommentTotalModal = new CommentTotalSocketModal(
+            webClientBuilder.build().get()
+                .uri("http://comment-service/api/comments/count",
+                uriBuilder -> uriBuilder.queryParam("postId", postId).build())
+                .retrieve()
+                .bodyToMono(Integer.class)
+                .block(),
+            webClientBuilder.build().get()
+                .uri("http://comment-service/api/comments/loadTwoComments",
+                uriBuilder -> uriBuilder.queryParam("postId", postId).build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Comment>>() {})
+                .block());
+        template.convertAndSend(String.format("/comment-total/%s", postId), socketCommentTotalModal);
     }
 
     @Override
@@ -103,7 +122,7 @@ public class SocketServiceImpl implements SocketService {
 
     @Override
     public void realtimeProfile(PostSocketModal socketPostModal) {
-        template.convertAndSend(String.format("/profile/%s", socketPostModal.getPost().getUserId().getId()), socketPostModal);
+        template.convertAndSend(String.format("/profile/%s", socketPostModal.getPost().getUserId()), socketPostModal);
     }
 
     @Override

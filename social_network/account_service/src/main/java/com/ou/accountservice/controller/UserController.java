@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ou.accountservice.pojo.Comment;
 import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.service.interfaces.UserService;
 
@@ -83,5 +84,4 @@ public class UserController {
     public List<User> listUser(@RequestParam List<Long> listUserId) {
         return userService.list(listUserId);
     }
-    
 }
