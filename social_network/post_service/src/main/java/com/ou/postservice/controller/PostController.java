@@ -110,4 +110,13 @@ public class PostController {
             return new ArrayList<>();
         }
     }
+
+    @GetMapping(path = "/fetch-post")
+    public Post getPost(@RequestParam Long postId) {
+        try {
+            return postService.retrieve(postId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

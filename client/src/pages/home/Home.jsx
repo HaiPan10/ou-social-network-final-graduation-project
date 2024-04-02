@@ -41,7 +41,7 @@ export const Home = () => {
       setFirstInit(false)
       socketClient.subscribe('/home', (payload) => {
         let newPost = JSON.parse(payload.body).post
-        if (newPost.userId.id !== user.id) {
+        if (newPost.userId !== user.id) {
           // setPosts(prevPosts => [...prevPosts, newPost])
           setPosts(prevState => {
             let data = [...prevState]
