@@ -134,6 +134,24 @@ public class CommentServiceImpl implements CommentService {
                         .block());
             }
             comment.setFirstReply(firstReply);
+            if (comment.getParentComment() != null) {
+                comment.setRepliedUser(
+                    webClientBuilder.build().get()
+                        .uri("http://account-service/api/users",
+                        uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .block()
+                );
+            }
+            comment.setUser(
+                webClientBuilder.build().get()
+                    .uri("http://account-service/api/users",
+                    uriBuilder -> uriBuilder.queryParam("userId", comment.getUserId()).build())
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block()
+            );
         });
         return comments;
     }
@@ -288,7 +306,41 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> loadComment(Long postId, Long commentId) {
-        return commentRepositoryJPA.loadComment(postId, commentId);
+        List<Comment> comments = commentRepositoryJPA.loadComment(postId, commentId);
+        comments.forEach(
+            comment -> {
+                Comment firstReply = commentRepositoryJPA.getFirstReply(postId, comment.getId());
+                if (firstReply != null) {
+                    firstReply.setUser(
+                        webClientBuilder.build().get()
+                            .uri("http://account-service/api/users",
+                            uriBuilder -> uriBuilder.queryParam("userId", firstReply.getUserId()).build())
+                            .retrieve()
+                            .bodyToMono(User.class)
+                            .block());
+                }
+                comment.setFirstReply(firstReply);
+                if (comment.getParentComment() != null) {
+                    comment.setRepliedUser(
+                        webClientBuilder.build().get()
+                            .uri("http://account-service/api/users",
+                            uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())
+                            .retrieve()
+                            .bodyToMono(User.class)
+                            .block()
+                    );
+                }
+                comment.setUser(
+                    webClientBuilder.build().get()
+                        .uri("http://account-service/api/users",
+                        uriBuilder -> uriBuilder.queryParam("userId", comment.getUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .block()
+                );
+            }
+        );
+        return comments;
     }
 
     @Override
