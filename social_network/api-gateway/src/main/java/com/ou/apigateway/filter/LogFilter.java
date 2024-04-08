@@ -24,7 +24,7 @@ public class LogFilter implements WebFilter{
                 log.info(h);
             }
         }
-        
+
         return chain.filter(exchange);
     }
 }

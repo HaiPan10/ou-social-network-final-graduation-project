@@ -8,17 +8,19 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
+@Slf4j
 public class CustomFilter implements WebFilter{
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         return ReactiveSecurityContextHolder.getContext().doOnNext(auth -> {
             if(auth != null && auth.getAuthentication().isAuthenticated()){
-                System.out.println("============AUTHENTICATED USER: " + auth.getAuthentication().getName());
                 String id = auth.getAuthentication().getCredentials().toString();
+                log.info(String.format("Start to inject id %s in header", id));
                 ServerHttpRequest request = exchange.getRequest();
                 HttpHeaders httpHeaders = HttpHeaders.writableHttpHeaders(request.getHeaders());
                 if(httpHeaders.containsKey("AccountId")){
@@ -30,8 +32,8 @@ public class CustomFilter implements WebFilter{
                 }
 
             }
-            System.out.println("====================TESTING=================");
+
         }).then(chain.filter(exchange));
     }
-    
+
 }

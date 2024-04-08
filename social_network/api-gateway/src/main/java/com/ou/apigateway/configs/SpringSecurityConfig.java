@@ -1,23 +1,19 @@
 package com.ou.apigateway.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 
-import com.netflix.discovery.converters.Auto;
 import com.ou.apigateway.components.AuthenticationManager;
 import com.ou.apigateway.components.SecurityContextHolder;
 import com.ou.apigateway.filter.CustomFilter;
@@ -43,8 +39,8 @@ public class SpringSecurityConfig {
     @Autowired
     private CustomFilter customFilter;
 
-//     @Autowired
-//     private CorsWebFilter corsWebFilter;
+    @Autowired
+    private CorsWebFilter corsWebFilter;
 
     @Autowired
     private LogFilter logFilter;
@@ -99,14 +95,13 @@ public class SpringSecurityConfig {
                                         "/api/accounts/login",
                                         "/api/accounts/register",
                                         "/api/accounts/verify/**",
-                                        "/api/ws/**",
-                                        "/**")
+                                        "/api/ws/**")
                                 .permitAll()
                                 .anyExchange().authenticated());
 
         http
                 .addFilterBefore(logFilter, SecurityWebFiltersOrder.CORS)
-        //     .addFilterAfter(corsWebFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION)
+                .addFilterAfter(corsWebFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION)
                 .addFilterAfter(customFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION);
         return http.build();
     }

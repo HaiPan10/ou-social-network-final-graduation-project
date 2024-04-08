@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 
 import com.ou.apigateway.configs.JwtService;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
+@Slf4j
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     @Autowired
@@ -23,7 +25,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String token = authentication.getCredentials().toString();
-
         return Mono.just(jwtService.isValidAccessToken(token))
                 .switchIfEmpty(Mono.empty())
                 .map(authen -> {
@@ -33,7 +34,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                     Long id = jwtService.getIdFromToken(token);
                     Set<GrantedAuthority> authorities = new HashSet<>();
                     authorities.add(new SimpleGrantedAuthority(roleName));
-                    System.out.println("Hello world again");
                     return new UsernamePasswordAuthenticationToken(email, id, authorities);
                 });
     }

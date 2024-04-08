@@ -83,6 +83,8 @@ public class JwtService {
         Date expirationDate = getExpirationDate(token);
         String email = getEmailFromToken(token);
         Long id = getIdFromToken(token);
+        log.info(String.format("Id: %d", id));
+        log.info(String.format("Email: %s", email));
         // System.out.println("[DEBUG] - " + email);
         // System.out.println("[DEBUG] - " + id);
         // System.out.println("[DEBUG] - " + expirationDate);
@@ -93,7 +95,7 @@ public class JwtService {
     }
 
     /**
-     * 
+     *
      * @param token
      * @return a string with format [id,email]
      */

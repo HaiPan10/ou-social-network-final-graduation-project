@@ -5,17 +5,6 @@ spring:
 #           max-request-size: 10MB
   main:
     allow-circular-references: true
-  cloud:
-    gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowCredentials: true
-            allowedOrigins: "http://localhost:3000"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-            
-    
 #Logging
 logging:
   level:
