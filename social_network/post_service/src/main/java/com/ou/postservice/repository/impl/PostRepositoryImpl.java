@@ -47,7 +47,7 @@ public class PostRepositoryImpl implements PostRepository {
     private Environment env;
 
     @Override
-    public Optional<List<Post>> loadPost(Long userId, @RequestParam Map<String, String> params, Long currentUserId) {
+    public Optional<List<Post>> loadPost(Long userId, Map<String, String> params, Long currentUserId) {
         Session session = entityManager.unwrap(Session.class);
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Post> criteriaQuery = builder.createQuery(Post.class);

@@ -186,4 +186,13 @@ public class AccountController {
     public Mono<Boolean> validateToken(@RequestParam String token){
         return Mono.just(accountService.validateToken(token));
     }
+
+    @GetMapping("/retrieve")
+    public Account retrieveAccount(@RequestParam Long accountId) {
+        try {
+            return accountService.retrieve(accountId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

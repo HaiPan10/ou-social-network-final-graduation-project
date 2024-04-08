@@ -6,7 +6,7 @@ export const endpoints = {
     "verify": "/email/verify",
     "login": "/accounts/login",
     "status": "/accounts/status",
-    "profile": "/users/profile",
+    "profile": "/posts/profile",
     "update_avatar": "/users/update_avatar",
     "update_cover": "/users/update_cover",
     "update_information": "/users/update_information",

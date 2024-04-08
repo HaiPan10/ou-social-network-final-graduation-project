@@ -81,6 +81,7 @@ public class AccountServiceImpl implements AccountService {
     public Account retrieve(Long id) throws Exception {
         Optional<Account> accountOptional = accountRepositoryJPA.findById(id);
         if (accountOptional.isPresent()) {
+            System.out.println("DEBUG ROLE: " + accountOptional.get().getRoleId());
             return accountOptional.get();
         } else {
             throw new Exception("Account not found");

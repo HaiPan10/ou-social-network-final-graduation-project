@@ -100,16 +100,16 @@ public class PostController {
         }
     }
 
-    @GetMapping(path = "/profile")
-    public List<Post> loadPost(@RequestParam Long profileId,
-     @RequestParam Long currentUserId, 
-     @RequestParam Map<String, String> params) {
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<Object> loadProfile(@PathVariable Long userId, @RequestHeader HttpHeaders headers, @RequestParam Map<String, String> params) {
         try {
-            return postService.loadPost(profileId, currentUserId, params);
+            Long currentUserId = Long.parseLong(headers.getFirst("AccountID"));
+            return ResponseEntity.ok().body(postService.loadProfile(userId, currentUserId, params));
         } catch (Exception e) {
-            return new ArrayList<>();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @GetMapping(path = "/fetch-post")
     public Post getPost(@RequestParam Long postId) {

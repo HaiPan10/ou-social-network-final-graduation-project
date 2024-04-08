@@ -60,17 +60,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @GetMapping("/profile/{userId}")
-    public ResponseEntity<Object> loadProfile(@PathVariable Long userId, @RequestHeader HttpHeaders headers, @RequestParam Map<String, String> params) {
-        try {
-            Long currentUserId = Long.parseLong(headers.getFirst("AccountID"));
-            return ResponseEntity.ok().body(userService.loadProfile(userId, currentUserId, params));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
+    
     @GetMapping()
     public User getUser(@RequestParam Long userId) {
         try {
