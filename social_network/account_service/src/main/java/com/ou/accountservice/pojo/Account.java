@@ -79,7 +79,7 @@ public class Account implements Serializable{
     private User user;
 
     @ManyToOne
-    @JsonIgnore
+    // @JsonIgnore
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role roleId;
 

@@ -3,14 +3,12 @@ package com.ou.postservice.service.impl;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,6 @@ import com.ou.postservice.event.OrderPlacedEvent;
 import com.ou.postservice.pojo.Account;
 import com.ou.postservice.pojo.ImageInPost;
 import com.ou.postservice.pojo.InvitationGroup;
-import com.ou.postservice.pojo.NotificationFirebaseModal;
 import com.ou.postservice.pojo.Post;
 import com.ou.postservice.pojo.PostInvitation;
 import com.ou.postservice.pojo.PostInvitationUser;
@@ -138,7 +135,7 @@ public class PostServiceImpl implements PostService {
             applicationEventPublisher.publishEvent(
                 new OrderPlacedEvent(this, "realtimeTopic", "notification"));
         }
-        
+
         // socketService.realtimePost(new SocketPostModal(newPost, "create"));
         applicationEventPublisher.publishEvent(
             new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
@@ -161,6 +158,7 @@ public class PostServiceImpl implements PostService {
             throw new Exception("Not activated Account!");
         }
         System.out.println("DEBUG ACC: " + retrieveAccount);
+        System.out.println("DEBUG ROLE: " + retrieveAccount.getRoleId());
         Map<String, Object> jsonObject = new HashMap<>();
         jsonObject.put("user", retrieveAccount.getUser());
         jsonObject.put("role", retrieveAccount.getRoleId());

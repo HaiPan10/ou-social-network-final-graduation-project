@@ -46,7 +46,7 @@ public class AccountController {
 
     @Autowired
     private MapValidator mapValidator;
-    
+
     @Autowired
     private WebAppValidator webAppValidator;
 
@@ -84,11 +84,11 @@ public class AccountController {
         }
     }
 
-    
+
     @GetMapping(path = "/verify/{accountId}/{verificationCode}")
     public ResponseEntity<Object> verifyAccount(@PathVariable Long accountId, 
     @PathVariable String verificationCode, ServerHttpResponse response) throws Exception {
-        try {            
+        try {
             if (accountService.verifyEmail(accountId, verificationCode)) {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setLocation(URI.create(String.format("%s/", env.getProperty("CLIENT_HOSTNAME"))));
@@ -143,7 +143,7 @@ public class AccountController {
                 return ResponseEntity.badRequest().body("Mật khẩu không khớp");
             }
             accountService.changePassword(id, password, authPassword);
-            
+
             return ResponseEntity.ok().body("Change Password Successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -165,7 +165,7 @@ public class AccountController {
     public Account getAccount(@RequestParam Long accountId) {
         try {
             return accountService.retrieve(accountId);
-            
+
         } catch (Exception e) {
             return null;
         }
@@ -175,7 +175,7 @@ public class AccountController {
     public Account getAccount(@RequestParam String email) {
         try {
             return accountService.retrieve(email);
-            
+
         } catch (Exception e) {
             return null;
         }

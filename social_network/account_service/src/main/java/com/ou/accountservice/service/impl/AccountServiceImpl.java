@@ -42,8 +42,11 @@ import com.ou.accountservice.service.interfaces.ScheduleService;
 import com.ou.accountservice.service.interfaces.UserService;
 import com.ou.accountservice.service.interfaces.UserStudentService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service("accountDetailService")
 @Transactional(rollbackFor = Exception.class)
+@Slf4j
 public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepositoryJPA accountRepositoryJPA;
