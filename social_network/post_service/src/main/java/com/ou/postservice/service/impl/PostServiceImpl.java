@@ -162,7 +162,9 @@ public class PostServiceImpl implements PostService {
         Map<String, Object> jsonObject = new HashMap<>();
         jsonObject.put("user", retrieveAccount.getUser());
         jsonObject.put("role", retrieveAccount.getRoleId());
-        jsonObject.put("posts", loadPost(userId, currentUserId, params));
+        List<Post> posts = loadPost(userId, currentUserId, params);
+        posts.stream().forEach(p -> p.setUser(retrieveAccount.getUser()));
+        jsonObject.put("posts", posts);
         return jsonObject;
     }
 

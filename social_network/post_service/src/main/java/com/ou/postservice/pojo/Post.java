@@ -81,7 +81,7 @@ public class Post implements Serializable {
 
     @Transient
     private Map<Long, Long> reactionTotal;
-    
+
     @Transient
     private Integer commentTotal;
     // @Override
@@ -109,6 +109,6 @@ public class Post implements Serializable {
         this.id = post.getId();
         this.postInvitation = postInvitation;
     }
-    
-    
+
+
 }
