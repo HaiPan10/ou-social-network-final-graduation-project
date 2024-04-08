@@ -41,7 +41,7 @@ export const Home = () => {
       setFirstInit(false)
       socketClient.subscribe('/home', (payload) => {
         let newPost = JSON.parse(payload.body).post
-        if (newPost.userId.id !== user.id) {
+        if (newPost.userId !== user.id) {
           // setPosts(prevPosts => [...prevPosts, newPost])
           setPosts(prevState => {
             let data = [...prevState]
@@ -53,7 +53,7 @@ export const Home = () => {
             return data;
           })
         }
-      }, { id: "home", Authorization: `Bearer ${load("access-token")}` })
+      }, { id: "home", user: user.id })
     }
   }, [socketClient, posts, inViewList])
 
@@ -67,7 +67,7 @@ export const Home = () => {
         // setPosts(res.data)
       } catch (ex) {
         setIsCaughtUp(true)
-        console.clear()
+        // console.clear()
       } finally {
         setIsLoading(false)
       }

@@ -19,7 +19,7 @@ export const PostModal = (props) => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Bài viết của {props.post.userId.lastName + ' ' + props.post.userId.firstName}
+                    Bài viết của {props.post.user.lastName + ' ' + props.post.user.firstName}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>

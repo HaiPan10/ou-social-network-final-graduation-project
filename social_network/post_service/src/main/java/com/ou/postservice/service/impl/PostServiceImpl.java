@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +31,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.postservice.pojo.NotificationFirebaseModal;
 import com.ou.postservice.event.OrderPlacedEvent;
+import com.ou.postservice.pojo.Account;
 import com.ou.postservice.pojo.ImageInPost;
 import com.ou.postservice.pojo.InvitationGroup;
 import com.ou.postservice.pojo.NotificationFirebaseModal;
@@ -147,8 +149,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Map<String, Object> loadProfile(Long userId, Long currentUserId, Map<String, String> params) throws Exception {
+        // Account retrieveAccount = accountService.retrieve(userId);
+        Account retrieveAccount = webClientBuilder.build().get()
+        .uri("http://account-service/api/accounts/retrieve",
+            uriBuilder -> uriBuilder.queryParam("accountId", userId).build())
+            .retrieve()
+            .bodyToMono(Account.class)
+            .block();
+        if (!(retrieveAccount.getStatus().equals("ACTIVE") || retrieveAccount.getStatus().equals("PASSWORD_CHANGE_REQUIRED"))) {
+            throw new Exception("Not activated Account!");
+        }
+        System.out.println("DEBUG ACC: " + retrieveAccount);
+        Map<String, Object> jsonObject = new HashMap<>();
+        jsonObject.put("user", retrieveAccount.getUser());
+        jsonObject.put("role", retrieveAccount.getRoleId());
+        jsonObject.put("posts", loadPost(userId, currentUserId, params));
+        return jsonObject;
+    }
+
+    @Override
     public List<Post> loadPost(Long userId, Long currentUserId, Map<String, String> params) throws Exception {
         Optional<List<Post>> listPostOptional = postRepository.loadPost(userId, params, currentUserId);
+        System.out.println("DEBUG: " + listPostOptional.get().size());
         if (listPostOptional.isPresent()) {
             List<Post> posts = listPostOptional.get();
             posts.forEach(p -> {
@@ -248,6 +271,7 @@ public class PostServiceImpl implements PostService {
         Optional<List<Post>> listPostOptional = postRepository.loadNewFeed(currentUserId, params);
         if (listPostOptional.isPresent() && listPostOptional.get().size() != 0) {
             List<Post> posts = listPostOptional.get();
+
             posts.forEach(p -> {
                 postReactionService.countReaction(p, currentUserId);
                 Integer commentTotal = webClientBuilder.build().get()
@@ -257,6 +281,13 @@ public class PostServiceImpl implements PostService {
                     .bodyToMono(Integer.class)
                     .block();
                 p.setCommentTotal(commentTotal);
+                User user = webClientBuilder.build().get()
+                    .uri("http://account-service/api/users",
+                    uriBuilder -> uriBuilder.queryParam("userId", p.getUserId()).build())
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block();
+                p.setUser(user);
                 // p.setTwoComments(commentService.loadTwoComments(p.getId()));
                 p.getImageInPostList().forEach(img -> img
                         .setContentType(String.format("image/%s", CloudinaryUtils.getImageType(img.getImageUrl()))));

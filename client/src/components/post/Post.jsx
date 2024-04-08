@@ -54,7 +54,7 @@ const DeleteConfirmation = (props) => {
       }
     }
 
-    if (user.id === props.post.userId.id) {
+    if (user.id === props.post.user.id) {
       process()
     }
   }
@@ -101,7 +101,7 @@ export const Post = ({ post, posts, setPosts, postInView, focusComment, focusPar
   const [reactionMap, setReactionMap] = useState(post.reactionTotal)
   const getReactionTotal = (reactionId) => {
     const total = reactionMap[reactionId];
-    return total !== undefined ? total : 0;
+      return total !== undefined ? total : 0;
   }
   const [like, setLike] = useState(getReactionTotal(1))
   const [lol, setLol] = useState(getReactionTotal(2))
@@ -120,7 +120,7 @@ export const Post = ({ post, posts, setPosts, postInView, focusComment, focusPar
           if (buffer.interactUser !== user.id) {
             setReactionMap(buffer.reactionTotal);
           }
-        }, { id: `reaction-${post.id}`, Authorization: `Bearer ${load("access-token")}`});
+        }, { id: `reaction-${post.id}`, user: user.id});
 
         if (posts !== undefined) {
           commentTotalSubcribe = socketClient.subscribe(`/comment-total/${post.id}`, (payload) => {
@@ -138,7 +138,7 @@ export const Post = ({ post, posts, setPosts, postInView, focusComment, focusPar
             })
             // setCommentTotal(buffer.commentTotal)
             setLatestComment(buffer.latestComment)
-          }, { id: `comment-total-${post.id}`, Authorization: `Bearer ${load("access-token")}`})
+          }, { id: `comment-total-${post.id}`, user: user.id})
 
           postInView()
         }
@@ -282,21 +282,21 @@ export const Post = ({ post, posts, setPosts, postInView, focusComment, focusPar
           <div className="postContainer">
             <div className="user">
               <div className="userInfo">
-                <Link to={`/profile/${post.userId.id}`}>
-                  {post.userId.id === user.id ?
+                <Link to={`/profile/${post.user.id}`}>
+                  {post.user.id === user.id ?
                     <img src={user.avatar} alt="" /> :
-                    <img src={post.userId.avatar} alt="" />
+                    <img src={post.user.avatar} alt="" />
                   }
                 </Link>
 
                 <div className="details">
-                  <Link to={`/profile/${post.userId.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                    <span className='name'>{post.userId.lastName} {post.userId.firstName}</span>
+                  <Link to={`/profile/${post.user.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    <span className='name'>{post.user.lastName} {post.user.firstName}</span>
                   </Link>
                   <span className='date'><Moment locale="vi" fromNow>{formattedDate}</Moment></span>
                 </div>
               </div>
-              {post.userId.id === user.id &&
+              {post.user.id === user.id &&
                 <>
                   <div className="dropdown" ref={dropdownRef} onClick={toggleDropdown}>
                     <div className='btn-edit' ><MoreHorizIcon /></div>

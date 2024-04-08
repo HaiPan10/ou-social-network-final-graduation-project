@@ -5,11 +5,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.cloudinary.Cloudinary;
@@ -19,7 +22,7 @@ import com.cloudinary.utils.ObjectUtils;
 @PropertySource("classpath:configs.properties")
 // @ComponentScan("com.ou.social_network")
 @EnableTransactionManagement
-public class ApplicationConfig implements WebMvcConfigurer {
+public class ApplicationConfig implements WebFluxConfigurer {
     @Autowired
     private Environment environment;
 
@@ -35,5 +38,11 @@ public class ApplicationConfig implements WebMvcConfigurer {
                 "api_key", environment.getProperty("CLOUDINARY_API_KEY"),
                 "api_secret", environment.getProperty("CLOUDINARY_API_SECRET"),
                 "secure", true));
+    }
+
+    @Bean
+    @LoadBalanced
+    public WebClient.Builder getWebClient(){
+        return WebClient.builder();
     }
 }

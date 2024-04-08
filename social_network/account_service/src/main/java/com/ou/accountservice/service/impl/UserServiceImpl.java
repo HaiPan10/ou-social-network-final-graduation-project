@@ -1,9 +1,7 @@
 package com.ou.accountservice.service.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.ou.accountservice.pojo.UserDoc;
 import com.ou.accountservice.event.OrderPlacedEvent;
-import com.ou.accountservice.pojo.Account;
-import com.ou.accountservice.pojo.Post;
 import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.repository.repositoryJPA.UserRepositoryJPA;
 import com.ou.accountservice.service.interfaces.AccountService;
@@ -104,29 +99,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new Exception("Không tìm thấy người dùng");
         }
-    }
-
-    @Override
-    public Map<String, Object> loadProfile(Long userId, Long currentUserId, Map<String, String> params) throws Exception {
-        Account retrieveAccount = accountService.retrieve(userId);
-        if (!(retrieveAccount.getStatus().equals("ACTIVE") || retrieveAccount.getStatus().equals("PASSWORD_CHANGE_REQUIRED"))) {
-            throw new Exception("Not activated Account!");
-        }
-        Map<String, Object> jsonObject = new HashMap<>();
-        jsonObject.put("user", retrieveAccount.getUser());
-        jsonObject.put("role", retrieveAccount.getRoleId());
-        // jsonObject.put("posts", postService.loadPost(userId, currentUserId, params));
-        Post[] posts = webClientBuilder.build().get()
-            .uri("http://post-service/api/posts/profile",
-            uriBuilder -> uriBuilder.queryParam("profileId", userId)
-            .queryParam("currentUserId", currentUserId)
-            .queryParam("params", params)
-            .build())
-            .retrieve()
-            .bodyToMono(Post[].class)
-            .block();
-        jsonObject.put("posts", posts);
-        return jsonObject;
     }
 
     @Override

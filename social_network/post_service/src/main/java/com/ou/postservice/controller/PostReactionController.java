@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ou.postservice.pojo.Post;
 import com.ou.postservice.pojo.Reaction;
 import com.ou.postservice.service.interfaces.PostReactionService;
 
@@ -54,5 +56,12 @@ public class PostReactionController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/countReaction")
+    public Post countReaction(@RequestParam Long postId) {
+        Post post = new Post(postId);
+        postReactionService.countReaction(post, Long.valueOf(0));
+        return post;
     }
 }

@@ -37,7 +37,7 @@ const DeleteConfirmation = (props) => {
         }
       }
 
-      if (user.id === props.post.userId.id) {
+      if (user.id === props.post.user.id) {
         process()
       }
     }
@@ -223,21 +223,21 @@ const DeleteConfirmation = (props) => {
             <div className="postContainer">
                 <div className="user">
                     <div className="userInfo">
-                        <Link to={`/profile/${post.userId.id}`}>
-                          {post.userId.id === user.id ? 
+                        <Link to={`/profile/${post.user.id}`}>
+                          {post.user.id === user.id ? 
                             <img src={user.avatar} alt=""/> :
-                            <img src={post.userId.avatar} alt=""/>
+                            <img src={post.user.avatar} alt=""/>
                           }
                         </Link>
                         
                         <div className="details">
-                            <Link to={`/profile/${post.userId.id}`} style={{textDecoration:"none", color:"inherit"}}>
-                                <span className='name'>{post.userId.lastName} {post.userId.firstName} <span>mời bạn tham gia sự kiện <EmailIcon/></span></span>
+                            <Link to={`/profile/${post.user.id}`} style={{textDecoration:"none", color:"inherit"}}>
+                                <span className='name'>{post.user.lastName} {post.user.firstName} <span>mời bạn tham gia sự kiện <EmailIcon/></span></span>
                             </Link>
                             <span className='date'><Moment locale="vi" fromNow>{formattedDate}</Moment></span>
                         </div>
                     </div>
-                    {post.userId.id===user.id &&
+                    {post.user.id===user.id &&
                         <>
                             <div className="dropdown" ref={dropdownRef} onClick={toggleDropdown}>
                                 <div className='btn-edit' ><MoreHorizIcon/></div>

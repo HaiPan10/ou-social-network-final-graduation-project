@@ -51,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
     public Comment create(Comment comment, Long postId, Long userId) throws Exception {
         // Post persistPost = postService.retrieve(postId);
         Post persistPost = webClientBuilder.build().get()
-            .uri("http://account-service/api/posts",
+            .uri("http://post-service/api/posts/fetch-post",
             uriBuilder -> uriBuilder.queryParam("postId", postId).build())
             .retrieve()
             .bodyToMono(Post.class)
@@ -71,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
             //         .getSocketClientsForPath(String.format("/comment/%s", postId));
             // boolean userIdExists = socketClients.stream()
             //         .anyMatch(client -> client.getId().equals(persistPost.getUserId().getId()));
-            if (!persistPost.getUserId().getId().equals(userId)) {
+            if (!persistPost.getUserId().equals(userId)) {
                 NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
                 notificationDoc.setNotificationType("comment");
                 notificationDoc.setCommentId(comment.getId());
@@ -123,7 +123,35 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepositoryJPA.loadComment(postId);
         comments.forEach(comment -> {
             comment.setRepliesTotal(commentRepositoryJPA.countReply(postId, comment.getId()));
-            comment.setFirstReply(commentRepositoryJPA.getFirstReply(postId, comment.getId()));
+            Comment firstReply = commentRepositoryJPA.getFirstReply(postId, comment.getId());
+            if (firstReply != null) {
+                firstReply.setUser(
+                    webClientBuilder.build().get()
+                        .uri("http://account-service/api/users",
+                        uriBuilder -> uriBuilder.queryParam("userId", firstReply.getUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .block());
+            }
+            comment.setFirstReply(firstReply);
+            if (comment.getParentComment() != null) {
+                comment.setRepliedUser(
+                    webClientBuilder.build().get()
+                        .uri("http://account-service/api/users",
+                        uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .block()
+                );
+            }
+            comment.setUser(
+                webClientBuilder.build().get()
+                    .uri("http://account-service/api/users",
+                    uriBuilder -> uriBuilder.queryParam("userId", comment.getUserId()).build())
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block()
+            );
         });
         return comments;
     }
@@ -167,13 +195,17 @@ public class CommentServiceImpl implements CommentService {
                 .bodyToMono(User.class)
                 .block();
             comment.setUser(user);
-            User repliedUser = webClientBuilder.build().get()
-                .uri("http://account-service/api/users",
-                uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())
-                .retrieve()
-                .bodyToMono(User.class)
-                .block();
-            comment.setRepliedUser(repliedUser);
+            if (comment.getRepliedUserId() != null) {
+                User repliedUser = webClientBuilder.build().get()
+                    .uri("http://account-service/api/users",
+                    uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block();
+                comment.setRepliedUser(repliedUser);
+            } else {
+                comment.setRepliedUser(null);
+            }
             return comment;
         } else {
             throw new Exception("Không tìm thấy comment!");
@@ -186,7 +218,7 @@ public class CommentServiceImpl implements CommentService {
         // Call service to fetch post
         Long postId = persistComment.getPostId();
         if (!persistComment.getUserId().equals(userId)
-                && !persistComment.getPost().getUserId().getId().equals(userId)) {
+                && !persistComment.getPost().getUserId().equals(userId)) {
             throw new Exception("Not owner");
         }
         try {
@@ -219,7 +251,37 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepositoryJPA.loadTwoComments(postId);
         comments.forEach(comment -> {
             comment.setRepliesTotal(commentRepositoryJPA.countReply(postId, comment.getId()));
-            comment.setFirstReply(commentRepositoryJPA.getFirstReply(postId, comment.getId()));
+            Comment firstReply = commentRepositoryJPA.getFirstReply(postId, comment.getId());
+            if (firstReply != null) {
+                firstReply.setUser(
+                    webClientBuilder.build().get()
+                        .uri("http://account-service/api/users",
+                        uriBuilder -> uriBuilder.queryParam("userId", firstReply.getUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .block());
+            }
+            comment.setFirstReply(firstReply);
+            User user = webClientBuilder.build().get()
+                .uri("http://account-service/api/users",
+                uriBuilder -> uriBuilder.queryParam("userId", comment.getUserId()).build())
+                .retrieve()
+                .bodyToMono(User.class)
+                .block();
+            comment.setUser(user);
+
+            User repliedUser;
+            if (comment.getRepliedUserId() != null) {
+                repliedUser = webClientBuilder.build().get()
+                    .uri("http://account-service/api/users",
+                    uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block();
+            } else {
+                repliedUser = null;
+            }
+            comment.setRepliedUser(repliedUser);
         });
         return comments;
     }
@@ -244,13 +306,57 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> loadComment(Long postId, Long commentId) {
-        return commentRepositoryJPA.loadComment(postId, commentId);
+        List<Comment> comments = commentRepositoryJPA.loadComment(postId, commentId);
+        comments.forEach(
+            comment -> {
+                Comment firstReply = commentRepositoryJPA.getFirstReply(postId, comment.getId());
+                if (firstReply != null) {
+                    firstReply.setUser(
+                        webClientBuilder.build().get()
+                            .uri("http://account-service/api/users",
+                            uriBuilder -> uriBuilder.queryParam("userId", firstReply.getUserId()).build())
+                            .retrieve()
+                            .bodyToMono(User.class)
+                            .block());
+                }
+                comment.setFirstReply(firstReply);
+                if (comment.getParentComment() != null) {
+                    comment.setRepliedUser(
+                        webClientBuilder.build().get()
+                            .uri("http://account-service/api/users",
+                            uriBuilder -> uriBuilder.queryParam("userId", comment.getRepliedUserId()).build())
+                            .retrieve()
+                            .bodyToMono(User.class)
+                            .block()
+                    );
+                }
+                comment.setUser(
+                    webClientBuilder.build().get()
+                        .uri("http://account-service/api/users",
+                        uriBuilder -> uriBuilder.queryParam("userId", comment.getUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .block()
+                );
+            }
+        );
+        return comments;
     }
 
     @Override
     public Comment getReplyInfo(Comment comment) {
         comment.setRepliesTotal(commentRepositoryJPA.countReply(comment.getPostId(), comment.getId()));
-        comment.setFirstReply(commentRepositoryJPA.getFirstReply(comment.getPostId(), comment.getId()));
+        Comment firstReply = commentRepositoryJPA.getFirstReply(comment.getPostId(), comment.getId());
+        if (firstReply != null) {
+            firstReply.setUser(
+                webClientBuilder.build().get()
+                    .uri("http://account-service/api/users",
+                    uriBuilder -> uriBuilder.queryParam("userId", firstReply.getUserId()).build())
+                    .retrieve()
+                    .bodyToMono(User.class)
+                    .block());
+        }
+        comment.setFirstReply(firstReply);
         return comment;
     }
 }

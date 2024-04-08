@@ -23,4 +23,5 @@ public interface PostService {
     Post uploadPostInvitation(Post post, Long userId) throws Exception;
     List<Object[]> stat(Map<String, String> params);
     Post getDetail(Long postId, Long userId) throws Exception;
+    Map<String, Object> loadProfile(Long userId, Long currentUserId, Map<String, String> params) throws Exception;
 }

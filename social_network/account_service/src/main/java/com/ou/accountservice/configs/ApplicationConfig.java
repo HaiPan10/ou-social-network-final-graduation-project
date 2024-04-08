@@ -10,17 +10,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.ou.accountservice.components.DateFormatter;
 
 @Configuration
 @PropertySource("classpath:configs.properties")
 // @ComponentScan("com.ou.social_network")
 @EnableTransactionManagement
-public class ApplicationConfig {
+public class ApplicationConfig implements WebFluxConfigurer {
 
     @Bean
     @LoadBalanced
@@ -30,6 +34,9 @@ public class ApplicationConfig {
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    private DateFormatter dateFormatter;
 
     @Bean
     public SimpleDateFormat getSimpleDate() {
@@ -55,5 +62,16 @@ public class ApplicationConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        // registry.addFormatter(new CategoryFormatter());
+        // In case of needed to format fields of pojo
+        // create new class and
+        // implements the Formatter<T> interface
+        // might not necessary
+        registry.addFormatter(dateFormatter);
     }
 }

@@ -28,7 +28,7 @@ export const CommentItem = (props) => {
     const [comment, setComment] = useState(null)
     const [editCommentId, setEditCommentId] = useState(null)
     // const [replyCommentShow, setReplyCommentShow] = useState(false)
-    const [repliedUser, setRepliedUser] = useState(props.comment.userId)
+    const [repliedUser, setRepliedUser] = useState(props.comment.user)
     const [repliedComment, setRepliedComment] = useState(props.comment)
     const [socketClient] = useContext(SocketContext)
     const commentRef = useRef()
@@ -49,7 +49,7 @@ export const CommentItem = (props) => {
             socketClient.subscribe('/reply' + `/${props.comment.id}`, (payload) => {
                 let newReply = JSON.parse(payload.body).comment
                 let action = JSON.parse(payload.body).action
-                // if (newReply.userId.id !== user.id) {
+                // if (newReply.user.id !== user.id) {
                 //     if (action === "CREATE") {
                 //         setReplies(prevComments => [...prevComments, newReply]);
                 //     } else if (action === "UPDATE") {
@@ -85,7 +85,7 @@ export const CommentItem = (props) => {
                 } else {
                     setReplies(prevData => prevData.filter(item => item.id !== newReply.id))
                 }
-            }, { id: `reply-${props.comment.id}`, Authorization: `Bearer ${load("access-token")}` })
+            }, { id: `reply-${props.comment.id}`, user: user.id })
         }
 
         if (showReply && reloadReplies) {
@@ -104,10 +104,10 @@ export const CommentItem = (props) => {
         } else {
             if (props.comment.level === 1) {
                 setShowReply(true)
-                setRepliedUser(props.comment.userId)
+                setRepliedUser(props.comment.user)
                 setRepliedComment(props.comment)
             } else {
-                props.setRepliedUser(props.comment.userId)
+                props.setRepliedUser(props.comment.user)
                 props.setRepliedComment(props.comment)
             }
             props.setReplyCommentId(props.parentComment.id)
@@ -150,13 +150,13 @@ export const CommentItem = (props) => {
         <div>
             <div ref={props.focusComment !== null && props.focusComment !== undefined && props.comment.id === props.focusComment ? commentRef : null}
              className="comment">
-                <Link to={`/profile/${props.comment.userId.id}`}>
-                    <img src={props.comment.userId.avatar} alt="" />
+                <Link to={`/profile/${props.comment.user.id}`}>
+                    <img src={props.comment.user.avatar} alt="" />
                 </Link>
                 <div className='comment-content'>
                     <div className={`info ${props.focusComment !== null && props.focusComment !== undefined && props.comment.id === props.focusComment ? "animate__animated animate__flash" : " "}`}>
-                        <Link to={`/profile/${props.comment.userId.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                            <span>{props.comment.userId.lastName} {props.comment.userId.firstName}</span>
+                        <Link to={`/profile/${props.comment.user.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                            <span>{props.comment.user.lastName} {props.comment.user.firstName}</span>
                         </Link>
                         <p>
                             {props.comment.level !== 1 && <span className='repliedUserInfo'>{props.comment.repliedUser.lastName} {props.comment.repliedUser.firstName} </span>}
@@ -166,18 +166,18 @@ export const CommentItem = (props) => {
                     <div className='comment-action'>
                         <div className="reply" onClick={reply}>Phản hồi</div>
                         <span className="date"><Moment locale="vi" fromNow>{formattedDate}</Moment></span>
-                        {(props.post.userId.id === user.id || props.comment.userId.id === user.id) &&
+                        {(props.post.user.id === user.id || props.comment.user.id === user.id) &&
                             <>
                                 <div className="dropdown">
                                     <MoreHorizIcon className='comment-more' />
                                     <div className="dropdown-content">
-                                        {props.post.userId.id === user.id ? <>
-                                            {props.comment.userId.id === user.id && <span onClick={() => props.setEditCommentId(props.comment.id)}><EditIcon /> Sửa </span>}
+                                        {props.post.user.id === user.id ? <>
+                                            {props.comment.user.id === user.id && <span onClick={() => props.setEditCommentId(props.comment.id)}><EditIcon /> Sửa </span>}
                                             <span onClick={() => {
                                                 props.setDeleteCommentShow(true)
                                                 props.setComment(props.comment)
                                             }}> <DeleteIcon /> Xóa</span>
-                                        </> : props.comment.userId.id === user.id && <>
+                                        </> : props.comment.user.id === user.id && <>
                                             <span ><EditIcon onClick={() => props.setEditCommentId(props.comment.id)} /> Sửa </span>
                                             <span onClick={() => {
                                                 props.setDeleteCommentShow(true)
@@ -189,7 +189,7 @@ export const CommentItem = (props) => {
                             </>}
                     </div>
                     {props.comment.repliesTotal !== null && props.comment.repliesTotal !== 0 && !showReply && <div className="replied" onClick={() => showReplies(props.comment.id)}>
-                        <ReplyIcon /> <div className='repliedInfo'><span className="repliedUser">{props.comment.firstReply.userId.lastName} {props.comment.firstReply.userId.firstName}</span> <span> đã trả lời
+                        <ReplyIcon /> <div className='repliedInfo'><span className="repliedUser">{props.comment.firstReply.user.lastName} {props.comment.firstReply.user.firstName}</span> <span> đã trả lời
                         </span></div><div>•</div> <div className='repliedTotal'>{props.comment.repliesTotal} phản hồi</div>
                     </div>}
                     {showReply &&
