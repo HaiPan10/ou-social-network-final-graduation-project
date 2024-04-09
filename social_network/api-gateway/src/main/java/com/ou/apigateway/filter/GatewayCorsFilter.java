@@ -29,10 +29,8 @@ public class GatewayCorsFilter implements GlobalFilter {
                         }
                         httpHeaders.set("Access-Control-Allow-Origin", "http://localhost:3000");
                         httpHeaders.set("Access-Control-Allow-Credentials", "true");
-                    } else {
-                        log.info("Null");
                     }
-                    log.info("Global Post Filter executed");
+
                 })
         );
     }

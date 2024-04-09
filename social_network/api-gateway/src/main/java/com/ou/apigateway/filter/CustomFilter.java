@@ -21,7 +21,8 @@ public class CustomFilter implements WebFilter {
                 .filter(auth -> auth.getAuthentication()
                         .getAuthorities()
                         .stream()
-                        .allMatch(predicate -> !predicate.getAuthority().equals("ROLE_ADMIN")))
+                        .allMatch(predicate -> !predicate.getAuthority().equals("ROLE_ADMIN")
+                                && !predicate.getAuthority().equals("ROLE_ANONYMOUS")))
                 .switchIfEmpty(Mono.empty())
                 .doOnNext(auth -> {
 
