@@ -7,14 +7,12 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -30,12 +28,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.apigateway.pojo.Account;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Configuration
 @PropertySource("classpath:configs.properties")
-@Slf4j
 public class ApplicationConfig implements WebFluxConfigurer {
 
     @Autowired
@@ -82,29 +78,6 @@ public class ApplicationConfig implements WebFluxConfigurer {
                         .path("/api/ws/**")
                         .uri("lb://realtime-service"))
                 .build();
-    }
-
-    @Bean
-    public GlobalFilter setCorsHeaderFilter() {
-        return (exchange, chain) -> {
-            return chain.filter(exchange)
-                    .then(Mono.fromRunnable(() -> {
-                        HttpHeaders headers = exchange.getResponse().getHeaders();
-                        List<String> header = headers.get("Access-Control-Allow-Origin");
-                        HttpHeaders httpHeaders = HttpHeaders.writableHttpHeaders(exchange.getResponse().getHeaders());
-                        if (header != null) {
-                            log.info(String.valueOf(header.size()));
-                            for (String h : header) {
-                                log.info(h);
-                            }
-                            httpHeaders.set("Access-Control-Allow-Origin", "http://localhost:3000");
-                            httpHeaders.set("Access-Control-Allow-Credentials", "true");
-                        } else {
-                            log.info("Null");
-                        }
-                        log.info("Global Post Filter executed");
-                    }));
-        };
     }
 
     @Bean

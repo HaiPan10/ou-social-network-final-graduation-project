@@ -13,6 +13,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.RedirectServerAuthenticationSuccessHandler;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
@@ -62,7 +63,9 @@ public class SpringSecurityConfig {
     @Order(1)
     public SecurityWebFilterChain adminFilterChain(ServerHttpSecurity http) {
         return http.csrf(csrf -> csrf.disable())
-                .formLogin(login -> login.loginPage("/"))
+                .formLogin(login -> login.loginPage("/admin/login")
+                        .authenticationSuccessHandler(new RedirectServerAuthenticationSuccessHandler(
+                                "/admin/dashboard")))
                 .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
                         .authenticationEntryPoint(
                                 (swe, e) -> Mono
@@ -75,17 +78,16 @@ public class SpringSecurityConfig {
                 .authorizeExchange(
                         authorizeExchangeSpec -> authorizeExchangeSpec
                                 .pathMatchers(
-                                        "/",
+                                        "/admin/login",
                                         "/resources/**",
                                         "/css/**",
                                         "/img/**",
                                         "/js/**",
                                         "/styles/**",
                                         "/vendor/**",
-                                        "/pages/index",
-                                        "/admin/**")
+                                        "/pages/index")
                                 .permitAll()
-                                .anyExchange().hasAnyRole("ROLE_ADMIN"))
+                                .anyExchange().hasAnyRole("ADMIN"))
                 .build();
     }
 
