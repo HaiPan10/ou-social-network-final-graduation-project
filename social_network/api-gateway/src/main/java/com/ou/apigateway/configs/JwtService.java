@@ -50,7 +50,7 @@ public class JwtService {
                 token = signedJWT.serialize();
 
             } catch (JOSEException e) {
-                System.out.println("[ERROR] - " + e.getMessage());
+                log.error(e.getMessage());
             }
         }
         return token;
@@ -65,7 +65,7 @@ public class JwtService {
                 claimsSet = signedJWT.getJWTClaimsSet();
             }
         } catch (JOSEException | ParseException e) {
-            System.out.println("[ERROR] - " + e.getMessage());
+            log.error(e.getMessage());
         }
         return claimsSet;
     }
@@ -85,11 +85,7 @@ public class JwtService {
         Long id = getIdFromToken(token);
         log.info(String.format("Id: %d", id));
         log.info(String.format("Email: %s", email));
-        // System.out.println("[DEBUG] - " + email);
-        // System.out.println("[DEBUG] - " + id);
-        // System.out.println("[DEBUG] - " + expirationDate);
-        // System.out.println("[DEBUG] - " + !(email == null || email.isEmpty() || id ==
-        // null || expirationDate.before(new Date())));
+
         return !(email == null || email.isEmpty() || id == null || expirationDate == null
                 || expirationDate.before(new Date()));
     }

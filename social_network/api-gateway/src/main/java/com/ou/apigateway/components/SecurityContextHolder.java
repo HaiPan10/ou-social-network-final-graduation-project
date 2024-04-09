@@ -1,6 +1,7 @@
 package com.ou.apigateway.components;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -11,18 +12,16 @@ import org.springframework.web.server.ServerWebExchange;
 
 import com.ou.apigateway.configs.JwtService;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
-@Slf4j
 public class SecurityContextHolder implements ServerSecurityContextRepository {
 
     @Autowired
     private JwtService jwtService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private ReactiveAuthenticationManager authenticationManager;
 
     @Override
     public Mono<Void> save(ServerWebExchange exchange, SecurityContext context) {
@@ -33,7 +32,7 @@ public class SecurityContextHolder implements ServerSecurityContextRepository {
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         return Mono.justOrEmpty(jwtService.getAccessToken(exchange.getRequest()))
                 .flatMap(token -> {
-                    log.info(token);
+                    // log.info(token);
                     Authentication authentication = new UsernamePasswordAuthenticationToken(null, token, null);
                     return authenticationManager.authenticate(authentication)
                         .map(SecurityContextImpl::new);

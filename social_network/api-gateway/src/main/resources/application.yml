@@ -8,7 +8,8 @@ spring:
 #Logging
 logging:
   level:
-    root: info
+    root: INFO
+    web: INFO
     org:
       springframework:
-        security: TRACE
+        security: INFO

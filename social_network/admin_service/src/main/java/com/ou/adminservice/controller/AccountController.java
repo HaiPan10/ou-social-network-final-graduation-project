@@ -65,7 +65,7 @@ public class AccountController {
     // public String accounts(Model model, @RequestParam Map<String, String> params) {
     //     List<Account> accounts = accountService.search(params);
     //     model.addAttribute("accounts", accounts);
-        
+
     //     Integer pageSize = Integer.parseInt(env.getProperty("PENDING_ACCOUNT_PAGE_SIZE"));
     //     model.addAttribute("counter", Math.ceil(accountService.countAccounts(params) * 1.0 / pageSize));
     //     int page;

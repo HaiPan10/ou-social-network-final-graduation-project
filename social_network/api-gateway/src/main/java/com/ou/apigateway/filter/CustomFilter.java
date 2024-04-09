@@ -13,27 +13,38 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
-public class CustomFilter implements WebFilter{
+public class CustomFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        return ReactiveSecurityContextHolder.getContext().doOnNext(auth -> {
-            if(auth != null && auth.getAuthentication().isAuthenticated()){
-                String id = auth.getAuthentication().getCredentials().toString();
-                log.info(String.format("Start to inject id %s in header", id));
-                ServerHttpRequest request = exchange.getRequest();
-                HttpHeaders httpHeaders = HttpHeaders.writableHttpHeaders(request.getHeaders());
-                if(httpHeaders.containsKey("AccountId")){
-                    // Prevent the user intent to custom the account id
-                    httpHeaders.set("AccountId", id);
-                } else {
-                    // Add new AccountId header
-                    httpHeaders.add("AccountId", id);
-                }
+        return ReactiveSecurityContextHolder.getContext()
+                .filter(auth -> auth.getAuthentication()
+                        .getAuthorities()
+                        .stream()
+                        .allMatch(predicate -> !predicate.getAuthority().equals("ROLE_ADMIN")))
+                .switchIfEmpty(Mono.empty())
+                .doOnNext(auth -> {
 
-            }
+                    log.info("Auth user: " + auth.getAuthentication().getName());
+                    auth.getAuthentication().getAuthorities().forEach(au -> log.info(au.getAuthority()));
+                    // log.info(exchange.getRequest().getPath().value());
 
-        }).then(chain.filter(exchange));
+                    if (auth != null && auth.getAuthentication().isAuthenticated()) {
+                        String id = auth.getAuthentication().getCredentials().toString();
+                        log.info(String.format("Start to inject id %s in header", id));
+                        ServerHttpRequest request = exchange.getRequest();
+                        HttpHeaders httpHeaders = HttpHeaders.writableHttpHeaders(request.getHeaders());
+                        if (httpHeaders.containsKey("AccountId")) {
+                            // Prevent the user intent to custom the account id
+                            httpHeaders.set("AccountId", id);
+                        } else {
+                            // Add new AccountId header
+                            httpHeaders.add("AccountId", id);
+                        }
+
+                    }
+
+                }).then(chain.filter(exchange));
     }
 
 }

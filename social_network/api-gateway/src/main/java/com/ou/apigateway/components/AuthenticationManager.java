@@ -24,6 +24,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
+        log.info("Start authenticate");
         String token = authentication.getCredentials().toString();
         return Mono.just(jwtService.isValidAccessToken(token))
                 .switchIfEmpty(Mono.empty())

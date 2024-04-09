@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet" />
+    <link th:href="@{/vendor/fonts/boxicons.css}" rel="stylesheet">
+    <link th:href="@{/vendor/css/core.css}" class="template-customizer-core-css" rel="stylesheet">
+    <link th:href="@{/vendor/css/theme-default.css}" class="template-customizer-theme-css" rel="stylesheet">
+    <link th:href="@{/css/demo.css}" rel="stylesheet">
+    <link th:href="@{/vendor/css/pages/page-auth.css}" rel="stylesheet">
+    <title>Đăng nhập</title>
+</head>
+
+<body>
+    <div sec:authorize="!isAuthenticated()">
+        <div class="container-xxl">
+            <div class="authentication-wrapper authentication-basic container-p-y">
+                <div class="authentication-inner">
+                    <div class="card">
+                        <div class="card-body">
+                            <div th:if="${loginError}">
+                                <div class="alert alert-danger">
+                                    Đăng nhập thất bại
+                                </div>
+                            </div>
+                            <h4 class="mb-2">Trang quản trị mạng xã hội cựu sinh viên trường đại học Mở TP.HCM</h4>
+                            <p class="mb-4">Vui lòng đăng nhập</p>
+
+                            <form id="formAuthentication" class="mb-3" th:action="@{/}" method="post">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Email</label>
+                                    <input type="text" class="form-control" id="username" name="username" required />
+                                </div>
+                                <div class="mb-3 form-password-toggle">
+                                    <div class="d-flex justify-content-between">
+                                        <label class="form-label" for="password">Mật khẩu</label>
+                                    </div>
+                                    <div class="input-group input-group-merge">
+                                        <input type="password" id="password" class="form-control" name="password" />
+                                        <span class="input-group-text cursor-pointer" id="toggle-password"><i
+                                                class="bx bx-hide" id="toggle-icon"></i></span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <button class="btn btn-primary d-grid w-100" type="submit">Đăng nhập</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div sec:authorize="isAuthenticated()">
+        <div th:with="dashBoardAction='/admin/dashboard'">
+            <script th:inline="javascript">
+                function redirectToOtherSite() {
+                    var dashBoardAction = /*[[${dashBoardAction}]]*/ '';
+                    window.location.href = dashBoardAction;
+                }
+                window.onload = redirectToOtherSite;
+            </script>
+        </div>
+    </div> -->
+
+    <script>
+        document.getElementById("toggle-password").onclick = function () {
+            var inputPassword = document.getElementById("password");
+            var toggleIcon = document.getElementById("toggle-icon");
+            if (inputPassword.type === "password") {
+                inputPassword.type = "text";
+                toggleIcon.classList.remove("bx-hide");
+                toggleIcon.classList.add("bx-show");
+            } else {
+                inputPassword.type = "password";
+                toggleIcon.classList.remove("bx-show");
+                toggleIcon.classList.add("bx-hide");
+            }
+        }
+    </script>
+</body>
+
+</html>
