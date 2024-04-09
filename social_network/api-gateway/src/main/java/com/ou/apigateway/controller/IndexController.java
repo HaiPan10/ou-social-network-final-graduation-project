@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @PropertySource("classpath:configs.properties")
 public class IndexController {
-    @RequestMapping("/admin/login")
+    @RequestMapping("/login")
     public String index(Model model, @RequestParam Map<String, String> params){
         if(params.containsKey("error")){
             model.addAttribute("loginError", true);

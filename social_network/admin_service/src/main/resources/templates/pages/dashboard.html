@@ -125,14 +125,14 @@
         <script>
             var d = document.getElementById("dash-board");
             d.className += " active";
-        
+
             var months = [
                 "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
             ];
             var quarter = ["Quý 1", "Quý 2", "Quý 3", "Quý 4"];
-        
+
             var years = [];
-        
+
             var ctx = document.getElementById('chartUser');
             var ctxPost = document.getElementById("chartPost");
             // var baseUrl = "http://localhost:8080/social_network";
@@ -143,7 +143,7 @@
             var statPostApi = "/admin/stat/post";
             var statSurveyApi = "/admin/stat/post_survey";
             var statInvitationApi = "/admin/stat/post_invitation";
-        
+
             var configs = {
                 type: 'bar',
                 data: {},
@@ -172,7 +172,7 @@
                 },
                 plugins: [ChartDataLabels]
             }
-        
+
             var configsCharPost = {
                 type: 'bar',
                 data: {},
@@ -206,7 +206,7 @@
                 },
                 plugins: [ChartDataLabels]
             }
-        
+
             $(document).ready(function (e) {
                 // $("#containerDropDownYear").hide();
                 $("#dropDownOption").text("Tháng");
@@ -217,7 +217,7 @@
                         var requestParams = new URLSearchParams();
                         requestParams.append("byMonth", "true");
                         stat(months, requestParams, statUserApi);
-        
+
                     } else if (selectedText === "Quý") {
                         $("#containerDropDownYear").show();
                         var requestParams = new URLSearchParams();
@@ -229,7 +229,7 @@
                     }
                     $("#dropDownOption").text(selectedText);
                 });
-        
+
                 $("#dropDownYearMenu li div").click(function () {
                     var selectedText = $(this).text();
                     var requestParams = new URLSearchParams();
@@ -242,10 +242,10 @@
                         requestParams.append("byQuarter", "true");
                         stat(quarter, requestParams, statUserApi);
                     }
-        
+
                     $("#dropDownYear").text(selectedText);
                 });
-        
+
                 // $("#containerDropDownPostYear").hide();
                 $("#dropDownPostOption").text("Tháng");
                 $("#dropDownPostOptionMenu li div").click(function () {
@@ -266,7 +266,7 @@
                     }
                     $("#dropDownPostOption").text(selectedText);
                 });
-        
+
                 $("#dropDownPostYearMenu li div").click(function () {
                     var selectedText = $(this).text();
                     var requestParams = new URLSearchParams();
@@ -279,11 +279,11 @@
                         requestParams.append("byQuarter", "true");
                         checkPostType(quarter, requestParams);
                     }
-        
+
                     $("#dropDownPostYear").text(selectedText);
                 });
             });
-        
+
             async function stat(labels, requestParams, api) {
                 var data = {
                     labels: labels,
@@ -298,14 +298,14 @@
                         color: 'black'
                     }
                 }
-        
+
                 await fetch(`${api}${requestParams != null ? '?' + requestParams.toString() : ''}`)
                     .then(res => {
                         if (res.ok) {
                             return res.json();
                         }
                         return res.text().then(text => { throw new Error(text) })
-        
+
                     })
                     .then(d => {
                         var counter = 0;
@@ -319,15 +319,15 @@
                         })
                     })
                     .catch(err => console.log(err));
-        
+
                 data.datasets = [datasetUser];
                 configs.data = data;
                 drawChart(labels, ctx, configs);
             }
-        
+
             async function statPost(labels, requestParams, api, postType) {
                 var data = null;
-        
+
                 if (Object.keys(configsCharPost.data).length === 0) {
                     data = {
                         labels: labels,
@@ -336,10 +336,10 @@
                 } else {
                     data = configsCharPost.data;
                 }
-        
+
                 var datasets = data.datasets;
                 var dataset = null;
-        
+
                 if (postType === "post") {
                     dataset = createDataset('Bài đăng thường', labels, '#FFCC66', 1);
                     // posts[0] = true;
@@ -368,17 +368,17 @@
                                 counter++;
                             }
                         })
-        
-        
+
+
                     }).catch(err => console.log(err));
-        
+
                 datasets.push(dataset);
                 data.datasets = datasets;
                 configsCharPost.data = data;
             }
-        
+
             async function fetchData() {
-        
+
                 await fetch(statUserApi)
                     .then(res => {
                         if (res.ok) {
@@ -404,17 +404,17 @@
                         $("#dropDownYear").text($("#dropDownYearMenu li:first div").text());
                         $("#dropDownPostYear").text($("#dropDownPostYearMenu li:first div").text());
                     })
-        
+
                 // var yearValue = years[years.length - 1];
                 // years.push(yearValue + 1);
                 // years.push(yearValue + 2);
                 // years.push(yearValue + 3);
-        
+
                 if (years.length === 1) {
                     $("#itemYear").hide();
                     $("#itemYearPost").hide();
                 }
-        
+
                 var requestParams = new URLSearchParams();
                 requestParams.append("byMonth", "true");
                 requestParams.append("year", "2023");
@@ -422,10 +422,10 @@
                 await statPost(months, requestParams, statSurveyApi, "postSurvey");
                 await statPost(months, requestParams, statInvitationApi, "postInvitation");
                 await stat(months, requestParams, statUserApi);
-        
+
                 drawChart(months, ctxPost, configsCharPost);
             }
-        
+
             function createDataset(labelName, labels, color, id) {
                 return dataset = {
                     label: labelName,
@@ -437,7 +437,7 @@
                     id: id
                 }
             }
-        
+
             function drawChart(labels, chartCtx, chartConfis) {
                 if (Object.keys(chartConfis.data).length === 0) {
                     var data = {
@@ -458,27 +458,27 @@
                 if (chart) {
                     chart.destroy();
                 }
-        
+
                 chart = new Chart(chartCtx, chartConfis);
             }
-        
+
             async function checkPostType(labels, requestParams) {
                 configsCharPost.data = {};
                 if ($("#totalPost").prop("checked")) {
                     await statPost(labels, requestParams, statPostApi, "post");
                 }
-        
+
                 if ($("#totalPostSurvey").prop("checked")) {
                     await statPost(labels, requestParams, statSurveyApi, "postSurvey");
                 }
-        
+
                 if ($("#totalPostInvitation").prop("checked")) {
                     await statPost(labels, requestParams, statInvitationApi, "postInvitation");
                 }
                 console.log(configsCharPost.data)
                 drawChart(labels, ctxPost, configsCharPost);
             }
-        
+
             fetchData();
         </script>
     </div>

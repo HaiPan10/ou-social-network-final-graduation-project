@@ -14,11 +14,14 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.RedirectServerAuthenticationSuccessHandler;
+import org.springframework.security.web.server.authentication.logout.DelegatingServerLogoutHandler;
+import org.springframework.security.web.server.authentication.logout.SecurityContextServerLogoutHandler;
+import org.springframework.security.web.server.authentication.logout.ServerLogoutHandler;
+import org.springframework.security.web.server.authentication.logout.WebSessionServerLogoutHandler;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.web.cors.reactive.CorsWebFilter;
-
 import com.ou.apigateway.filter.CustomFilter;
 import com.ou.apigateway.filter.LogFilter;
 
@@ -27,11 +30,6 @@ import reactor.core.publisher.Mono;
 @Configuration
 @EnableWebFluxSecurity()
 public class SpringSecurityConfig {
-
-    @Bean("adminSecurityContextRepository")
-    public ServerSecurityContextRepository securityContextRepository() {
-        return new WebSessionServerSecurityContextRepository();
-    }
 
     @Autowired
     public ReactiveUserDetailsService userDetailsService;
@@ -46,9 +44,24 @@ public class SpringSecurityConfig {
     @Qualifier("adminAuthenticationManager")
     private ReactiveAuthenticationManager adminAuthenticationManager;
 
+    @Bean("adminSecurityContextRepository")
+    public ServerSecurityContextRepository securityContextRepository() {
+        return new WebSessionServerSecurityContextRepository();
+    }
+
     @Autowired
     @Qualifier("adminSecurityContextRepository")
     private ServerSecurityContextRepository adminSecurityContextRepository;
+
+    @Bean()
+    public ServerLogoutHandler serverLogoutHandler() {
+        return new DelegatingServerLogoutHandler(
+                new SecurityContextServerLogoutHandler(),
+                new WebSessionServerLogoutHandler());
+    }
+
+    @Autowired
+    private ServerLogoutHandler logoutHandler;
 
     @Autowired
     private CustomFilter customFilter;
@@ -63,9 +76,12 @@ public class SpringSecurityConfig {
     @Order(1)
     public SecurityWebFilterChain adminFilterChain(ServerHttpSecurity http) {
         return http.csrf(csrf -> csrf.disable())
-                .formLogin(login -> login.loginPage("/admin/login")
+                .formLogin(login -> login.loginPage("/login")
                         .authenticationSuccessHandler(new RedirectServerAuthenticationSuccessHandler(
                                 "/admin/dashboard")))
+                .logout(logout -> logout
+                        .logoutHandler(logoutHandler)
+                        .logoutUrl("/logout"))
                 .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
                         .authenticationEntryPoint(
                                 (swe, e) -> Mono
@@ -78,7 +94,7 @@ public class SpringSecurityConfig {
                 .authorizeExchange(
                         authorizeExchangeSpec -> authorizeExchangeSpec
                                 .pathMatchers(
-                                        "/admin/login",
+                                        "/login",
                                         "/resources/**",
                                         "/css/**",
                                         "/img/**",

@@ -1,4 +1,5 @@
-<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+    id="layout-navbar">
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
             <i class="bx bx-menu bx-sm"></i>
@@ -13,7 +14,7 @@
                 <div class="nav-item d-flex align-items-center">
                     <button class="btn bg-transparent" type="submit"><i class="bx bx-search fs-4 lh-0"></i></button>
                     <input name="kw" type="text" class="form-control border-0 shadow-none" placeholder="Search..."
-                        aria-label="Search..." th:value="${kw != null} ? ${kw} : ''"/>
+                        aria-label="Search..." th:value="${kw != null} ? ${kw} : ''" />
                     <th:block th:if="${filterStatus != null}">
                         <input type="hidden" name="status" th:value="${filterStatus}" />
                     </th:block>
@@ -51,7 +52,7 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="/logout">
+                        <a id="admin-logout" class="dropdown-item" href="#">
                             <i class="bx bx-power-off me-2"></i>
                             <span class="align-middle">Đăng xuất</span>
                         </a>
@@ -61,11 +62,31 @@
             <!--/ User -->
         </ul>
         <script>
-            function clearFilter(){
-                var currentUrl = window.location.href;
-                var requestUrl = currentUrl.split("?")[0];
-                window.location = requestUrl;
+            var baseUrl = "http://localhost:8080"
+            var logoutApi = "/logout"
+
+            function clearFilter() {
+                var currentUrl = window.location.href
+                var requestUrl = currentUrl.split("?")[0]
+                window.location = requestUrl
             }
+
+            $(document).ready(function (e) {
+                $("#admin-logout").click(function (e) {
+                    e.preventDefault()
+                    fetch(`${baseUrl}${logoutApi}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json" // Set the content type to JSON
+                        },
+                    })
+                    .then(res => {
+                        if(res.redirected) {
+                            window.location.href = res.url
+                        }
+                    })
+                })
+            })
         </script>
     </div>
 </nav>
