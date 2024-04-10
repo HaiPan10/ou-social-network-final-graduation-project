@@ -1,6 +1,7 @@
 package com.ou.accountservice.controller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -74,20 +75,22 @@ public class AccountController {
             return ResponseEntity.badRequest().body(ValidationUtils.getInvalidMessage(bindingResult));
         } else {
             try {
-                Account createAccount = new Account(requestBody.getEmail(), requestBody.getPassword(), requestBody.getConfirmPassword());
+                Account createAccount = new Account(requestBody.getEmail(), requestBody.getPassword(),
+                        requestBody.getConfirmPassword());
                 User createUser = new User(requestBody.getUser().getFirstName(), requestBody.getUser().getLastName());
-                UserStudent createStudent = new UserStudent(requestBody.getUser().getUserStudent().getStudentIdentical());
-                return ResponseEntity.status(HttpStatus.CREATED).body(accountService.create(createAccount, createUser, createStudent));
+                UserStudent createStudent = new UserStudent(
+                        requestBody.getUser().getUserStudent().getStudentIdentical());
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(accountService.create(createAccount, createUser, createStudent));
             } catch (Exception e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
         }
     }
 
-
     @GetMapping(path = "/verify/{accountId}/{verificationCode}")
-    public ResponseEntity<Object> verifyAccount(@PathVariable Long accountId, 
-    @PathVariable String verificationCode, ServerHttpResponse response) throws Exception {
+    public ResponseEntity<Object> verifyAccount(@PathVariable Long accountId,
+            @PathVariable String verificationCode, ServerHttpResponse response) throws Exception {
         try {
             if (accountService.verifyEmail(accountId, verificationCode)) {
                 HttpHeaders headers = new HttpHeaders();
@@ -101,18 +104,17 @@ public class AccountController {
         }
     }
 
-    @PostMapping(path="/login")
+    @PostMapping(path = "/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest requestBody,
-        BindingResult bindingResult) {
+            BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
                 return ResponseEntity.badRequest().body(ValidationUtils.getInvalidMessage(bindingResult));
             }
             AuthResponse response = accountService.login(requestBody);
-            if(response != null){
+            if (response != null) {
                 return ResponseEntity.ok().body(response);
-            }
-            else {
+            } else {
                 throw new Exception("Get Null Pointer");
             }
         } catch (Exception e) {
@@ -120,7 +122,7 @@ public class AccountController {
         }
     }
 
-    @GetMapping(path="/status")
+    @GetMapping(path = "/status")
     public ResponseEntity<Object> getStatus(@RequestHeader HttpHeaders headers) {
         try {
             Long accountId = Long.parseLong(headers.getFirst("AccountID"));
@@ -130,15 +132,15 @@ public class AccountController {
         }
     }
 
-    @PostMapping(path="/change-password")
+    @PostMapping(path = "/change-password")
     public ResponseEntity<Object> changePassword(@RequestBody Map<String, Object> params,
-        BindingResult bindingResult, @RequestHeader HttpHeaders headers){
+            BindingResult bindingResult, @RequestHeader HttpHeaders headers) {
         try {
             Long id = Long.parseLong(headers.getFirst("AccountID"));
             String password = mapper.convertValue(params.get("password"), String.class);
             String authPassword = mapper.convertValue(params.get("authPassword"), String.class);
             String confirmPassword = mapper.convertValue(params.get("confirmPassword"), String.class);
-            //mapValidator.validate(params, bindingResult);
+            // mapValidator.validate(params, bindingResult);
             if (bindingResult.hasErrors() || !password.equals(confirmPassword)) {
                 return ResponseEntity.badRequest().body("Mật khẩu không khớp");
             }
@@ -151,48 +153,72 @@ public class AccountController {
     }
 
     @GetMapping(path = "/search")
-     public ResponseEntity<Object> search(@RequestParam Map<String, String> params) {
+    public ResponseEntity<Object> search(@RequestParam Map<String, String> params) {
         try {
             return ResponseEntity.ok().body(accountService.search(params).stream()
-            .filter(acc -> (acc.getStatus().equals("ACTIVE") || acc.getStatus().equals("PASSWORD_CHANGE_REQUIRED")))
-            .map(account -> account.getUser()).collect(Collectors.toList()));
+                    .filter(acc -> (acc.getStatus().equals("ACTIVE")
+                            || acc.getStatus().equals("PASSWORD_CHANGE_REQUIRED")))
+                    .map(account -> account.getUser()).collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping()
-    public Account getAccount(@RequestParam Long accountId) {
-        try {
-            return accountService.retrieve(accountId);
+    // @GetMapping()
+    // public ResponseEntity<?> getAccount(@RequestParam Long accountId) {
+    //     try {
+    //         return ResponseEntity.ok().body(accountService.retrieve(accountId));
 
-        } catch (Exception e) {
-            return null;
-        }
-    }
+    //     } catch (Exception e) {
+    //         return ResponseEntity.badRequest().body(e.getMessage());
+    //     }
+    // }
 
     @GetMapping("/email")
-    public Account getAccount(@RequestParam String email) {
+    public ResponseEntity<?> getAccount(@RequestParam String email) {
         try {
-            return accountService.retrieve(email);
+            return ResponseEntity.ok().body(accountService.retrieve(email));
 
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     // This API will be called by the api gateway for access permit
     @GetMapping("/validate")
-    public Mono<Boolean> validateToken(@RequestParam String token){
+    public Mono<Boolean> validateToken(@RequestParam String token) {
         return Mono.just(accountService.validateToken(token));
     }
 
     @GetMapping("/retrieve")
-    public Account retrieveAccount(@RequestParam Long accountId) {
+    public ResponseEntity<?> retrieveAccount(@RequestParam Long accountId) {
         try {
-            return accountService.retrieve(accountId);
+            return ResponseEntity.ok().body(accountService.retrieve(accountId));
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/pending/accounts")
+    public List<Account> pendingAccounts(@RequestParam Map<String, String> params) {
+        return accountService.getPendingAccounts(params);
+    }
+
+    @GetMapping("/pending/count")
+    public Long countPendingAccounts() {
+        return accountService.countPendingAccounts();
+    }
+
+    @GetMapping("/pending/verification/{accountId}")
+    public ResponseEntity<?> verifyAccount(@PathVariable Long accountId, @RequestParam String status) {
+        // Verify pending account
+        try {
+            Account account = accountService.retrieve(accountId);
+            return ResponseEntity.ok().body(accountService.verifyAccount(account, status));
+        } catch (Exception e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

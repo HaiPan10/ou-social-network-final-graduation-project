@@ -20,8 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ou.adminservice.pojo.Account;
 import com.ou.adminservice.service.interfaces.AccountService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
 @RequestMapping("/admin/accounts")
+@Slf4j
 public class AccountController {
     @Autowired
     private AccountService accountService;
@@ -94,11 +97,12 @@ public class AccountController {
     //     return "pages/accounts";
     // }
 
-    // @GetMapping("/verification/{accountId}")
-    // public String verify(@PathVariable Long accountId, @RequestParam String status) throws Exception {
-    //     accountService.verifyAccount(accountService.retrieve(accountId), status);
-    //     return "redirect:/admin/accounts/verification";
-    // }
+    @GetMapping("/verification/{accountId}")
+    public String verify(@PathVariable Long accountId, @RequestParam String status) throws Exception {
+        boolean result = accountService.verifyAccount(accountId, status);
+        log.info("Verify result: " + result);
+        return "redirect:/admin/accounts/verification";
+    }
 
     // @GetMapping("/provider")
     // public String provideAccounts(Model model, @RequestParam(name = "status", required = false) String status) {

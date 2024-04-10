@@ -14,4 +14,5 @@ public interface AccountService {
     List<Account> search(Map<String, String> params);
     Account retrieve(Long id) throws Exception;
     Account retrieve(String email) throws Exception;
+    boolean verifyAccount(Long accountId, String status);
 }
