@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ou.adminservice.pojo.Account;
+import com.ou.adminservice.pojo.Status;
 import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.AccountService;
 import com.ou.adminservice.service.interfaces.UserService;
@@ -147,11 +148,13 @@ public class AccountController {
             }
             String defaultCover = this.env.getProperty("DEFAULT_COVER").toString();
             user.setCoverAvatar(defaultCover);
-            // Account createdAccount = accountService.create(account, user);
-            // System.out.printf("[INFO] - Provided email: %s\n", createdAccount);
-            // if (!avatar.isEmpty()) {
-            //     userService.uploadAvatar(avatar, createdAccount.getId());
-            // }
+            account.setUser(user);
+            Account createdAccount = accountService.create(account);
+            System.out.printf("[INFO] - Provided email: %s\n", createdAccount);
+
+            if (!avatar.isEmpty()) {
+                userService.uploadAvatar(avatar, createdAccount.getId());
+            }
             return "redirect:/admin/accounts/provider?status=success";
         } catch (Exception e) {
             bindingResult.addError(new ObjectError("exceptionError", e.getMessage()));
@@ -160,14 +163,14 @@ public class AccountController {
         }
     }
 
-    // @GetMapping("{id}")
-    // public String retrieve(@PathVariable(value = "id") Long accountId, Model model) {
-    //     try {
-    //         Account targetAccount = accountService.retrieve(accountId);
-    //         model.addAttribute("account", targetAccount);
-    //     } catch (Exception e) {
+    @GetMapping("{id}")
+    public String retrieve(@PathVariable(value = "id") Long accountId, Model model) {
+        try {
+            Account targetAccount = accountService.retrieve(accountId);
+            model.addAttribute("account", targetAccount);
+        } catch (Exception e) {
 
-    //     }
-    //     return "pages/accountDetail";
-    // }
+        }
+        return "pages/accountDetail";
+    }
 }

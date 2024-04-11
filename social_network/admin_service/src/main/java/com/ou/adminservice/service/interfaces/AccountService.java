@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.ou.adminservice.pojo.Account;
-import com.ou.adminservice.pojo.User;
 
 public interface AccountService {
     List<Object[]> list();
@@ -16,5 +15,5 @@ public interface AccountService {
     Account retrieve(Long id) throws Exception;
     Account retrieve(String email) throws Exception;
     boolean verifyAccount(Long accountId, String status);
-    Account create(Account account, User user) throws Exception;
+    Account create(Account account) throws Exception;
 }

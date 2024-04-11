@@ -304,7 +304,7 @@ public class AccountServiceImpl implements AccountService {
             account.setUser(user);
             UserDoc userDoc = new UserDoc();
             userDoc.setDisplayName(String.format("%s %s", user.getLastName(), user.getFirstName()));
-            userDoc.setPhotoUrl(user.getAvatar());
+            // userDoc.setPhotoUrl(user.getAvatar());
             userDoc.setUserId(user.getId());
             userDoc.setActiveStatus("offline");
             // firebaseService.saveOrUpdate(userDoc);

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -63,8 +64,8 @@ public class AccountServiceImpl implements AccountService {
         return builder.build().get()
                 .uri("http://account-service/api/accounts/pending/accounts",
                         uriBuilder -> uriBuilder
-                            .queryParam("page", page)
-                            .build())
+                                .queryParam("page", page)
+                                .build())
                 .retrieve()
                 .bodyToFlux(Account.class)
                 .collect(Collectors.toList())
@@ -79,8 +80,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account retrieve(Long id) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'retrieve'");
+        return builder.build().get()
+                .uri("http://account-service/api/accounts/retrieve",
+                        uriBuilder -> uriBuilder.queryParam("accountId", id).build())
+                .retrieve()
+                .bodyToMono(Account.class)
+                .onErrorMap(ex -> new Exception("Error retrieving account: " + ex.getMessage()))
+                .block();
     }
 
     @Override
@@ -104,9 +110,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account create(Account account, User user) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+    public Account create(Account account) throws Exception {
+        return builder.build().post()
+                .uri("http://account-service/api/accounts/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(account)
+                .exchangeToMono(res -> res.bodyToMono(Account.class))
+                .onErrorMap(ex -> new Exception("Error retrieving account: " + ex.getMessage()))
+                .block();
     }
 
 }

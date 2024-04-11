@@ -164,16 +164,6 @@ public class AccountController {
         }
     }
 
-    // @GetMapping()
-    // public ResponseEntity<?> getAccount(@RequestParam Long accountId) {
-    //     try {
-    //         return ResponseEntity.ok().body(accountService.retrieve(accountId));
-
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
-
     @GetMapping("/email")
     public ResponseEntity<?> getAccount(@RequestParam String email) {
         try {
@@ -220,5 +210,34 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody Account account) {
+        try {
+            User user = account.getUser();
+            account.setUser(null);
+            Account createdAccount = accountService.create(account, user);
+            return ResponseEntity.ok().body(createdAccount);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // @PostMapping("/create")
+    // public Mono<ServerResponse> create(ServerRequest request) {
+    // return request.bodyToMono(Account.class)
+    // .flatMap(account -> {
+    // try {
+    // return Mono.just(accountService.create(account, account.getUser()));
+    // } catch (Exception e) {
+
+    // }
+    // return null;
+    // })
+    // .flatMap(account -> ServerResponse.created(URI.create("/books/" +
+    // account.getId()))
+    // .contentType(MediaType.APPLICATION_JSON)
+    // .body(BodyInserters.fromValue(account)));
+    // }
 
 }
