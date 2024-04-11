@@ -22,6 +22,8 @@ import org.springframework.security.web.server.context.ServerSecurityContextRepo
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.web.cors.reactive.CorsWebFilter;
+
+import com.ou.apigateway.filter.AdminLogFilter;
 import com.ou.apigateway.filter.CustomFilter;
 import com.ou.apigateway.filter.LogFilter;
 
@@ -72,6 +74,13 @@ public class SpringSecurityConfig {
     @Autowired
     private LogFilter logFilter;
 
+    @Autowired
+    private AdminLogFilter adminLogFilter;
+
+    @Autowired
+    @Qualifier("adminCorsWebFilter")
+    private CorsWebFilter adminCorsWebFilter;
+
     @Bean
     @Order(1)
     public SecurityWebFilterChain adminFilterChain(ServerHttpSecurity http) {
@@ -104,6 +113,8 @@ public class SpringSecurityConfig {
                                         "/pages/index")
                                 .permitAll()
                                 .anyExchange().hasAnyRole("ADMIN"))
+                .addFilterBefore(adminLogFilter, SecurityWebFiltersOrder.CORS)
+                .addFilterAfter(adminCorsWebFilter, SecurityWebFiltersOrder.ANONYMOUS_AUTHENTICATION)
                 .build();
     }
 

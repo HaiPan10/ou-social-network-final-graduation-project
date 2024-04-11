@@ -328,7 +328,7 @@ public class AccountServiceImpl implements AccountService {
     public Account changePassword(Long id, String changedPassword, String authPassword) throws Exception {
         try{
             Optional<Account> account = accountRepositoryJPA.findById(id);
-            
+
             if(!account.isPresent()){
                 throw new Exception("Tài khoản không tồn tại");
             }

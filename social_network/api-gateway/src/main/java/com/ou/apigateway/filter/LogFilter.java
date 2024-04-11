@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 public class LogFilter implements WebFilter{
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        // log.info("Pre-logging web filter");
         HttpHeaders headers = exchange.getResponse().getHeaders();
         List<String> header = headers.get("Access-Control-Allow-Origin");
         if(header != null) {

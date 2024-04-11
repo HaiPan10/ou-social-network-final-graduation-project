@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.adminservice.pojo.Account;
+import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.AccountService;
 
 import reactor.core.publisher.Mono;
@@ -100,6 +101,12 @@ public class AccountServiceImpl implements AccountService {
                 .bodyToMono(Boolean.class)
                 .onErrorResume(e -> Mono.just(false))
                 .block();
+    }
+
+    @Override
+    public Account create(Account account, User user) throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'create'");
     }
 
 }

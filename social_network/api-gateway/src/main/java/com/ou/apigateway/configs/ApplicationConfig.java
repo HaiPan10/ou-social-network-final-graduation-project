@@ -52,7 +52,7 @@ public class ApplicationConfig implements WebFluxConfigurer {
         WebFluxConfigurer.super.addResourceHandlers(registry);
     }
 
-    @Bean
+    @Bean()
     public CorsWebFilter corsWebFilter() {
         String clientHostName = environment.getProperty("CLIENT_HOSTNAME");
         CorsConfiguration corsConfig = new CorsConfiguration();
@@ -62,6 +62,26 @@ public class ApplicationConfig implements WebFluxConfigurer {
                 "OPTION"));
         corsConfig.setAllowedHeaders(List.of("*"));
         corsConfig.setAllowedOrigins(Collections.singletonList(clientHostName));
+
+        corsConfig.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+
+        return new CorsWebFilter(source);
+    }
+
+    @Bean("adminCorsWebFilter")
+    public CorsWebFilter adminCorsWebFilter() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+
+        corsConfig.setMaxAge(3000L);
+        corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE",
+                "OPTION"));
+        corsConfig.setAllowedHeaders(List.of("*"));
+        // corsConfig.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:8081"));
+
+        corsConfig.setAllowedOriginPatterns(List.of("*"));
 
         corsConfig.setAllowCredentials(true);
 
@@ -87,6 +107,7 @@ public class ApplicationConfig implements WebFluxConfigurer {
                     uriBuilder -> uriBuilder.queryParam("email", email).build())
                 .retrieve()
                 .bodyToMono(Account.class)
+                .onErrorResume(e -> Mono.empty())
                 .flatMap(account -> {
                     if (account != null) {
                         // Create UserDetails using User.builder

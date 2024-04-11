@@ -1,14 +1,19 @@
 package com.ou.adminservice.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +23,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ou.adminservice.pojo.Account;
+import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.AccountService;
+import com.ou.adminservice.service.interfaces.UserService;
+import com.ou.adminservice.validator.GrantAccountValidator;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,18 +38,18 @@ public class AccountController {
     private AccountService accountService;
     @Autowired
     private Environment env;
-    // @Autowired
-    // private GrantAccountValidator adminValidator;
-    // @Autowired
-    // private UserService userService;
+    @Autowired
+    private GrantAccountValidator adminValidator;
+    @Autowired
+    private UserService userService;
 
-    // @InitBinder
-    // public void initBinder(WebDataBinder binder) {
-    //     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    //     binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat,
-    //     true));
-    //     binder.setValidator(adminValidator);
-    // }
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat,
+        true));
+        binder.setValidator(adminValidator);
+    }
 
     @GetMapping("/verification")
     public String accountsVerification(Model model, @RequestParam Map<String, String> params) {
@@ -104,53 +112,53 @@ public class AccountController {
         return "redirect:/admin/accounts/verification";
     }
 
-    // @GetMapping("/provider")
-    // public String provideAccounts(Model model, @RequestParam(name = "status", required = false) String status) {
-    //     Account account = new Account();
-    //     account.setUser(new User());
-    //     model.addAttribute("account", account);
-    //     String defaultPassword = env.getProperty("DEFAULT_PASSWORD");
-    //     model.addAttribute("defaultPassword", defaultPassword);
-    //     if (status != null) {
-    //         model.addAttribute("status", status);
-    //     }
-    //     return "pages/provider";
-    // }
+    @GetMapping("/provider")
+    public String provideAccounts(Model model, @RequestParam(name = "status", required = false) String status) {
+        Account account = new Account();
+        account.setUser(new User());
+        model.addAttribute("account", account);
+        String defaultPassword = env.getProperty("DEFAULT_PASSWORD");
+        model.addAttribute("defaultPassword", defaultPassword);
+        if (status != null) {
+            model.addAttribute("status", status);
+        }
+        return "pages/provider";
+    }
 
-    // @PostMapping(path = "/provider")
-    // public String add(@ModelAttribute("account") Account account,
-    //         @RequestPart(value = "fileInput", required = false) MultipartFile avatar,
-    //         BindingResult bindingResult, Model model) throws Exception {
-    //     try {
-    //         System.out.printf("[INFO] - Provider email: %s\n", account);
-    //         String defaultPassword = env.getProperty("DEFAULT_PASSWORD");
-    //         model.addAttribute("defaultPassword", defaultPassword);
-    //         User user = account.getUser();
-    //         account.setUser(null);
-    //         adminValidator.validate(account, bindingResult);
-    //         adminValidator.validate(user, bindingResult);
-    //         if (bindingResult.hasErrors()) {
-    //             return "pages/provider";
-    //         }
+    @PostMapping(path = "/provider")
+    public String add(@ModelAttribute("account") Account account,
+            @RequestPart(value = "fileInput", required = false) MultipartFile avatar,
+            BindingResult bindingResult, Model model) throws Exception {
+        try {
+            System.out.printf("[INFO] - Provider email: %s\n", account);
+            String defaultPassword = env.getProperty("DEFAULT_PASSWORD");
+            model.addAttribute("defaultPassword", defaultPassword);
+            User user = account.getUser();
+            account.setUser(null);
+            adminValidator.validate(account, bindingResult);
+            adminValidator.validate(user, bindingResult);
+            if (bindingResult.hasErrors()) {
+                return "pages/provider";
+            }
 
-    //         if (avatar.isEmpty()) {
-    //             String defaultAvatar = this.env.getProperty("DEFAULT_AVATAR").toString();
-    //             user.setAvatar(defaultAvatar);
-    //         }
-    //         String defaultCover = this.env.getProperty("DEFAULT_COVER").toString();
-    //         user.setCoverAvatar(defaultCover);
-    //         Account createdAccount = accountService.create(account, user);
-    //         System.out.printf("[INFO] - Provided email: %s\n", createdAccount);
-    //         if (!avatar.isEmpty()) {
-    //             userService.uploadAvatar(avatar, createdAccount.getId());
-    //         }
-    //         return "redirect:/admin/accounts/provider?status=success";
-    //     } catch (Exception e) {
-    //         bindingResult.addError(new ObjectError("exceptionError", e.getMessage()));
-    //         System.out.println("[DEBUG] - " + e.getMessage());
-    //         return "pages/provider";
-    //     }
-    // }
+            if (avatar.isEmpty()) {
+                String defaultAvatar = this.env.getProperty("DEFAULT_AVATAR").toString();
+                user.setAvatar(defaultAvatar);
+            }
+            String defaultCover = this.env.getProperty("DEFAULT_COVER").toString();
+            user.setCoverAvatar(defaultCover);
+            // Account createdAccount = accountService.create(account, user);
+            // System.out.printf("[INFO] - Provided email: %s\n", createdAccount);
+            // if (!avatar.isEmpty()) {
+            //     userService.uploadAvatar(avatar, createdAccount.getId());
+            // }
+            return "redirect:/admin/accounts/provider?status=success";
+        } catch (Exception e) {
+            bindingResult.addError(new ObjectError("exceptionError", e.getMessage()));
+            System.out.println("[DEBUG] - " + e.getMessage());
+            return "pages/provider";
+        }
+    }
 
     // @GetMapping("{id}")
     // public String retrieve(@PathVariable(value = "id") Long accountId, Model model) {
