@@ -115,8 +115,15 @@ public class AccountServiceImpl implements AccountService {
                 .uri("http://account-service/api/accounts/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(account)
-                .exchangeToMono(res -> res.bodyToMono(Account.class))
-                .onErrorMap(ex -> new Exception("Error retrieving account: " + ex.getMessage()))
+                .exchangeToMono(res -> {{
+                    if(res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(Account.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                        .flatMap(message -> Mono.error(new Exception(message)));
+                }})
+                .onErrorMap(ex -> new Exception(ex.getMessage()))
                 .block();
     }
 

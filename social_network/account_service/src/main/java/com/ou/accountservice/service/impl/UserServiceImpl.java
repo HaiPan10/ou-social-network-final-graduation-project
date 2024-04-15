@@ -24,7 +24,7 @@ import com.ou.accountservice.service.interfaces.UserService;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class UserServiceImpl implements UserService {    
+public class UserServiceImpl implements UserService {
     @Autowired
     private Environment env;
     @Autowired
@@ -129,5 +129,5 @@ public class UserServiceImpl implements UserService {
     public List<User> list(){
         return userRepositoryJPA.findAll();
     }
-    
+
 }

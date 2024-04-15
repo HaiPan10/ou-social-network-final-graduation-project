@@ -14,6 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -21,6 +22,7 @@ import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ou.adminservice.components.DateFormatter;
 
 @Configuration
@@ -74,6 +76,7 @@ public class ApplicationConfig implements WebFluxConfigurer {
 
     @Bean
     public ObjectMapper objectMapper() {
+        // return new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         return new ObjectMapper();
     }
 
@@ -111,6 +114,11 @@ public class ApplicationConfig implements WebFluxConfigurer {
     @Override
     public Validator getValidator() {
         return validator();
+    }
+
+    @Bean()
+    public MultipartBodyBuilder bodyBuilder() {
+        return new MultipartBodyBuilder();
     }
 
 }

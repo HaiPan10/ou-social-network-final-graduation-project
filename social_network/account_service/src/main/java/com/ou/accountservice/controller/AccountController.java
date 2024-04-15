@@ -34,6 +34,7 @@ import com.ou.accountservice.validator.MapValidator;
 import com.ou.accountservice.validator.WebAppValidator;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -41,6 +42,7 @@ import reactor.core.publisher.Mono;
 // @CrossOrigin(origins = "http://ousocialnetwork.id.vn/")
 // @CrossOrigin(origins = "*")
 @RequestMapping("api/accounts")
+@Slf4j
 public class AccountController {
     @Autowired
     private AccountService accountService;
@@ -219,6 +221,7 @@ public class AccountController {
             Account createdAccount = accountService.create(account, user);
             return ResponseEntity.ok().body(createdAccount);
         } catch (Exception e) {
+            log.info(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

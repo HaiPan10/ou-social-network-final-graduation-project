@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ou.adminservice.pojo.Account;
-import com.ou.adminservice.pojo.Status;
 import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.AccountService;
 import com.ou.adminservice.service.interfaces.UserService;
@@ -126,7 +126,7 @@ public class AccountController {
         return "pages/provider";
     }
 
-    @PostMapping(path = "/provider")
+    @PostMapping(path = "/provider", consumes = MediaType.ALL_VALUE)
     public String add(@ModelAttribute("account") Account account,
             @RequestPart(value = "fileInput", required = false) MultipartFile avatar,
             BindingResult bindingResult, Model model) throws Exception {
