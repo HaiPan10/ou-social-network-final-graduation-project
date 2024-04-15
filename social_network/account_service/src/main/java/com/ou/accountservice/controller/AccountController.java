@@ -201,7 +201,7 @@ public class AccountController {
         return accountService.countPendingAccounts();
     }
 
-    @GetMapping("/pending/verification/{accountId}")
+    @GetMapping("/verify/{accountId}")
     public ResponseEntity<?> verifyAccount(@PathVariable Long accountId, @RequestParam String status) {
         // Verify pending account
         try {
@@ -226,21 +226,18 @@ public class AccountController {
         }
     }
 
-    // @PostMapping("/create")
-    // public Mono<ServerResponse> create(ServerRequest request) {
-    // return request.bodyToMono(Account.class)
-    // .flatMap(account -> {
-    // try {
-    // return Mono.just(accountService.create(account, account.getUser()));
-    // } catch (Exception e) {
+    @GetMapping("/count")
+    public Long countAccounts(@RequestParam Map<String, String> params) {
+        return accountService.countAccounts(params);
+    }
 
-    // }
-    // return null;
-    // })
-    // .flatMap(account -> ServerResponse.created(URI.create("/books/" +
-    // account.getId()))
-    // .contentType(MediaType.APPLICATION_JSON)
-    // .body(BodyInserters.fromValue(account)));
-    // }
+    @GetMapping(path = "/search-admin")
+    public ResponseEntity<Object> searchAdmin(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(accountService.search(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 }

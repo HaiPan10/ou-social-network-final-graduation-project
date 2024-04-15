@@ -2,24 +2,30 @@ package com.ou.adminservice.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.adminservice.pojo.Account;
-import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.AccountService;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
+@Slf4j
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private WebClient.Builder builder;
+
+    @Autowired
+    private Environment env;
 
     @Override
     public List<Object[]> list() {
@@ -35,8 +41,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Long countAccounts(Map<String, String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'countAccounts'");
+        return builder.build().get()
+            .uri("http://account-service/api/accounts/count",
+                uriBuilder -> uriBuilder
+                    .queryParamIfPresent("page", Optional.ofNullable(params.get("page")))
+                    .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
+                    .queryParamIfPresent("status", Optional.ofNullable(params.get("status")))
+                    .build())
+            .retrieve()
+            .bodyToMono(Long.class)
+            .onErrorResume(err -> Mono.empty())
+            .block();
     }
 
     @Override
@@ -74,8 +89,18 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Account> search(Map<String, String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'search'");
+        return builder.build().get()
+            .uri("http://account-service/api/accounts/search-admin",
+                uriBuilder -> uriBuilder
+                    .queryParamIfPresent("page", Optional.ofNullable(params.get("page")))
+                    .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
+                    .queryParamIfPresent("status", Optional.ofNullable(params.get("status")))
+                    .build())
+            .retrieve()
+            .bodyToFlux(Account.class)
+            .collect(Collectors.toList())
+            .onErrorResume(err -> Mono.empty())
+            .block();
     }
 
     @Override
@@ -98,7 +123,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean verifyAccount(Long accountId, String status) {
         return builder.build().get()
-                .uri("http://account-service/api/accounts/pending/verification",
+                .uri("http://account-service/api/accounts/verify",
                         uriBuilder -> uriBuilder
                                 .pathSegment("{accountId}")
                                 .queryParam("status", status)

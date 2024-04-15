@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ou.adminservice.pojo.Account;
+import com.ou.adminservice.pojo.Status;
 import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.AccountService;
 import com.ou.adminservice.service.interfaces.UserService;
@@ -73,38 +74,37 @@ public class AccountController {
         return "pages/accountsVerification";
     }
 
-    // @GetMapping()
-    // public String accounts(Model model, @RequestParam Map<String, String> params) {
-    //     List<Account> accounts = accountService.search(params);
-    //     model.addAttribute("accounts", accounts);
+    @GetMapping()
+    public String accounts(Model model, @RequestParam Map<String, String> params) {
+        List<Account> accounts = accountService.search(params);
+        model.addAttribute("accounts", accounts);
+        Integer pageSize = Integer.parseInt(env.getProperty("PENDING_ACCOUNT_PAGE_SIZE"));
+        model.addAttribute("counter", Math.ceil(accountService.countAccounts(params) * 1.0 / pageSize));
+        int page;
+        if (params != null) {
+            String p = params.get("page");
+            if (p != null && !p.isEmpty()) {
+                page = Integer.parseInt(p);
+            } else {
+                page = 1;
+            }
+            String kw = params.get("kw");
+            if(kw != null){
+                model.addAttribute("kw", kw);
+            }
 
-    //     Integer pageSize = Integer.parseInt(env.getProperty("PENDING_ACCOUNT_PAGE_SIZE"));
-    //     model.addAttribute("counter", Math.ceil(accountService.countAccounts(params) * 1.0 / pageSize));
-    //     int page;
-    //     if (params != null) {
-    //         String p = params.get("page");
-    //         if (p != null && !p.isEmpty()) {
-    //             page = Integer.parseInt(p);
-    //         } else {
-    //             page = 1;
-    //         }
-    //         String kw = params.get("kw");
-    //         if(kw != null){
-    //             model.addAttribute("kw", kw);
-    //         }
+            String filterStatus = params.get("status");
+            if(filterStatus != null){
+                model.addAttribute("filterStatus", filterStatus);
+            }
 
-    //         String filterStatus = params.get("status");
-    //         if(filterStatus != null){
-    //             model.addAttribute("filterStatus", filterStatus);
-    //         }
-
-    //     } else {
-    //         page = 1;
-    //     }
-    //     model.addAttribute("status", Status.values());
-    //     model.addAttribute("currentPage", page);
-    //     return "pages/accounts";
-    // }
+        } else {
+            page = 1;
+        }
+        model.addAttribute("status", Status.values());
+        model.addAttribute("currentPage", page);
+        return "pages/accounts";
+    }
 
     @GetMapping("/verification/{accountId}")
     public String verify(@PathVariable Long accountId, @RequestParam String status) throws Exception {

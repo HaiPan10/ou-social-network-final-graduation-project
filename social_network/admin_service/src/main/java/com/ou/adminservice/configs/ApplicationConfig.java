@@ -22,7 +22,6 @@ import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ou.adminservice.components.DateFormatter;
 
 @Configuration
@@ -76,7 +75,6 @@ public class ApplicationConfig implements WebFluxConfigurer {
 
     @Bean
     public ObjectMapper objectMapper() {
-        // return new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         return new ObjectMapper();
     }
 
