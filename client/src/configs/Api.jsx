@@ -13,7 +13,7 @@ export const endpoints = {
     "upload": "/posts/upload",
     "posts": "/posts",
     "comment": "/comments",
-    "change_password": "/accounts/change_password",
+    "change-password": "/accounts/change-password",
     "post_reactions": "/post_reactions",
     "search": "/accounts/search?kw=",
     "responses": "/responses",

@@ -59,7 +59,7 @@ public class ApplicationConfig implements WebFluxConfigurer {
         // corsConfig.setAllowedOrigins(Arrays.asList(clientHostName));
         corsConfig.setMaxAge(3000L);
         corsConfig.setAllowedMethods(List.of("PUT", "GET", "POST", "DELETE",
-                "OPTION"));
+                "OPTION", "PATCH"));
         corsConfig.setAllowedHeaders(List.of("*"));
         corsConfig.setAllowedOrigins(Collections.singletonList(clientHostName));
 

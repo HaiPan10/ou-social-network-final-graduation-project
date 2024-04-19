@@ -11,7 +11,6 @@ export const EditComment = (props) => {
     const [content, setContent] = useState(props.comment.content)
     const editComment = (evt) => {
         evt.preventDefault()
-        console.log("edit")
         const process = async () => {
             try {
                 setContent('')

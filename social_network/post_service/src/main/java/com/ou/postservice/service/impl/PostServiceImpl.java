@@ -157,8 +157,6 @@ public class PostServiceImpl implements PostService {
         if (!(retrieveAccount.getStatus().equals("ACTIVE") || retrieveAccount.getStatus().equals("PASSWORD_CHANGE_REQUIRED"))) {
             throw new Exception("Not activated Account!");
         }
-        System.out.println("DEBUG ACC: " + retrieveAccount);
-        System.out.println("DEBUG ROLE: " + retrieveAccount.getRoleId());
         Map<String, Object> jsonObject = new HashMap<>();
         jsonObject.put("user", retrieveAccount.getUser());
         jsonObject.put("role", retrieveAccount.getRoleId());
