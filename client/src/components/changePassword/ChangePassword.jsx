@@ -78,7 +78,7 @@ const ChangePassword = (props) => {
         const process = async () => {
             setDisableButton(true)
             try {
-                let res = await authAPI().post(endpoints['change_password'], {
+                let res = await authAPI().post(endpoints['change-password'], {
                     "password": account.password,
                     "confirmPassword": account.confirmPassword,
                     "authPassword": authPassword
@@ -86,7 +86,7 @@ const ChangePassword = (props) => {
                 
                 if (res.status === 200) {
                     if(props.status === "ACTIVE") {
-                        updatePassword(auth.currentUser, account.password)
+                        // updatePassword(auth.currentUser, account.password)
                     } else if (props.status === "PASSWORD_CHANGE_REQUIRED") {
                         // createFirebaseAuth()
                     }
