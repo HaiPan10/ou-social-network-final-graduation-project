@@ -2,15 +2,21 @@ package com.ou.adminservice.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.service.interfaces.PostService;
 
 @Service
 public class PostServiceImpl implements PostService{
+
+    @Autowired
+    private WebClient.Builder builder;
 
     @Override
     public Post uploadPost(String postContent, Long userId, List<MultipartFile> image, boolean isActiveComment)
@@ -74,9 +80,17 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<Object[]> stat(Map<String, String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stat'");
+    public Object[][] stat(Map<String, String> params) {
+        return builder.build().get()
+                .uri("http://post-service/api/posts/stat/post",
+                        uriBuilder -> uriBuilder
+                                .queryParamIfPresent("year", Optional.ofNullable(params.get("year")))
+                                .queryParamIfPresent("byMonth", Optional.ofNullable(params.get("byMonth")))
+                                .queryParamIfPresent("byQuarter", Optional.ofNullable(params.get("byQuarter")))
+                                .build())
+                .retrieve()
+                .bodyToMono(Object[][].class)
+                .block();
     }
 
     @Override

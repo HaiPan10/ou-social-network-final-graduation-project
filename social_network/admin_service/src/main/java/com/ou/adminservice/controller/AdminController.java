@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ou.adminservice.pojo.Account;
 import com.ou.adminservice.service.interfaces.AccountService;
+import com.ou.adminservice.service.interfaces.PostInvitationService;
 import com.ou.adminservice.service.interfaces.PostService;
+import com.ou.adminservice.service.interfaces.PostSurveyService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,10 +32,10 @@ public class AdminController {
     private AccountService accountService;
     @Autowired
     private PostService postService;
-    // @Autowired
-    // private PostSurveyService postSurveyService;
-    // @Autowired
-    // private PostInvitationService postInvitationService;
+    @Autowired
+    private PostSurveyService postSurveyService;
+    @Autowired
+    private PostInvitationService postInvitationService;
     // @Autowired
     // private GroupService groupService;
     // @Autowired
@@ -92,33 +94,33 @@ public class AdminController {
         }
     }
 
-    // @GetMapping(path = "stat/post")
-    // public ResponseEntity<?> statPost(@RequestParam Map<String, String> params) {
-    //     try {
-    //         return ResponseEntity.ok().body(postService.stat(params));
-    //     } catch (Exception e) {
-    //         System.out.println("[ERROR] - " + e.getMessage());
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "stat/post")
+    public ResponseEntity<?> statPost(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postService.stat(params));
+        } catch (Exception e) {
+            System.out.println("[ERROR] - " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
-    // @GetMapping(path = "stat/post_survey")
-    // public ResponseEntity<?> statPostSurvey(@RequestParam Map<String, String> params) {
-    //     try {
-    //         return ResponseEntity.ok().body(postSurveyService.stat(params));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "stat/post_survey")
+    public ResponseEntity<?> statPostSurvey(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postSurveyService.stat(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
-    // @GetMapping(path = "stat/post_invitation")
-    // public ResponseEntity<?> statPostInvitation(@RequestParam Map<String, String> params) {
-    //     try {
-    //         return ResponseEntity.ok().body(postInvitationService.stat(params));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "stat/post_invitation")
+    public ResponseEntity<?> statPostInvitation(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postInvitationService.stat(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     // @GetMapping(path = "invitation_groups/{id}")
     // public ResponseEntity<?> getUsers(@PathVariable Long id) {

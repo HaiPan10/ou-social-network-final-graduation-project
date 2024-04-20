@@ -386,7 +386,6 @@
                         }
                         return res.text().then(err => { throw new Error(err) });
                     }).then(data => {
-                        console.log(data)
                         data.forEach(value => {
                             var newLi = $(`
                         <li>
