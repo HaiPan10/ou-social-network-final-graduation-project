@@ -240,4 +240,23 @@ public class AccountController {
         }
     }
 
+    @GetMapping()
+    public ResponseEntity<?> list() {
+        try {
+            return ResponseEntity.ok().body(accountService.list());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/stat/users")
+    public ResponseEntity<?> stat(@RequestParam Map<String, String> params) {
+        try {
+            List<Object[]> result = accountService.stat(params);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

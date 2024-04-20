@@ -6,8 +6,8 @@ import java.util.Map;
 import com.ou.adminservice.pojo.Account;
 
 public interface AccountService {
-    List<Object[]> list();
-    List<Object[]> stat(Map<String, String> params) throws Exception;
+    Object[][] list();
+    Object[][] stat(Map<String, String> params) throws Exception;
     Long countAccounts(Map<String, String> params);
     Long countPendingAccounts();
     List<Account> getPendingAccounts(Map<String, String> params);

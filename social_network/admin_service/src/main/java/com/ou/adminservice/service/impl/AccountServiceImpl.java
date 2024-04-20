@@ -1,5 +1,6 @@
 package com.ou.adminservice.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,30 +29,41 @@ public class AccountServiceImpl implements AccountService {
     private Environment env;
 
     @Override
-    public List<Object[]> list() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'list'");
+    public Object[][] list() {
+        return builder.build().get()
+                .uri("http://account-service/api/accounts")
+                .retrieve()
+                .bodyToMono(Object[][].class)
+                .block();
     }
 
     @Override
-    public List<Object[]> stat(Map<String, String> params) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stat'");
+    public Object[][] stat(Map<String, String> params) throws Exception {
+        return builder.build().get()
+                .uri("http://account-service/api/accounts/stat/users",
+                        uriBuilder -> uriBuilder
+                                .queryParamIfPresent("year", Optional.ofNullable(params.get("year")))
+                                .queryParamIfPresent("byMonth", Optional.ofNullable(params.get("byMonth")))
+                                .queryParamIfPresent("byQuarter", Optional.ofNullable(params.get("byQuarter")))
+                                .build())
+                .retrieve()
+                .bodyToMono(Object[][].class)
+                .block();
     }
 
     @Override
     public Long countAccounts(Map<String, String> params) {
         return builder.build().get()
-            .uri("http://account-service/api/accounts/count",
-                uriBuilder -> uriBuilder
-                    .queryParamIfPresent("page", Optional.ofNullable(params.get("page")))
-                    .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
-                    .queryParamIfPresent("status", Optional.ofNullable(params.get("status")))
-                    .build())
-            .retrieve()
-            .bodyToMono(Long.class)
-            .onErrorResume(err -> Mono.empty())
-            .block();
+                .uri("http://account-service/api/accounts/count",
+                        uriBuilder -> uriBuilder
+                                .queryParamIfPresent("page", Optional.ofNullable(params.get("page")))
+                                .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
+                                .queryParamIfPresent("status", Optional.ofNullable(params.get("status")))
+                                .build())
+                .retrieve()
+                .bodyToMono(Long.class)
+                .onErrorResume(err -> Mono.empty())
+                .block();
     }
 
     @Override
@@ -90,17 +102,17 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<Account> search(Map<String, String> params) {
         return builder.build().get()
-            .uri("http://account-service/api/accounts/search-admin",
-                uriBuilder -> uriBuilder
-                    .queryParamIfPresent("page", Optional.ofNullable(params.get("page")))
-                    .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
-                    .queryParamIfPresent("status", Optional.ofNullable(params.get("status")))
-                    .build())
-            .retrieve()
-            .bodyToFlux(Account.class)
-            .collect(Collectors.toList())
-            .onErrorResume(err -> Mono.empty())
-            .block();
+                .uri("http://account-service/api/accounts/search-admin",
+                        uriBuilder -> uriBuilder
+                                .queryParamIfPresent("page", Optional.ofNullable(params.get("page")))
+                                .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
+                                .queryParamIfPresent("status", Optional.ofNullable(params.get("status")))
+                                .build())
+                .retrieve()
+                .bodyToFlux(Account.class)
+                .collect(Collectors.toList())
+                .onErrorResume(err -> Mono.empty())
+                .block();
     }
 
     @Override
@@ -140,14 +152,16 @@ public class AccountServiceImpl implements AccountService {
                 .uri("http://account-service/api/accounts/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(account)
-                .exchangeToMono(res -> {{
-                    if(res.statusCode().is2xxSuccessful()) {
-                        return res.bodyToMono(Account.class);
-                    }
+                .exchangeToMono(res -> {
+                    {
+                        if (res.statusCode().is2xxSuccessful()) {
+                            return res.bodyToMono(Account.class);
+                        }
 
-                    return res.bodyToMono(String.class)
-                        .flatMap(message -> Mono.error(new Exception(message)));
-                }})
+                        return res.bodyToMono(String.class)
+                                .flatMap(message -> Mono.error(new Exception(message)));
+                    }
+                })
                 .onErrorMap(ex -> new Exception(ex.getMessage()))
                 .block();
     }

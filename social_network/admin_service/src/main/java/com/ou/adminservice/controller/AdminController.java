@@ -1,5 +1,6 @@
 package com.ou.adminservice.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ou.adminservice.pojo.Account;
 import com.ou.adminservice.service.interfaces.AccountService;
+import com.ou.adminservice.service.interfaces.PostService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("admin")
+@Slf4j
 public class AdminController {
     @Autowired
     private AccountService accountService;
-    // @Autowired
-    // private PostService postService;
+    @Autowired
+    private PostService postService;
     // @Autowired
     // private PostSurveyService postSurveyService;
     // @Autowired
@@ -62,10 +67,10 @@ public class AdminController {
     //     }
     // }
 
-    // @GetMapping(path = "accounts/list")
-    // public ResponseEntity<?> list() {
-    //     return ResponseEntity.ok().body(accountService.list());
-    // }
+    @GetMapping(path = "accounts/list")
+    public ResponseEntity<?> list() {
+        return ResponseEntity.ok().body(accountService.list());
+    }
 
     // @PostMapping(path = "posts/upload_invitation")
     // public ResponseEntity<?> uploadInvitation(@RequestBody Post post) {
@@ -76,14 +81,16 @@ public class AdminController {
     //     }
     // }
 
-    // @GetMapping(path = "statistics/users")
-    // public ResponseEntity<?> numberOfUsers(@RequestParam Map<String, String> params) {
-    //     try {
-    //         return ResponseEntity.ok().body(accountService.stat(params));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "statistics/users")
+    public ResponseEntity<?> numberOfUsers(@RequestParam Map<String, String> params) {
+        try {
+            Object[][] result = accountService.stat(params);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     // @GetMapping(path = "stat/post")
     // public ResponseEntity<?> statPost(@RequestParam Map<String, String> params) {
