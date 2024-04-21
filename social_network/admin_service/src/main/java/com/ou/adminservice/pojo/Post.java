@@ -3,7 +3,6 @@ package com.ou.adminservice.pojo;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -41,11 +40,11 @@ public class Post implements Serializable {
     // @JsonIgnore
     // private List<PostReaction> postReactionList;
 
-    private List<Comment> commentList;
+    // private List<Comment> commentList;
 
-    private Map<Long, Long> reactionTotal;
+    // private Map<Long, Long> reactionTotal;
 
-    private Integer commentTotal;
+    // private Integer commentTotal;
     // @Override
     // public String toString() {
     //     return "Post [id=" + id + ", content=" + content + ", isActiveComment=" + isActiveComment + ", imageInPostList="

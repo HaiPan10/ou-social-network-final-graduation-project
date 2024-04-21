@@ -172,4 +172,13 @@ public class PostController {
         }
     }
 
+    @GetMapping(path = "retrieve/{id}")
+    public ResponseEntity<?> retrieve(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok().body(postService.retrieve(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

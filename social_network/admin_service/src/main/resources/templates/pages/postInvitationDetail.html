@@ -35,9 +35,9 @@
                         <tbody class="table-border-bottom-0">
                             <th:block th:each="p : ${post.postInvitation.postInvitationUsers}">
                                 <tr>
-                                    <td th:text="${p.userId.id}"></td>
+                                    <td th:text="${p.user.id}"></td>
                                     <td style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;"
-                                        th:text="${p.userId.lastName} + ' ' + ${p.userId.firstName}"></td>
+                                        th:text="${p.user.lastName} + ' ' + ${p.user.firstName}"></td>
                                 </tr>
                             </th:block>
                         </tbody>

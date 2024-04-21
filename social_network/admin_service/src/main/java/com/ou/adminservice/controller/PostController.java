@@ -23,10 +23,12 @@ import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.service.interfaces.AccountService;
 import com.ou.adminservice.service.interfaces.PostService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Controller
 @RequestMapping("/admin/posts")
+@Slf4j
 public class PostController {
     @Autowired
     private PostService postService;
@@ -80,7 +82,6 @@ public class PostController {
             if (post.getPostSurvey() != null) {
                 return "pages/postSurveyDetail";
             } else if (post.getPostInvitation() != null) {
-                System.out.println(post.getPostInvitation().getPostInvitationUsers());
                 return "pages/postInvitationDetail";
             }
         } catch (Exception e) {

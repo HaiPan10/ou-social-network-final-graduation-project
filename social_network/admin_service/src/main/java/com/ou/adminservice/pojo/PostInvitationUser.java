@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  *
@@ -22,6 +23,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"postInvitationId"})
 public class PostInvitationUser implements Serializable {
 
     private Long id;
@@ -29,11 +31,13 @@ public class PostInvitationUser implements Serializable {
     @JsonIgnore
     private PostInvitation postInvitationId;
 
-    private User userId;
+    private Long userId;
 
-    @Override
-    public String toString() {
-        return "User[ id=" + userId + " ]";
-    }
+    private User user;
+
+    // @Override
+    // public String toString() {
+    //     return "User[ id=" + userId + " ]";
+    // }
 
 }

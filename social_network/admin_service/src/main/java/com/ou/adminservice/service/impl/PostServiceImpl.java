@@ -14,6 +14,7 @@ import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.PostService;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -43,8 +44,47 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Post retrieve(Long postId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'retrieve'");
+        return builder.build().get()
+            .uri("http://post-service/api/posts/retrieve",
+                    uriBuilder -> uriBuilder.pathSegment("{id}").build(postId))
+            .retrieve()
+            .bodyToMono(Post.class)
+            .flatMap(post -> {
+                return builder.build().get()
+                        .uri("http://account-service/api/users",
+                            uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .map(user -> {
+                            post.setUser(user);
+                            return post;
+                        });
+            })
+            .flatMap(post -> {
+                if(post.getPostInvitation() != null) {
+                    return Flux.fromIterable(post.getPostInvitation().getPostInvitationUsers())
+                        .flatMap(inviteUser -> {
+                            return builder.build().get()
+                                .uri("http://account-service/api/users",
+                                    uriBuilder -> uriBuilder.queryParam("userId", inviteUser.getUserId()).build())
+                                .retrieve()
+                                .bodyToMono(User.class)
+                                .map(user -> {
+                                    inviteUser.setUser(user);
+                                    return inviteUser;
+                                });
+                        })
+                        .collectList()
+                        .map(list -> {
+                            post.getPostInvitation().setPostInvitationUsers(list);
+                            return post;
+                        });
+                }
+
+                return Mono.just(post);
+            })
+            .onErrorResume(err -> Mono.empty())
+            .block();
     }
 
     @Override
