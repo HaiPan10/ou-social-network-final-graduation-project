@@ -89,8 +89,20 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public boolean delete(Long postId, Long userId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        return builder.build().delete()
+            .uri("http://post-service/api/posts",
+                    uriBuilder -> uriBuilder.pathSegment("{postId}").build(postId))
+            .header("AccountId", String.valueOf(userId))
+            .exchangeToMono(res -> {
+                if(res.statusCode().is2xxSuccessful()) {
+                    return Mono.just(true);
+                }
+
+                return res.bodyToMono(String.class)
+                    .flatMap(message -> Mono.error(new Exception(message)));
+            })
+            .onErrorMap(ex -> new Exception(ex.getMessage()))
+            .block();
     }
 
     @Override

@@ -51,14 +51,14 @@ public class AdminController {
         }
     }
 
-    // @DeleteMapping(path = "posts/delete/{postId}")
-    // ResponseEntity<Object> delete(@PathVariable Long postId) {
-    //     try {
-    //         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(postService.delete(postId, Long.valueOf(1)));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @DeleteMapping(path = "posts/delete/{postId}")
+    ResponseEntity<Object> delete(@PathVariable Long postId) {
+        try {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(postService.delete(postId, Long.valueOf(1)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     // @PostMapping("posts/upload_survey")
     // public ResponseEntity<?> uploadSurvey(@RequestBody Post post) {
