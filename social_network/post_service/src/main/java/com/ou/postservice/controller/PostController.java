@@ -154,4 +154,22 @@ public class PostController {
         }
     }
 
+    @GetMapping(path = "search")
+    public ResponseEntity<?> search(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postService.search(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "count")
+    public ResponseEntity<?> countPosts(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postService.countPosts(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

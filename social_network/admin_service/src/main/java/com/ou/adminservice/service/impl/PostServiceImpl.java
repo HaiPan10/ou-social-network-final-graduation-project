@@ -3,6 +3,7 @@ package com.ou.adminservice.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.adminservice.pojo.Post;
+import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.PostService;
+
+import reactor.core.publisher.Mono;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -57,14 +61,41 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Long countPosts(Map<String, String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'countPosts'");
+        return builder.build().get()
+                .uri("http://post-service/api/posts/count",
+                        uriBuilder -> uriBuilder
+                                .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
+                                .build())
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
     }
 
     @Override
     public List<Post> search(Map<String, String> params) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'search'");
+        return builder.build().get()
+                .uri("http://post-service/api/posts/search",
+                        uriBuilder -> uriBuilder
+                                .queryParamIfPresent("page", Optional.ofNullable(params.get("page")))
+                                .queryParamIfPresent("kw", Optional.ofNullable(params.get("kw")))
+                                .queryParamIfPresent("status", Optional.ofNullable(params.get("status")))
+                                .build())
+                .retrieve()
+                .bodyToFlux(Post.class)
+                .flatMap(post -> {
+                    return builder.build().get()
+                        .uri("http://account-service/api/users",
+                            uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
+                        .retrieve()
+                        .bodyToMono(User.class)
+                        .map(user -> {
+                            post.setUser(user);
+                            return post;
+                        });
+                })
+                .collect(Collectors.toList())
+                .onErrorResume(err -> Mono.empty())
+                .block();
     }
 
     @Override
