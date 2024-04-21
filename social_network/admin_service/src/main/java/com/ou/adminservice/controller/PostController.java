@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ou.adminservice.pojo.InvitationGroup;
 import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.service.interfaces.AccountService;
+import com.ou.adminservice.service.interfaces.InvitationGroupService;
 import com.ou.adminservice.service.interfaces.PostService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,8 @@ public class PostController {
     private Environment env;
     @Autowired
     private AccountService accountService;
-    // @Autowired
-    // private InvitationGroupService invitationGroupService;
+    @Autowired
+    private InvitationGroupService invitationGroupService;
     // @Autowired
     // private QuestionService questionService;
     // @Autowired
@@ -90,19 +91,19 @@ public class PostController {
         return "pages/postDetail";
     }
 
-    // @GetMapping("/upload")
-    // public String uploadPost(Model model, @RequestParam(name = "status", required = false) String status) {
-    //     Post post = new Post();
-    //     model.addAttribute("post", post);
-    //     List<Object[]> accountList = accountService.list();
-    //     List<InvitationGroup> invitationGroups = invitationGroupService.list();
-    //     model.addAttribute("accountList", accountList);
-    //     model.addAttribute("invitationGroups", invitationGroups);
-    //     // if (status != null) {
-    //     // model.addAttribute("status", status);
-    //     // }
-    //     return "pages/uploadPost";
-    // }
+    @GetMapping("/upload")
+    public String uploadPost(Model model, @RequestParam(name = "status", required = false) String status) {
+        Post post = new Post();
+        model.addAttribute("post", post);
+        Object[][] accountList = accountService.list();
+        List<InvitationGroup> invitationGroups = invitationGroupService.list();
+        model.addAttribute("accountList", accountList);
+        model.addAttribute("invitationGroups", invitationGroups);
+        // if (status != null) {
+        // model.addAttribute("status", status);
+        // }
+        return "pages/uploadPost";
+    }
 
     // @PostMapping("/upload")
     // public String add(@ModelAttribute("post") @Valid Post post,

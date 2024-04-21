@@ -432,7 +432,7 @@ public class PostServiceImpl implements PostService {
         // InvitationGroup group = postInvitation.getGroupId();
         InvitationGroup group = webClientBuilder.build().get()
             .uri("http://account-service/api/groups",
-            uriBuilder -> uriBuilder.queryParam("invitationGroupId", groupId).build())
+            uriBuilder -> uriBuilder.pathSegment("{invitationGroupId}").build(groupId))
             .retrieve()
             .bodyToMono(InvitationGroup.class)
             .block();
