@@ -28,7 +28,7 @@ spring:
         spring:
           json:
             type:
-              mapping: event:com.ou.accountservice.event.OrderPlacedEvent 
+              mapping: event-account:com.ou.accountservice.event.AccountMailEvent, event-order:com.ou.accountservice.event.OrderPlacedEvent
   application:
     name: account-service
 

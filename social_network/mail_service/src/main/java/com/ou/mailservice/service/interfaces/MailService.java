@@ -1,7 +1,6 @@
 package com.ou.mailservice.service.interfaces;
 
 import java.util.List;
-
 import com.ou.mailservice.pojo.Account;
 import com.ou.mailservice.pojo.PostInvitation;
 import com.ou.mailservice.pojo.User;
@@ -10,6 +9,7 @@ import com.ou.mailservice.pojo.User;
 public interface MailService {
     void sendEmail(String userEmail, String subject, String content);
     void sendVerificationEmail(Long accountId) throws Exception;
+    void sendVerificationEmail(Account account) throws Exception;
     void sendGrantedAccount(Account account) throws Exception;
     void sendAcceptedMail(Account account) throws Exception;
     void sendRejectMail(Account account) throws Exception;

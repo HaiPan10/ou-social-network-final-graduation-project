@@ -35,4 +35,13 @@ public class Account implements Serializable{
         this.email = email;
         this.password = password;
     }
+
+    public Account(Long id, String email, String verificationCode,
+    String status, String fistName, String lastName) {
+        this.id = id;
+        this.email = email;
+        this.verificationCode = verificationCode;
+        this.status = status;
+        this.user = new User(fistName, lastName);
+    }
 }

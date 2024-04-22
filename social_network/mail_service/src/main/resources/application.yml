@@ -14,12 +14,8 @@ spring:
             protocols: TLSv1.2
             trust: "*"
         debug: true
-  application:
-    name: mail-service
   kafka:
     bootstrap-servers: localhost:9092
-    template:
-      default-topic: mailTopic
     consumer:
       group-id: notificationId
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -27,9 +23,12 @@ spring:
       properties:
         spring:
           json:
+            trusted:
+              packages: "*"
             type:
-              mapping: event:com.ou.mailservice.pojo.OrderPlacedEvent
-
+              mapping: event-account:com.ou.mailservice.event.AccountMailEvent, event-order:com.ou.mailservice.event.OrderPlacedEvent
+  application:
+    name: mail-service
 #JPA/Hibernate
 server:
   error:
