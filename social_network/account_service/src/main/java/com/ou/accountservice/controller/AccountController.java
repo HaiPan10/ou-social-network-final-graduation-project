@@ -91,8 +91,8 @@ public class AccountController {
     }
 
     @GetMapping(path = "/verify/{accountId}/{verificationCode}")
-    public ResponseEntity<Object> verifyAccount(@PathVariable Long accountId,
-            @PathVariable String verificationCode, ServerHttpResponse response) throws Exception {
+    public ResponseEntity<Object> verifyAccountFromMail(@PathVariable Long accountId,
+            @PathVariable String verificationCode) throws Exception {
         try {
             if (accountService.verifyEmail(accountId, verificationCode)) {
                 HttpHeaders headers = new HttpHeaders();

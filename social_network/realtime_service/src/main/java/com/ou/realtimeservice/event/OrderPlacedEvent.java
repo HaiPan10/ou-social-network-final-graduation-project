@@ -1,4 +1,4 @@
-package com.ou.realtimeservice.pojo;
+package com.ou.realtimeservice.event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -20,7 +20,7 @@ spring:
         spring:
           json:
             type:
-              mapping: event:com.ou.realtimeservice.pojo.OrderPlacedEvent
+              mapping: event-order:com.ou.mailservice.event.OrderPlacedEvent
 
 #JPA/Hibernate
 server:

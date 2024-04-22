@@ -61,4 +61,19 @@ public class AccountAspect {
                 accountOptional.get().getUser().getFirstName(), accountOptional.get().getUser().getLastName()));
         }
     }
+
+    @AfterReturning(pointcut = "execution(" +
+            "public com.ou.accountservice.pojo.Account " +
+            "com.ou.accountservice.service.interfaces.AccountService.create(" +
+            "com.ou.accountservice.pojo.Account, com.ou.accountservice.pojo.User))", 
+            returning = "account")
+    public void sendGrantedMail(Account account) {
+        applicationEventPublisher.publishEvent(
+            new AccountMailEvent(this, 
+            "mailAccountTopic", 
+            "sendGrantedAccount", 
+            account.getId(), account.getEmail(),
+            account.getVerificationCode(), account.getStatus(),
+            account.getUser().getFirstName(), account.getUser().getLastName()));
+    }
 }
