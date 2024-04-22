@@ -2,7 +2,6 @@ package com.ou.mailservice.service.impl;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.google.gson.Gson;
 import com.ou.mailservice.pojo.Account;
 import com.ou.mailservice.pojo.PostInvitation;
 import com.ou.mailservice.pojo.Status;
