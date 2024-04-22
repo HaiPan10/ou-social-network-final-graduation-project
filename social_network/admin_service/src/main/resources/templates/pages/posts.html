@@ -32,8 +32,8 @@
                     <tbody class="table-border-bottom-0">
                         <th:block th:each="p : ${posts}">
                             <tr>
-                                <td th:text="${p.userId.id}"></td>
-                                <td th:text="${p.userId.lastName} + ' ' + ${p.userId.firstName}"></td>
+                                <td th:text="${p.user.id}"></td>
+                                <td th:text="${p.user.lastName} + ' ' + ${p.user.firstName}"></td>
                                 <td style="max-width: 200px; text-overflow: ellipsis; overflow: hidden;"
                                     th:text="${p.content}"></td>
                                 <td th:text="${p.createdAt}"></td>

@@ -44,21 +44,21 @@ public class AccountAspect {
         }
     }
 
-    // @AfterReturning(pointcut = "execution(" +
-    //         "public com.ou.accountservice.pojo.AuthResponse " +
-    //         "com.ou.accountservice.service.interfaces.AccountService.create(" +
-    //         "com.ou.accountservice.pojo.Account, com.ou.accountservice.pojo.User, com.ou.accountservice.pojo.UserStudent))", 
-    //         returning = "authResponse")
-    // public void sendVerificationEmail(AuthResponse authResponse) {
-    //     Optional<Account> accountOptional = accountRepositoryJPA.findById(authResponse.getUser().getId());
-    //     if (accountOptional.isPresent()) {
-    //         applicationEventPublisher.publishEvent(
-    //             new AccountMailEvent(this, 
-    //             "mailAccountTopic", 
-    //             "sendVerificationEmail", 
-    //             accountOptional.get().getId(), accountOptional.get().getEmail(),
-    //             accountOptional.get().getVerificationCode(), accountOptional.get().getStatus(),
-    //             accountOptional.get().getUser().getFirstName(), accountOptional.get().getUser().getLastName()));
-    //     }
-    // }
+    @AfterReturning(pointcut = "execution(" +
+            "public com.ou.accountservice.pojo.AuthResponse " +
+            "com.ou.accountservice.service.interfaces.AccountService.create(" +
+            "com.ou.accountservice.pojo.Account, com.ou.accountservice.pojo.User, com.ou.accountservice.pojo.UserStudent))", 
+            returning = "authResponse")
+    public void sendVerificationEmail(AuthResponse authResponse) {
+        Optional<Account> accountOptional = accountRepositoryJPA.findById(authResponse.getUser().getId());
+        if (accountOptional.isPresent()) {
+            applicationEventPublisher.publishEvent(
+                new AccountMailEvent(this, 
+                "mailAccountTopic", 
+                "sendVerificationEmail", 
+                accountOptional.get().getId(), accountOptional.get().getEmail(),
+                accountOptional.get().getVerificationCode(), accountOptional.get().getStatus(),
+                accountOptional.get().getUser().getFirstName(), accountOptional.get().getUser().getLastName()));
+        }
+    }
 }

@@ -1,6 +1,5 @@
 package com.ou.postservice.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ou.postservice.pojo.Post;
+import com.ou.postservice.service.interfaces.PostInvitationService;
 import com.ou.postservice.service.interfaces.PostService;
+import com.ou.postservice.service.interfaces.PostSurveyService;
 import com.ou.postservice.utils.ValidationUtils;
 
 import jakarta.validation.Valid;
@@ -32,8 +33,14 @@ import jakarta.validation.Valid;
 // @CrossOrigin(origins = "*")
 @RequestMapping("api/posts")
 public class PostController {
-    @Autowired 
+    @Autowired
     private PostService postService;
+
+    @Autowired
+    private PostSurveyService postSurveyService;
+
+    @Autowired
+    private PostInvitationService postInvitationService;
 
     // @Autowired
     // private WebAppValidator webAppValidator;
@@ -119,4 +126,59 @@ public class PostController {
             return null;
         }
     }
+
+    @GetMapping(path = "/stat/post")
+    public ResponseEntity<?> stat(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postService.stat(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "stat/post_survey")
+    public ResponseEntity<?> statPostSurvey(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postSurveyService.stat(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "stat/post_invitation")
+    public ResponseEntity<?> statPostInvitation(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postInvitationService.stat(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "search")
+    public ResponseEntity<?> search(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postService.search(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "count")
+    public ResponseEntity<?> countPosts(@RequestParam Map<String, String> params) {
+        try {
+            return ResponseEntity.ok().body(postService.countPosts(params));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(path = "retrieve/{id}")
+    public ResponseEntity<?> retrieve(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok().body(postService.retrieve(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

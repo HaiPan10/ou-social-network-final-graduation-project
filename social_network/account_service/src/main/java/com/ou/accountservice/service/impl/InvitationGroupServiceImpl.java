@@ -21,5 +21,5 @@ public class InvitationGroupServiceImpl implements InvitationGroupService {
     public List<InvitationGroup> list() {
         return invitationGroupRepositoryJPA.findAll();
     }
-    
+
 }
