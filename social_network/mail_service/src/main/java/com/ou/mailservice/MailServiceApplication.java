@@ -32,7 +32,7 @@ public class MailServiceApplication {
 	@KafkaListener(topics = "mailAccountTopic")
     public void handleNotification(AccountMailEvent orderPlacedEvent) {
         Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
-            log.info("Got message <{}, {} {} {} {} {} {}>",
+            log.info("Got message from mailAccountTopic <action: {}, params: {} {} {} {} {} {}>",
             orderPlacedEvent.getOrderAction(), orderPlacedEvent.getId(), orderPlacedEvent.getEmail(), orderPlacedEvent.getFirstName(),
             orderPlacedEvent.getLastName(), orderPlacedEvent.getVerificationCode(), orderPlacedEvent.getStatus());
             try {

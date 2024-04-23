@@ -13,12 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.accountservice.event.OrderPlacedEvent;
+import com.ou.accountservice.event.UploadAvatarEvent;
 import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.repository.repositoryJPA.UserRepositoryJPA;
-import com.ou.accountservice.service.interfaces.AccountService;
 import com.ou.accountservice.service.interfaces.CloudinaryService;
-// import com.ou.accountservice.service.interfaces.FirebaseService;
-// import com.ou.accountservice.service.interfaces.PostService;
 import com.ou.accountservice.service.interfaces.UserService;
 
 
@@ -28,8 +26,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private Environment env;
     @Autowired
-    private AccountService accountService;;
-    @Autowired
     private UserRepositoryJPA userRepositoryJPA;
     @Autowired
     private CloudinaryService cloudinaryService;
@@ -37,10 +33,6 @@ public class UserServiceImpl implements UserService {
     private WebClient.Builder webClientBuilder;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-    // @Autowired
-    // private FirebaseService firebaseService;
-    // @Autowired
-    // private PostService postService
 
     @Override
     public User create(User user) {
@@ -54,17 +46,13 @@ public class UserServiceImpl implements UserService {
             User persistUser = retrieve(userId);
             String oldUrl = persistUser.getAvatar();
             persistUser.setAvatar(newUrl);
-            // User returnUser = userRepository.updateAvatar(persistUser, newUrl);
             User returnUser = userRepositoryJPA.save(persistUser);
             String defaultAvatar = this.env.getProperty("DEFAULT_AVATAR").toString();
             if (oldUrl != null && !oldUrl.equals(defaultAvatar)) {
                 cloudinaryService.deleteImage(oldUrl);
             }
-            // UserDoc userDoc = firebaseService.retrieve(userId.toString());
-            // userDoc.setPhotoUrl(newUrl);
-            // firebaseService.saveOrUpdate(userDoc);
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
+                new UploadAvatarEvent(this, "uploadAvatarTopic", userId, newUrl));
             return returnUser;
         } catch (IOException e) {
             throw new IOException("Fail to upload avatar");
@@ -78,7 +66,6 @@ public class UserServiceImpl implements UserService {
             User persistUser = retrieve(userId);
             String oldUrl = persistUser.getCoverAvatar();
             String defaultCover = this.env.getProperty("DEFAULT_COVER").toString();
-            // User returnUser = userRepository.updateCover(persistUser, newUrl);
             persistUser.setCoverAvatar(newUrl);
             User returnUser = userRepositoryJPA.save(persistUser);
             if (!oldUrl.equals(defaultCover)) {
@@ -92,7 +79,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User retrieve(Long userId) throws Exception {
-        // Optional<User> userOptional = userRepository.retrieve(userId);
         Optional<User> userOptional = userRepositoryJPA.findById(userId);
         if (userOptional.isPresent()) {
             return userOptional.get();
@@ -116,7 +102,6 @@ public class UserServiceImpl implements UserService {
             persistentUser.setLastName(user.getLastName());
         }
 
-        // return userRepository.updateUser(user, userId);
         return userRepositoryJPA.save(persistentUser);
     }
 

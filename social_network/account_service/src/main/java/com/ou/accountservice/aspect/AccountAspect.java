@@ -13,6 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.ou.accountservice.event.AccountMailEvent;
+import com.ou.accountservice.event.UserDocEvent;
 import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.AuthResponse;
 import com.ou.accountservice.pojo.Status;
@@ -68,6 +69,10 @@ public class AccountAspect {
             "com.ou.accountservice.pojo.Account, com.ou.accountservice.pojo.User))", 
             returning = "account")
     public void sendGrantedMail(Account account) {
+        applicationEventPublisher.publishEvent(
+            new UserDocEvent(this, "updateUserDocTopic", 
+            account.getId(), String.format("%s %s", account.getUser().getLastName(), account.getUser().getFirstName()),
+            account.getUser().getAvatar(), "offline"));
         applicationEventPublisher.publishEvent(
             new AccountMailEvent(this, 
             "mailAccountTopic", 

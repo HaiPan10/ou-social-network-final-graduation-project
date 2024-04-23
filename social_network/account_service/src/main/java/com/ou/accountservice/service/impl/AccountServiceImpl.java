@@ -20,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ou.accountservice.configs.JwtService;
 import com.ou.accountservice.event.AccountMailEvent;
-import com.ou.accountservice.event.OrderPlacedEvent;
-import com.ou.accountservice.pojo.UserDoc;
+import com.ou.accountservice.event.UserDocEvent;
 import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.AuthRequest;
 import com.ou.accountservice.pojo.AuthResponse;
@@ -43,9 +42,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    // @Autowired
-    // private AccountRepository accountRepository;
 
     @Autowired
     private JwtService jwtService;
@@ -175,15 +171,10 @@ public class AccountServiceImpl implements AccountService {
             switch (status) {
                 case "ACTIVE":
                     if (account.getStatus().equals(Status.AUTHENTICATION_PENDING.toString())) {
-                        UserDoc userDoc = new UserDoc();
-                        userDoc.setDisplayName(String.format("%s %s", account.getUser().getLastName(),
-                                account.getUser().getFirstName()));
-                        userDoc.setPhotoUrl(account.getUser().getAvatar());
-                        userDoc.setUserId(account.getUser().getId());
-                        userDoc.setActiveStatus("offline");
-                        // firebaseService.saveOrUpdate(userDoc);
                         applicationEventPublisher.publishEvent(
-                                new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
+                            new UserDocEvent(this, "updateUserDocTopic", 
+                            account.getUser().getId(), String.format("%s %s", account.getUser().getLastName(),
+                            account.getUser().getFirstName()), account.getUser().getAvatar(), "offline"));
                         applicationEventPublisher.publishEvent(
                             new AccountMailEvent(this, 
                             "mailAccountTopic", 
@@ -296,14 +287,6 @@ public class AccountServiceImpl implements AccountService {
             user.setAccount(account);
             userService.create(user);
             account.setUser(user);
-            UserDoc userDoc = new UserDoc();
-            userDoc.setDisplayName(String.format("%s %s", user.getLastName(), user.getFirstName()));
-            // userDoc.setPhotoUrl(user.getAvatar());
-            userDoc.setUserId(user.getId());
-            userDoc.setActiveStatus("offline");
-            // firebaseService.saveOrUpdate(userDoc);
-            applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
             scheduleService.changePasswordRequiredSchedule(account.getEmail());
             return account;
         } catch (Exception e) {
