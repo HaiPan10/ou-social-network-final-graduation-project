@@ -3,14 +3,19 @@ package com.ou.accountservice.aspect;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.ou.accountservice.event.AccountMailEvent;
+import com.ou.accountservice.event.UserDocEvent;
 import com.ou.accountservice.pojo.Account;
+import com.ou.accountservice.pojo.AuthResponse;
 import com.ou.accountservice.pojo.Status;
 import com.ou.accountservice.repository.repositoryJPA.AccountRepositoryJPA;
 
@@ -22,6 +27,9 @@ public class AccountAspect {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @AfterReturning(pointcut = "execution(" +
             "public com.ou.accountservice.pojo.Account " +
@@ -35,5 +43,42 @@ public class AccountAspect {
                             .atZone(ZoneId.systemDefault()).toInstant()));
             accountRepositoryJPA.save(account);
         }
+    }
+
+    @AfterReturning(pointcut = "execution(" +
+            "public com.ou.accountservice.pojo.AuthResponse " +
+            "com.ou.accountservice.service.interfaces.AccountService.create(" +
+            "com.ou.accountservice.pojo.Account, com.ou.accountservice.pojo.User, com.ou.accountservice.pojo.UserStudent))", 
+            returning = "authResponse")
+    public void sendVerificationEmail(AuthResponse authResponse) {
+        Optional<Account> accountOptional = accountRepositoryJPA.findById(authResponse.getUser().getId());
+        if (accountOptional.isPresent()) {
+            applicationEventPublisher.publishEvent(
+                new AccountMailEvent(this, 
+                "mailAccountTopic", 
+                "sendVerificationEmail", 
+                accountOptional.get().getId(), accountOptional.get().getEmail(),
+                accountOptional.get().getVerificationCode(), accountOptional.get().getStatus(),
+                accountOptional.get().getUser().getFirstName(), accountOptional.get().getUser().getLastName()));
+        }
+    }
+
+    @AfterReturning(pointcut = "execution(" +
+            "public com.ou.accountservice.pojo.Account " +
+            "com.ou.accountservice.service.interfaces.AccountService.create(" +
+            "com.ou.accountservice.pojo.Account, com.ou.accountservice.pojo.User))", 
+            returning = "account")
+    public void sendGrantedMail(Account account) {
+        applicationEventPublisher.publishEvent(
+            new UserDocEvent(this, "updateUserDocTopic", 
+            account.getId(), String.format("%s %s", account.getUser().getLastName(), account.getUser().getFirstName()),
+            account.getUser().getAvatar(), "offline"));
+        applicationEventPublisher.publishEvent(
+            new AccountMailEvent(this, 
+            "mailAccountTopic", 
+            "sendGrantedAccount", 
+            account.getId(), account.getEmail(),
+            account.getVerificationCode(), account.getStatus(),
+            account.getUser().getFirstName(), account.getUser().getLastName()));
     }
 }

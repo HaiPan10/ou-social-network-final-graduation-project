@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ou-social-network-postdb
     username: root
-    password: mai2604
+    password: IamPhong89
     # url: jdbc:mysql://34.118.232.140:3306/${DB_NAME}
     # username: ${DB_USERNAME}
     # password: ${DB_PASSWORD}

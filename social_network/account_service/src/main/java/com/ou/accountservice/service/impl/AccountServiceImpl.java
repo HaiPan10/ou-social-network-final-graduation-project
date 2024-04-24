@@ -15,18 +15,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-// import org.springframework.security.authentication.AuthenticationManager;
-// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-// import org.springframework.security.core.Authentication;
-// import org.springframework.security.core.AuthenticationException;
-// import org.springframework.security.core.context.SecurityContextHolder;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ou.accountservice.configs.JwtService;
-import com.ou.accountservice.event.OrderPlacedEvent;
-import com.ou.accountservice.pojo.UserDoc;
+import com.ou.accountservice.event.AccountMailEvent;
+import com.ou.accountservice.event.UserDocEvent;
 import com.ou.accountservice.pojo.Account;
 import com.ou.accountservice.pojo.AuthRequest;
 import com.ou.accountservice.pojo.AuthResponse;
@@ -35,27 +29,19 @@ import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.pojo.UserStudent;
 import com.ou.accountservice.repository.repositoryJPA.AccountRepositoryJPA;
 import com.ou.accountservice.service.interfaces.AccountService;
-// import com.ou.accountservice.service.interfaces.FirebaseService;
-// import com.ou.accountservice.service.interfaces.MailService;
 import com.ou.accountservice.service.interfaces.RoleService;
 import com.ou.accountservice.service.interfaces.ScheduleService;
 import com.ou.accountservice.service.interfaces.UserService;
 import com.ou.accountservice.service.interfaces.UserStudentService;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service("accountDetailService")
 @Transactional(rollbackFor = Exception.class)
-@Slf4j
 public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepositoryJPA accountRepositoryJPA;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    // @Autowired
-    // private AccountRepository accountRepository;
 
     @Autowired
     private JwtService jwtService;
@@ -69,13 +55,6 @@ public class AccountServiceImpl implements AccountService {
     private ScheduleService scheduleService;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-    // @Autowired
-    // private FirebaseService firebaseService;
-    // @Autowired
-    // private MailService mailService;
-
-    // @Autowired
-    // private FirebaseAuth firebaseAuth;
 
     @Autowired
     private Environment env;
@@ -156,9 +135,6 @@ public class AccountServiceImpl implements AccountService {
             userStudent.setUser(user);
             userStudentService.create(userStudent);
             account.setUser(user);
-            // mailService.sendVerificationEmail(account.getId());
-            applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "mailTopic", "sendVerificationEmail"));
             String token = jwtService.generateAccessToken(account);
             return new AuthResponse(account.getRoleId(), user, token);
         } catch (Exception e) {
@@ -192,46 +168,56 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean verifyAccount(Account account, String status) {
         try {
-            // if(status.equals(Status.ACTIVE.toString())){
-            // mailService.sendAcceptedMail(account);
-            // } else if(status.equals(Status.REJECT.toString())){
-            // mailService.sendRejectMail(account);
-            // }
             switch (status) {
                 case "ACTIVE":
                     if (account.getStatus().equals(Status.AUTHENTICATION_PENDING.toString())) {
-                        UserDoc userDoc = new UserDoc();
-                        userDoc.setDisplayName(String.format("%s %s", account.getUser().getLastName(),
-                                account.getUser().getFirstName()));
-                        userDoc.setPhotoUrl(account.getUser().getAvatar());
-                        userDoc.setUserId(account.getUser().getId());
-                        userDoc.setActiveStatus("offline");
-                        // firebaseService.saveOrUpdate(userDoc);
                         applicationEventPublisher.publishEvent(
-                                new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
-                        // mailService.sendAcceptedMail(account);
+                            new UserDocEvent(this, "updateUserDocTopic", 
+                            account.getUser().getId(), String.format("%s %s", account.getUser().getLastName(),
+                            account.getUser().getFirstName()), account.getUser().getAvatar(), "offline"));
                         applicationEventPublisher.publishEvent(
-                                new OrderPlacedEvent(this, "mailTopic", "sendAcceptedMail"));
+                            new AccountMailEvent(this, 
+                            "mailAccountTopic", 
+                            "sendAcceptedMail", 
+                            account.getId(), account.getEmail(),
+                            account.getVerificationCode(), account.getStatus(),
+                            account.getUser().getFirstName(), account.getUser().getLastName()));
                     } else if (account.getStatus().equals(Status.LOCKED.toString())) {
-                        // mailService.sendUnlockMail(account);
                         applicationEventPublisher.publishEvent(
-                                new OrderPlacedEvent(this, "mailTopic", "sendUnlockMail"));
+                            new AccountMailEvent(this, 
+                            "mailAccountTopic", 
+                            "sendUnlockMail", 
+                            account.getId(), account.getEmail(),
+                            account.getVerificationCode(), account.getStatus(),
+                            account.getUser().getFirstName(), account.getUser().getLastName()));
                     }
                     break;
                 case "REJECT":
-                    // mailService.sendRejectMail(account);
                     applicationEventPublisher.publishEvent(
-                            new OrderPlacedEvent(this, "mailTopic", "sendRejectMail"));
+                        new AccountMailEvent(this, 
+                        "mailAccountTopic", 
+                        "sendRejectMail", 
+                        account.getId(), account.getEmail(),
+                        account.getVerificationCode(), account.getStatus(),
+                        account.getUser().getFirstName(), account.getUser().getLastName()));
                     break;
                 case "LOCKED":
-                    // mailService.sendLockMail(account);
                     applicationEventPublisher.publishEvent(
-                            new OrderPlacedEvent(this, "mailTopic", "sendLockMail"));
+                        new AccountMailEvent(this, 
+                        "mailAccountTopic", 
+                        "sendLockMail", 
+                        account.getId(), account.getEmail(),
+                        account.getVerificationCode(), account.getStatus(),
+                        account.getUser().getFirstName(), account.getUser().getLastName()));
                     break;
                 case "PASSWORD_CHANGE_REQUIRED":
-                    // mailService.sendResetPasswordRequire(account);
                     applicationEventPublisher.publishEvent(
-                            new OrderPlacedEvent(this, "mailTopic", "sendResetPasswordRequire"));
+                        new AccountMailEvent(this, 
+                        "mailAccountTopic", 
+                        "sendResetPasswordRequire", 
+                        account.getId(), account.getEmail(),
+                        account.getVerificationCode(), account.getStatus(),
+                        account.getUser().getFirstName(), account.getUser().getLastName()));
                     scheduleService.changePasswordRequiredSchedule(account.getEmail());
                     break;
             }
@@ -298,25 +284,9 @@ public class AccountServiceImpl implements AccountService {
             account.setRoleId(roleService.retrieve(Long.valueOf(2)));
             account.setStatus(Status.PASSWORD_CHANGE_REQUIRED.toString());
             create(account);
-            // System.out.println("[DEBUG] - Saved account id: " + account.getId());
             user.setAccount(account);
             userService.create(user);
             account.setUser(user);
-            UserDoc userDoc = new UserDoc();
-            userDoc.setDisplayName(String.format("%s %s", user.getLastName(), user.getFirstName()));
-            // userDoc.setPhotoUrl(user.getAvatar());
-            userDoc.setUserId(user.getId());
-            userDoc.setActiveStatus("offline");
-            // firebaseService.saveOrUpdate(userDoc);
-            applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "saveOrUpdateUserDoc"));
-            // UserRecord.CreateRequest request = new UserRecord.CreateRequest()
-            // .setEmail(account.getEmail())
-            // .setPassword(env.getProperty("DEFAULT_PASSWORD").toString());
-            // firebaseAuth.createUser(request);
-            // mailService.sendGrantedAccount(account);
-            applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "mailTopic", "sendGrantedAccount"));
             scheduleService.changePasswordRequiredSchedule(account.getEmail());
             return account;
         } catch (Exception e) {

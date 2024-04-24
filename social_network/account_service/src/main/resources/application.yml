@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ou-social-network-accountdb
     username: root
-    password: mai2604
+    password: IamPhong89
     # url: jdbc:mysql://34.118.232.140:3306/${DB_NAME}
     # username: ${DB_USERNAME}
     # password: ${DB_PASSWORD}
@@ -28,7 +28,7 @@ spring:
         spring:
           json:
             type:
-              mapping: event:com.ou.accountservice.event.OrderPlacedEvent 
+              mapping: event-account:com.ou.accountservice.event.AccountMailEvent, event-order:com.ou.accountservice.event.OrderPlacedEvent, event-userdoc:com.ou.accountservice.event.UserDocEvent, event-uploadavatar:com.ou.accountservice.event.UploadAvatarEvent
   application:
     name: account-service
 

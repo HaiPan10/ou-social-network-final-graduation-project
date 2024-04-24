@@ -59,14 +59,40 @@ public class MailServiceImpl implements MailService {
     @Override
     public void sendVerificationEmail(Long accountId) throws Exception {
         // Account account = accountService.retrieve(accountId);
-
         Account account = webClientBuilder.build().get()
-            .uri("http://account-service/api/accounts",
+            .uri("http://account-service/api/accounts/retrieve",
             uriBuilder -> uriBuilder.queryParam("accountId", accountId).build())
             .retrieve()
             .bodyToMono(Account.class)
             .block();
 
+        if (account == null) {
+            throw new Exception("Không tìm thấy tài khoản!");
+        } else if (!account.getStatus().equals(Status.EMAIL_VERIFICATION_PENDING.toString())) {
+            throw new Exception("Trạng thái không hợp lệ!");
+        } else {
+            String mailBody = String.format("Xin chào %s,<br>"
+                    + "Cảm ơn bạn đã đăng kí tài khoản mạng xã hội cựu sinh viên trường đại học Mở TP.HCM<br>"
+                    + "Vui lòng nhấn vào đường link bên dưới để xác thực<br>"
+                    + "<h3><a href=\"%s\">XÁC THỰC NGAY</a></h3>"
+                    + "Chúng tôi xin cảm ơn,<br>"
+                    + "OU Social Network", account.getUser().getFirstName(),
+                    String.format("%s/api/accounts/verify/%d/%s",
+                            env.getProperty("SERVER_HOSTNAME"),
+                            account.getId(),
+                            account.getVerificationCode()));
+
+            Runnable runnable = () -> {
+                sendEmail(account.getEmail(), "Xác thực email", mailBody);
+            };
+
+            executorService.execute(runnable);
+        }
+    }
+
+    @Override
+    public void sendVerificationEmail(Account account) throws Exception {
+        System.out.println("DEBUG ACC: " + account);
         if (account == null) {
             throw new Exception("Không tìm thấy tài khoản!");
         } else if (!account.getStatus().equals(Status.EMAIL_VERIFICATION_PENDING.toString())) {

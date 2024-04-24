@@ -6,10 +6,12 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.annotation.ServerTimestamp;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class MessageFirebaseModal {
     private String content;
     private DocumentReference userDoc;
