@@ -14,7 +14,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -112,11 +111,6 @@ public class ApplicationConfig implements WebFluxConfigurer {
     @Override
     public Validator getValidator() {
         return validator();
-    }
-
-    @Bean()
-    public MultipartBodyBuilder bodyBuilder() {
-        return new MultipartBodyBuilder();
     }
 
 }

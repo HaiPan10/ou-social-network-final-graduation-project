@@ -24,12 +24,10 @@ import com.ou.adminservice.service.interfaces.AccountService;
 import com.ou.adminservice.service.interfaces.InvitationGroupService;
 import com.ou.adminservice.service.interfaces.PostService;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 
 @Controller
 @RequestMapping("/admin/posts")
-@Slf4j
 public class PostController {
     @Autowired
     private PostService postService;
@@ -105,21 +103,21 @@ public class PostController {
         return "pages/uploadPost";
     }
 
-    // @PostMapping("/upload")
-    // public String add(@ModelAttribute("post") @Valid Post post,
-    //         @RequestPart(value = "images", required = false) List<MultipartFile> images, BindingResult bindingResult)
-    //         throws Exception {
-    //     try {
-    //         if(bindingResult.hasErrors()){
-    //             return "pages/uploadPost";
-    //         }
-    //         postService.uploadPost(post.getContent(), Long.valueOf(1), images, post.getIsActiveComment());
-    //         return "redirect:/admin/posts?status=success";
-    //     } catch (Exception e) {
-    //         bindingResult.addError(new ObjectError("exceptionError", e.getMessage()));
-    //         return "pages/uploadPost";
-    //     }
-    // }
+    @PostMapping("/upload")
+    public String add(@ModelAttribute("post") @Valid Post post,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images, BindingResult bindingResult)
+            throws Exception {
+        try {
+            if(bindingResult.hasErrors()){
+                return "pages/uploadPost";
+            }
+            postService.uploadPost(post.getContent(), Long.valueOf(1), images, post.getIsActiveComment());
+            return "redirect:/admin/posts?status=success";
+        } catch (Exception e) {
+            bindingResult.addError(new ObjectError("exceptionError", e.getMessage()));
+            return "pages/uploadPost";
+        }
+    }
 
     // @GetMapping(path = "/survey_question/{id}")
     // public String statQuestion(Model model, @PathVariable Long id) {
