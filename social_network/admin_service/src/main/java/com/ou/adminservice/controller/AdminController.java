@@ -1,6 +1,5 @@
 package com.ou.adminservice.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ou.adminservice.pojo.Account;
+import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.service.interfaces.AccountService;
 import com.ou.adminservice.service.interfaces.PostInvitationService;
 import com.ou.adminservice.service.interfaces.PostService;
@@ -60,14 +59,15 @@ public class AdminController {
         }
     }
 
-    // @PostMapping("posts/upload_survey")
-    // public ResponseEntity<?> uploadSurvey(@RequestBody Post post) {
-    //     try {
-    //         return ResponseEntity.ok().body(postService.uploadPostSurvey(post, Long.valueOf(1)));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @PostMapping("posts/upload_survey")
+    public ResponseEntity<?> uploadSurvey(@RequestBody Post post) {
+        try {
+            log.info(post.toString());
+            return ResponseEntity.ok().body(postService.uploadPostSurvey(post, Long.valueOf(1)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping(path = "accounts/list")
     public ResponseEntity<?> list() {

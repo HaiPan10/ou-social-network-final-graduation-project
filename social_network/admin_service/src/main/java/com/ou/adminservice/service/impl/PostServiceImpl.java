@@ -193,8 +193,22 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post uploadPostSurvey(Post post, Long userId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'uploadPostSurvey'");
+        return builder.build().post()
+                .uri("http://post-service/api/posts/upload/survey")
+                .header("AccountId", String.valueOf(userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(post)
+                .exchangeToMono(res -> {
+
+                    if (res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(Post.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                            .flatMap(err -> Mono.error(new Exception(err)));
+                })
+                .doOnError(err -> new Exception(err.getMessage()))
+                .block();
     }
 
     @Override
