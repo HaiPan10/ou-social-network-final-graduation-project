@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -176,6 +177,16 @@ public class PostController {
     public ResponseEntity<?> retrieve(@PathVariable Long id) {
         try {
             return ResponseEntity.ok().body(postService.retrieve(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(path = "upload/survey")
+    public ResponseEntity<?> upload(@RequestBody @Valid Post post, @RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
+            return ResponseEntity.ok().body(postService.uploadPostSurvey(post, userId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

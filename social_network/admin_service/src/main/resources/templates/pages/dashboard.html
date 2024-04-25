@@ -75,8 +75,7 @@
                                             <ul class="dropdown-menu" id="dropDownPostOptionMenu"
                                                 style="cursor: pointer;">
                                                 <li>
-                                                    <div id="itemYearPost" class="dropdown-item" data-value="postYear">
-                                                        Năm</div>
+                                                    <div id="itemYearPost" class="dropdown-item" data-value="postYear">Năm</div>
                                                 </li>
                                                 <li>
                                                     <div class="dropdown-item" data-value="postMonth">Tháng</div>
@@ -183,7 +182,7 @@
                         },
                         y: {
                             stacked: true,
-                            beginAtZero: false
+                            beginAtZero: true
                         }
                     },
                     plugins: {
@@ -216,12 +215,14 @@
                         $("#containerDropDownYear").show();
                         var requestParams = new URLSearchParams();
                         requestParams.append("byMonth", "true");
+                        requestParams.append("year", $("#dropDownYear").text());
                         stat(months, requestParams, statUserApi);
 
                     } else if (selectedText === "Quý") {
                         $("#containerDropDownYear").show();
                         var requestParams = new URLSearchParams();
                         requestParams.append("byQuarter", "true");
+                        requestParams.append("year", $("#dropDownYear").text());
                         stat(quarter, requestParams, statUserApi);
                     } else if (selectedText === "Năm") {
                         $("#containerDropDownYear").hide();
@@ -254,14 +255,17 @@
                         $("#containerDropDownPostYear").show();
                         var requestParams = new URLSearchParams();
                         requestParams.append("byMonth", "true");
+                        requestParams.append("year", $("#dropDownPostYear").text());
                         checkPostType(months, requestParams);
                     } else if (selectedText === "Quý") {
                         $("#containerDropDownPostYear").show();
                         var requestParams = new URLSearchParams();
                         requestParams.append("byQuarter", "true");
+                        requestParams.append("year", $("#dropDownPostYear").text());
                         checkPostType(quarter, requestParams);
                     } else if (selectedText === "Năm") {
                         $("#containerDropDownPostYear").hide();
+                        console.log("In the year option")
                         checkPostType(years, null);
                     }
                     $("#dropDownPostOption").text(selectedText);

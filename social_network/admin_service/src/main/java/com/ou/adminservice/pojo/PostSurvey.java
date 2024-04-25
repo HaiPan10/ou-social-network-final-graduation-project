@@ -8,14 +8,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  *
@@ -25,6 +24,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class PostSurvey implements Serializable {
 
     @NotNull
@@ -40,16 +40,16 @@ public class PostSurvey implements Serializable {
 
     private List<Question> questions;
 
-    @JsonIgnore
-    private List<Response> responses;
+    // @JsonIgnore
+    // private List<Response> responses;
 
-    @JsonIgnore
-    private Post post;
+    // @JsonIgnore
+    // private Post post;
 
-    @Override
-    public String toString() {
-        return "com.ou.pojo.PostSurvey[ id=" + id + " ]";
-    }
+    // @Override
+    // public String toString() {
+    //     return "com.ou.pojo.PostSurvey[ id=" + id + " ]";
+    // }
     // @Override
     // public String toString() {
     //     return "PostSurvey [surveyTitle=" + surveyTitle + ", surveyStatus=" + surveyStatus + ", questions=" + questions

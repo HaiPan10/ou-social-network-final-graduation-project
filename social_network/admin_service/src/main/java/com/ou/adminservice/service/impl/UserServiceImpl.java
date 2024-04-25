@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.http.codec.multipart.FormFieldPart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -24,9 +23,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private WebClient.Builder builder;
 
-    @Autowired
-    private MultipartBodyBuilder bodyBuilder;
-
     @Override
     public User create(User user) {
         // TODO Auto-generated method stub
@@ -37,6 +33,8 @@ public class UserServiceImpl implements UserService {
     public User uploadAvatar(MultipartFile uploadAvatar, Long userId) throws IOException, Exception {
 
         return Mono.fromCallable(() -> {
+
+            MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 
             byte[] fileBytes = uploadAvatar.getBytes();
 

@@ -1,13 +1,18 @@
 package com.ou.adminservice.service.impl;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.adminservice.pojo.Post;
@@ -18,16 +23,51 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
     @Autowired
     private WebClient.Builder builder;
 
     @Override
     public Post uploadPost(String postContent, Long userId, List<MultipartFile> image, boolean isActiveComment)
-            throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'uploadPost'");
+            throws IOException, Exception {
+
+        return Mono.fromCallable(() -> {
+
+            MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
+
+            for (MultipartFile file : image) {
+                if (!image.isEmpty()) {
+                    bodyBuilder.part("images", new ByteArrayResource(file.getBytes()) {
+                        @Override
+                        public String getFilename() {
+                            return file.getOriginalFilename(); // Set the filename for the part
+                        }
+                    });
+                }
+            }
+
+            bodyBuilder.part("postContent", postContent);
+
+            bodyBuilder.part("isActiveComment", isActiveComment);
+
+            return bodyBuilder.build();
+        }).flatMap(body -> builder.build().post()
+                .uri("http://post-service/api/posts/upload")
+                .header("AccountId", String.valueOf(userId))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(body))
+                .exchangeToMono(res -> {
+
+                    if (res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(Post.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                            .flatMap(err -> Mono.error(new Exception(err)));
+                }))
+                .doOnError(err -> new Exception(err.getMessage()))
+                .block();
     }
 
     @Override
@@ -45,64 +85,65 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post retrieve(Long postId) throws Exception {
         return builder.build().get()
-            .uri("http://post-service/api/posts/retrieve",
-                    uriBuilder -> uriBuilder.pathSegment("{id}").build(postId))
-            .retrieve()
-            .bodyToMono(Post.class)
-            .flatMap(post -> {
-                return builder.build().get()
-                        .uri("http://account-service/api/users",
-                            uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
-                        .retrieve()
-                        .bodyToMono(User.class)
-                        .map(user -> {
-                            post.setUser(user);
-                            return post;
-                        });
-            })
-            .flatMap(post -> {
-                if(post.getPostInvitation() != null) {
-                    return Flux.fromIterable(post.getPostInvitation().getPostInvitationUsers())
-                        .flatMap(inviteUser -> {
-                            return builder.build().get()
-                                .uri("http://account-service/api/users",
-                                    uriBuilder -> uriBuilder.queryParam("userId", inviteUser.getUserId()).build())
-                                .retrieve()
-                                .bodyToMono(User.class)
-                                .map(user -> {
-                                    inviteUser.setUser(user);
-                                    return inviteUser;
+                .uri("http://post-service/api/posts/retrieve",
+                        uriBuilder -> uriBuilder.pathSegment("{id}").build(postId))
+                .retrieve()
+                .bodyToMono(Post.class)
+                .flatMap(post -> {
+                    return builder.build().get()
+                            .uri("http://account-service/api/users",
+                                    uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
+                            .retrieve()
+                            .bodyToMono(User.class)
+                            .map(user -> {
+                                post.setUser(user);
+                                return post;
+                            });
+                })
+                .flatMap(post -> {
+                    if (post.getPostInvitation() != null) {
+                        return Flux.fromIterable(post.getPostInvitation().getPostInvitationUsers())
+                                .flatMap(inviteUser -> {
+                                    return builder.build().get()
+                                            .uri("http://account-service/api/users",
+                                                    uriBuilder -> uriBuilder
+                                                            .queryParam("userId", inviteUser.getUserId()).build())
+                                            .retrieve()
+                                            .bodyToMono(User.class)
+                                            .map(user -> {
+                                                inviteUser.setUser(user);
+                                                return inviteUser;
+                                            });
+                                })
+                                .collectList()
+                                .map(list -> {
+                                    post.getPostInvitation().setPostInvitationUsers(list);
+                                    return post;
                                 });
-                        })
-                        .collectList()
-                        .map(list -> {
-                            post.getPostInvitation().setPostInvitationUsers(list);
-                            return post;
-                        });
-                }
+                    }
 
-                return Mono.just(post);
-            })
-            .onErrorResume(err -> Mono.empty())
-            .block();
+                    return Mono.just(post);
+                })
+                .onErrorResume(err -> Mono.empty())
+                .block();
     }
 
     @Override
     public boolean delete(Long postId, Long userId) throws Exception {
         return builder.build().delete()
-            .uri("http://post-service/api/posts",
-                    uriBuilder -> uriBuilder.pathSegment("{postId}").build(postId))
-            .header("AccountId", String.valueOf(userId))
-            .exchangeToMono(res -> {
-                if(res.statusCode().is2xxSuccessful()) {
-                    return Mono.just(true);
-                }
+                .uri("http://post-service/api/posts",
+                        uriBuilder -> uriBuilder.pathSegment("{postId}").build(postId))
+                .header("AccountId", String.valueOf(userId))
+                .exchangeToMono(res -> {
+                    if (res.statusCode().is2xxSuccessful()) {
+                        return Mono.just(true);
+                    }
 
-                return res.bodyToMono(String.class)
-                    .flatMap(message -> Mono.error(new Exception(message)));
-            })
-            .onErrorMap(ex -> new Exception(ex.getMessage()))
-            .block();
+                    return res.bodyToMono(String.class)
+                            .flatMap(message -> Mono.error(new Exception(message)));
+                })
+                .onErrorMap(ex -> new Exception(ex.getMessage()))
+                .block();
     }
 
     @Override
@@ -136,14 +177,14 @@ public class PostServiceImpl implements PostService{
                 .bodyToFlux(Post.class)
                 .flatMap(post -> {
                     return builder.build().get()
-                        .uri("http://account-service/api/users",
-                            uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
-                        .retrieve()
-                        .bodyToMono(User.class)
-                        .map(user -> {
-                            post.setUser(user);
-                            return post;
-                        });
+                            .uri("http://account-service/api/users",
+                                    uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
+                            .retrieve()
+                            .bodyToMono(User.class)
+                            .map(user -> {
+                                post.setUser(user);
+                                return post;
+                            });
                 })
                 .collect(Collectors.toList())
                 .onErrorResume(err -> Mono.empty())
@@ -152,8 +193,22 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Post uploadPostSurvey(Post post, Long userId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'uploadPostSurvey'");
+        return builder.build().post()
+                .uri("http://post-service/api/posts/upload/survey")
+                .header("AccountId", String.valueOf(userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(post)
+                .exchangeToMono(res -> {
+
+                    if (res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(Post.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                            .flatMap(err -> Mono.error(new Exception(err)));
+                })
+                .doOnError(err -> new Exception(err.getMessage()))
+                .block();
     }
 
     @Override
