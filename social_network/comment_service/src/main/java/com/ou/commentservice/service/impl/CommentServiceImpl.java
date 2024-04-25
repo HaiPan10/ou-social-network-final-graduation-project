@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.commentservice.pojo.NotificationFirebaseModal;
 import com.cloudinary.provisioning.Account;
+import com.ou.commentservice.event.NotificationEvent;
 import com.ou.commentservice.event.OrderPlacedEvent;
 import com.ou.commentservice.pojo.Comment;
 import com.ou.commentservice.pojo.SocketClient;
@@ -72,15 +73,9 @@ public class CommentServiceImpl implements CommentService {
             // boolean userIdExists = socketClients.stream()
             //         .anyMatch(client -> client.getId().equals(persistPost.getUserId().getId()));
             if (!persistPost.getUserId().equals(userId)) {
-                NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-                notificationDoc.setNotificationType("comment");
-                notificationDoc.setCommentId(comment.getId());
-                notificationDoc.setPostId(postId);
-                notificationDoc.setContent(comment.getContent());
-                notificationDoc.setSeen(false);
-                // firebaseService.notification(userId, persistPost.getUserId().getId(), notificationDoc);
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                    new NotificationEvent(this, "notificationTopic", "comment",
+                    postId, comment.getId(), comment.getContent(), false, userId, persistPost.getUserId()));
             }
 
             if (comment.getParentComment() == null) {
@@ -97,17 +92,11 @@ public class CommentServiceImpl implements CommentService {
                 applicationEventPublisher.publishEvent(
                     new OrderPlacedEvent(this, "realtimeTopic", "realtimeReply"));
 
-                if (!comment.getUserId().equals(comment.getRepliedUser().getId())) {
-                    NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-                    notificationDoc.setNotificationType("reply");
-                    notificationDoc.setCommentId(comment.getId());
-                    notificationDoc.setPostId(postId);
-                    notificationDoc.setContent(comment.getContent());
-                    notificationDoc.setSeen(false);
-                    notificationDoc.setParentCommentId(comment.getParentComment().getId());
-                    // firebaseService.notification(userId, comment.getRepliedUser().getId(), notificationDoc);
+                if (!comment.getUserId().equals(comment.getRepliedUserId())) {
                     applicationEventPublisher.publishEvent(
-                        new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                        new NotificationEvent(this, "notificationTopic", "reply",
+                        postId, comment.getId(), comment.getParentComment().getId(),
+                        comment.getContent(), false, userId, comment.getRepliedUserId()));
                 }
 
             }

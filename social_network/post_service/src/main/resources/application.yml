@@ -30,7 +30,7 @@ spring:
         spring:
           json:
             type:
-              mapping: event:com.ou.postservice.event.OrderPlacedEvent 
+              mapping: event-order:com.ou.postservice.event.OrderPlacedEvent 
 
 #JPA/Hibernate
 server:

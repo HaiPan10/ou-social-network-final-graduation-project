@@ -30,7 +30,7 @@ spring:
         spring:
           json:
             type:
-              mapping: event:com.ou.commentservice.event.OrderPlacedEvent 
+              mapping: event-order:com.ou.commentservice.event.OrderPlacedEvent, event-notification:com.ou.commentservice.event.NotificationEvent
 
 #JPA/Hibernate
 server:

@@ -7,9 +7,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.kafka.annotation.KafkaListener;
 
+import com.ou.realtimeservice.event.NotificationEvent;
 import com.ou.realtimeservice.event.OrderPlacedEvent;
 import com.ou.realtimeservice.event.UploadAvatarEvent;
 import com.ou.realtimeservice.event.UserDocEvent;
+import com.ou.realtimeservice.pojo.NotificationFirebaseModal;
 import com.ou.realtimeservice.pojo.UserFirebaseModal;
 import com.ou.realtimeservice.service.interfaces.FirebaseService;
 
@@ -61,11 +63,30 @@ public class RealtimeServiceApplication {
 
         });
     }
-	
-	@KafkaListener(topics = "realtimeTopic")
-    public void handleNotification(OrderPlacedEvent orderPlacedEvent) {
+
+    @KafkaListener(topics = "notificationTopic")
+    public void handleNotification(NotificationEvent orderPlacedEvent) {
         Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
-            log.info("Got message <{}>", orderPlacedEvent.getOrderAction());
+            log.info("Got message from notificationTopic <userId {} notify to userId {} with action {}>",
+            orderPlacedEvent.getCurrentUserId(), orderPlacedEvent.getTargetUserId(), orderPlacedEvent.getNotificationType());
+            try {
+                NotificationFirebaseModal notificationFirebaseModal = new NotificationFirebaseModal(
+                    orderPlacedEvent.getNotificationType(), orderPlacedEvent.getPostId(),
+                    orderPlacedEvent.getCommentId(), orderPlacedEvent.getParentCommentId(),
+                    orderPlacedEvent.getContent(), orderPlacedEvent.isSeen()
+                );
+                firebaseService.notification(orderPlacedEvent.getCurrentUserId(), orderPlacedEvent.getTargetUserId(), notificationFirebaseModal);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
         });
     }
+	
+	// @KafkaListener(topics = "realtimeTopic")
+    // public void handleNotification(OrderPlacedEvent orderPlacedEvent) {
+    //     Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
+    //         log.info("Got message <{}>", orderPlacedEvent.getOrderAction());
+    //     });
+    // }
 }

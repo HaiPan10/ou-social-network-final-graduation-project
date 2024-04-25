@@ -20,7 +20,7 @@ spring:
         spring:
           json:
             type:
-              mapping: event-order:com.ou.realtimeservice.event.OrderPlacedEvent, event-userdoc:com.ou.realtimeservice.event.UserDocEvent, event-uploadavatar:com.ou.realtimeservice.event.UploadAvatarEvent
+              mapping: event-order:com.ou.realtimeservice.event.OrderPlacedEvent, event-userdoc:com.ou.realtimeservice.event.UserDocEvent, event-uploadavatar:com.ou.realtimeservice.event.UploadAvatarEvent, event-notification:com.ou.realtimeservice.event.NotificationEvent
 
 #JPA/Hibernate
 server:
