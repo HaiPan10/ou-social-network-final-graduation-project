@@ -73,13 +73,18 @@ public class SocketServiceImpl implements SocketService {
     }
     
     @Override
-    public void realtimeComment(Comment comment, Long postId, String action) {
-        Comment newComment = webClientBuilder.build().get()
-            .uri("http://comment-service/api/comments/getReplyInfo",
-            uriBuilder -> uriBuilder.queryParam("comment", comment).build())
-            .retrieve()
-            .bodyToMono(Comment.class)
-            .block();
+    public void realtimeComment(Long commentId, Long postId, String action) {
+        Comment newComment;
+        if (!action.equals("DELETE")) {
+            newComment = webClientBuilder.build().get()
+                .uri("http://comment-service/api/comments/getReplyInfo",
+                uriBuilder -> uriBuilder.queryParam("commentId", commentId).build())
+                .retrieve()
+                .bodyToMono(Comment.class)
+                .block();
+        } else {
+            newComment = new Comment(commentId);
+        }
         CommentSocketModal socketCommentModal = new CommentSocketModal(newComment, action);
         template.convertAndSend(String.format("/comment/%s", postId), socketCommentModal);
     }
@@ -126,7 +131,18 @@ public class SocketServiceImpl implements SocketService {
     }
 
     @Override
-    public void realtimeReply(Comment comment, Long parentCommentId, String action) {
+    public void realtimeReply(Long commentId, Long parentCommentId, String action) {
+        Comment comment;
+        if (!action.equals("DELETE")) {
+            comment = webClientBuilder.build().get()
+                .uri("http://comment-service/api/comments/fetchComment",
+                uriBuilder -> uriBuilder.queryParam("commentId", commentId).build())
+                .retrieve()
+                .bodyToMono(Comment.class)
+                .block();
+        } else {
+            comment = new Comment(commentId);
+        }
         CommentSocketModal socketCommentModal = new CommentSocketModal(comment, action);
         template.convertAndSend(String.format("/reply/%s", parentCommentId), socketCommentModal);
     }

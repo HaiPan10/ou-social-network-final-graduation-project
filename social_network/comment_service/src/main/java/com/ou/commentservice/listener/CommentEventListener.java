@@ -10,29 +10,30 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
-import com.ou.commentservice.event.OrderPlacedEvent;
+import com.ou.commentservice.event.CommentEvent;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
-public class OrderPlacedEventListener {
+public class CommentEventListener {
     @Autowired
-    private KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
+    private KafkaTemplate<String, CommentEvent> kafkaTemplate;
 
     @Autowired
     private ObservationRegistry observationRegistry;
 
     @EventListener
-    public void handleOrderPlacedEvent(OrderPlacedEvent event) {
-        log.info("Order Placed Event Received, Sending OrderPlacedEvent to {}: {}", event.getOrderService(), event.getOrderAction());
+    public void handleOrderPlacedEvent(CommentEvent event) {
+        log.info("Order Placed Event Received, Sending CommentEvent to {}: action {}, commentId {}, postId {}",
+         event.getOrderService(), event.getAction(), event.getCommentId(), event.getPostId());
 
         // Create Observation for Kafka Template
         try {
             Observation.createNotStarted(event.getOrderService(), this.observationRegistry).observeChecked(() -> {
-                CompletableFuture<SendResult<String, OrderPlacedEvent>> future = kafkaTemplate.send(event.getOrderService(),
-                        new OrderPlacedEvent(event.getOrderService(), event.getOrderAction()));
+                CompletableFuture<SendResult<String, CommentEvent>> future = kafkaTemplate.send(event.getOrderService(),
+                        new CommentEvent(event.getOrderService(), event.getCommentId(), event.getPostId(), event.getAction()));
                 return future.handle((result, throwable) -> CompletableFuture.completedFuture(result));
             }).get();
         } catch (InterruptedException | ExecutionException e) {

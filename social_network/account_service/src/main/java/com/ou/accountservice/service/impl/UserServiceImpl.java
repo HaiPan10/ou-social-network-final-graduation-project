@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.ou.accountservice.event.OrderPlacedEvent;
 import com.ou.accountservice.event.UploadAvatarEvent;
 import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.repository.repositoryJPA.UserRepositoryJPA;

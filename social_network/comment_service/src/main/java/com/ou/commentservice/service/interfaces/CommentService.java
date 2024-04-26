@@ -16,4 +16,5 @@ public interface CommentService {
     boolean delete(Long commentId, Long userId) throws Exception;
     List<Comment> loadTwoComments(Long postId);
     Comment getReplyInfo(Comment comment);
+    Comment getReplyInfo(Long commentId) throws Exception;
 }

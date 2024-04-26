@@ -6,19 +6,19 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 @Setter
-public class OrderPlacedEvent extends ApplicationEvent {
+public class CommentTotalEvent extends ApplicationEvent {
     private String orderService;
-    private String orderAction;
+    private Long postId;
 
-    public OrderPlacedEvent(Object source, String orderService, String orderAction) {
+    public CommentTotalEvent(Object source, String orderService, Long postId) {
         super(source);
         this.orderService = orderService;
-        this.orderAction = orderAction;
+        this.postId = postId;
     }
 
-    public OrderPlacedEvent(String orderService, String orderAction) {
+    public CommentTotalEvent(String orderService, Long postId) {
         super(orderService);
         this.orderService = orderService;
-        this.orderAction = orderAction;
+        this.postId = postId;
     }
 }
