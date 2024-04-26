@@ -7,13 +7,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.kafka.annotation.KafkaListener;
 
+import com.ou.realtimeservice.event.CommentEvent;
+import com.ou.realtimeservice.event.CommentTotalEvent;
 import com.ou.realtimeservice.event.NotificationEvent;
 import com.ou.realtimeservice.event.OrderPlacedEvent;
+import com.ou.realtimeservice.event.ReplyEvent;
 import com.ou.realtimeservice.event.UploadAvatarEvent;
 import com.ou.realtimeservice.event.UserDocEvent;
 import com.ou.realtimeservice.pojo.NotificationFirebaseModal;
 import com.ou.realtimeservice.pojo.UserFirebaseModal;
 import com.ou.realtimeservice.service.interfaces.FirebaseService;
+import com.ou.realtimeservice.service.interfaces.SocketService;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
@@ -27,6 +31,9 @@ public class RealtimeServiceApplication {
 
     @Autowired
     private FirebaseService firebaseService;
+
+    @Autowired
+    private SocketService socketService;
 
     public static void main(String[] args) {
 		SpringApplication.run(RealtimeServiceApplication.class, args);
@@ -80,6 +87,34 @@ public class RealtimeServiceApplication {
                 e.printStackTrace();
             }
 
+        });
+    }
+
+    @KafkaListener(topics = "commentTopic")
+    public void handleNotification(CommentEvent orderPlacedEvent) {
+        Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
+            log.info("Got message from commentTopic <action {} for commendId {} in postId {}>",
+            orderPlacedEvent.getAction(), orderPlacedEvent.getCommentId(), orderPlacedEvent.getPostId());
+            socketService.realtimeComment(orderPlacedEvent.getCommentId(), orderPlacedEvent.getPostId(), orderPlacedEvent.getAction());
+
+        });
+    }
+
+    @KafkaListener(topics = "replyTopic")
+    public void handleNotification(ReplyEvent orderPlacedEvent) {
+        Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
+            log.info("Got message from replyTopic <action {} for parentCommentId {}>",
+            orderPlacedEvent.getAction(), orderPlacedEvent.getParentCommentId());
+            socketService.realtimeReply(orderPlacedEvent.getCommentId(), orderPlacedEvent.getParentCommentId(), orderPlacedEvent.getAction());
+
+        });
+    }
+
+    @KafkaListener(topics = "commentTotalTopic")
+    public void handleNotification(CommentTotalEvent orderPlacedEvent) {
+        Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
+            log.info("Got message from commentTotalTopic <postId {}>", orderPlacedEvent.getPostId());
+            socketService.realtimeCommentTotal(orderPlacedEvent.getPostId());
         });
     }
 	
