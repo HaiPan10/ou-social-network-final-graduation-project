@@ -23,6 +23,9 @@ import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.service.interfaces.AccountService;
 import com.ou.adminservice.service.interfaces.InvitationGroupService;
 import com.ou.adminservice.service.interfaces.PostService;
+import com.ou.adminservice.service.interfaces.QuestionService;
+import com.ou.adminservice.service.interfaces.ResponseService;
+
 import jakarta.validation.Valid;
 
 
@@ -37,10 +40,10 @@ public class PostController {
     private AccountService accountService;
     @Autowired
     private InvitationGroupService invitationGroupService;
-    // @Autowired
-    // private QuestionService questionService;
-    // @Autowired
-    // private ResponseService responseService;
+    @Autowired
+    private QuestionService questionService;
+    @Autowired
+    private ResponseService responseService;
 
     @GetMapping
     public String posts(Model model, @RequestParam Map<String, String> params) {
@@ -119,15 +122,15 @@ public class PostController {
         }
     }
 
-    // @GetMapping(path = "/survey_question/{id}")
-    // public String statQuestion(Model model, @PathVariable Long id) {
-    //     List<Object[]> list = questionService.stat(id);
-    //     if (list.isEmpty()) {
-    //         model.addAttribute("listTextAnswer", responseService.getTextAnswers(id));
-    //     }
-    //     model.addAttribute("questionText", questionService.getText(id));
-    //     model.addAttribute("id", id);
+    @GetMapping(path = "/survey_question/{id}")
+    public String statQuestion(Model model, @PathVariable Long id) {
+        Object[][] list = questionService.stat(id);
+        if (list != null) {
+            model.addAttribute("listTextAnswer", responseService.getTextAnswers(id));
+        }
+        model.addAttribute("questionText", questionService.getText(id));
+        model.addAttribute("id", id);
 
-    //     return "pages/questionDetail";
-    // }
+        return "pages/questionDetail";
+    }
 }
