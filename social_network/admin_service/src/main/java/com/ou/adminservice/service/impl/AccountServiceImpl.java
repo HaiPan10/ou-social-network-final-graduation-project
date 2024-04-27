@@ -1,13 +1,11 @@
 package com.ou.adminservice.service.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,8 +23,8 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private WebClient.Builder builder;
 
-    @Autowired
-    private Environment env;
+    // @Autowired
+    // private Environment env;
 
     @Override
     public Object[][] list() {

@@ -40,4 +40,13 @@ public class GroupController {
         }
     }
 
+    @GetMapping("users/{invitationGroupId}")
+    public ResponseEntity<?> getUsers(@PathVariable Long invitationGroupId) {
+        try {
+            return ResponseEntity.ok().body(groupService.getUsers(invitationGroupId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

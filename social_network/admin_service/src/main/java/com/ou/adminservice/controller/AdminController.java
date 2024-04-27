@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.service.interfaces.AccountService;
+import com.ou.adminservice.service.interfaces.GroupService;
 import com.ou.adminservice.service.interfaces.PostInvitationService;
 import com.ou.adminservice.service.interfaces.PostService;
 import com.ou.adminservice.service.interfaces.PostSurveyService;
@@ -36,8 +37,8 @@ public class AdminController {
     private PostSurveyService postSurveyService;
     @Autowired
     private PostInvitationService postInvitationService;
-    // @Autowired
-    // private GroupService groupService;
+    @Autowired
+    private GroupService groupService;
     @Autowired
     private QuestionService questionService;
 
@@ -123,14 +124,14 @@ public class AdminController {
         }
     }
 
-    // @GetMapping(path = "invitation_groups/{id}")
-    // public ResponseEntity<?> getUsers(@PathVariable Long id) {
-    //     try {
-    //         return ResponseEntity.ok().body(groupService.getUsers(id));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "invitation_groups/{id}")
+    public ResponseEntity<?> getUsers(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok().body(groupService.getUsers(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping(path = "stat/question/{id}")
     public ResponseEntity<?> statQuestion(@PathVariable Long id) {
