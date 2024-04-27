@@ -13,11 +13,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.ou.adminservice.pojo.Account;
 import com.ou.adminservice.service.interfaces.AccountService;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
-@Slf4j
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
@@ -122,12 +120,6 @@ public class AccountServiceImpl implements AccountService {
                 .bodyToMono(Account.class)
                 .onErrorMap(ex -> new Exception("Error retrieving account: " + ex.getMessage()))
                 .block();
-    }
-
-    @Override
-    public Account retrieve(String email) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'retrieve'");
     }
 
     @Override

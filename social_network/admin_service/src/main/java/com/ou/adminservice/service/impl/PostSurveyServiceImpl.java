@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.ou.adminservice.pojo.PostSurvey;
 import com.ou.adminservice.service.interfaces.PostSurveyService;
 
 @Service
@@ -15,12 +14,6 @@ public class PostSurveyServiceImpl implements PostSurveyService{
 
     @Autowired
     private WebClient.Builder builder;
-
-    @Override
-    public PostSurvey uploadPostSurvey(Long postId, PostSurvey postSurvey) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'uploadPostSurvey'");
-    }
 
     @Override
     public Object[][] stat(Map<String, String> params) {

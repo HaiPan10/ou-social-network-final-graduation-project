@@ -71,18 +71,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> loadPost(Long userId, Long currentUserId, Map<String, String> params) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadPost'");
-    }
-
-    @Override
-    public boolean update(Post post, List<MultipartFile> images, boolean isEditImage) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-
-    @Override
     public Post retrieve(Long postId) throws Exception {
         return builder.build().get()
                 .uri("http://post-service/api/posts/retrieve",
@@ -144,12 +132,6 @@ public class PostServiceImpl implements PostService {
                 })
                 .onErrorMap(ex -> new Exception(ex.getMessage()))
                 .block();
-    }
-
-    @Override
-    public List<Post> loadNewFeed(Long currentUserId, Map<String, String> params) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadNewFeed'");
     }
 
     @Override
@@ -241,12 +223,6 @@ public class PostServiceImpl implements PostService {
                 .retrieve()
                 .bodyToMono(Object[][].class)
                 .block();
-    }
-
-    @Override
-    public Post getDetail(Long postId, Long userId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDetail'");
     }
 
 }
