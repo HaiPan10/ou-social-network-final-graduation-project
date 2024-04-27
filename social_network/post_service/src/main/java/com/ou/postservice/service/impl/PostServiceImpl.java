@@ -16,7 +16,6 @@ import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +47,8 @@ import com.ou.postservice.service.interfaces.PostService;
 import com.ou.postservice.service.interfaces.PostSurveyService;
 import com.ou.postservice.service.interfaces.QuestionService;
 import com.ou.postservice.utils.CloudinaryUtils;
+
+import reactor.core.publisher.Mono;
 
 // import com.ou.postservice.service.interfaces.SocketService;
 // import com.ou.postservice.service.interfaces.UserService;
@@ -405,7 +406,7 @@ public class PostServiceImpl implements PostService {
         post.setUserId(userId);
         postRepositoryJPA.save(post);
 
-        List<Long> listUserId;
+        List<Long> listUserId = null;
         List<PostInvitationUser> list = postInvitation.getPostInvitationUsers();
         if (list != null) {
             if (list.size() > 0) {
@@ -414,41 +415,71 @@ public class PostServiceImpl implements PostService {
             } else {
                 throw new Exception("Empty invitation user!");
             }
-        } else {
-            throw new Exception("Null invitation user list!");
         }
 
-        // List<User> listUsers = userService.list(listUserId);
-        List<User> listUsers = webClientBuilder.build().get()
-            .uri("http://account-service/api/users/list",
-            uriBuilder -> uriBuilder.queryParam("listUserId", listUserId).build())
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<List<User>>() {})
-            .block();
+        List<User> listUsers = null;
+
+        if(listUserId != null) {
+            final List<Long> finalListUserId = listUserId;
+            listUsers = webClientBuilder.build().get()
+                    .uri("http://account-service/api/users/list-by-id",
+                        uriBuilder -> uriBuilder.queryParam("listUserId", finalListUserId).build())
+                    .retrieve()
+                    .bodyToFlux(User.class)
+                    .collectList()
+                    .block();
+        }
 
         postInvitation.setPostInvitationUsers(null);
-        Long groupId = postInvitation.getGroupId().getId();
-
-        // InvitationGroup group = postInvitation.getGroupId();
-        InvitationGroup group = webClientBuilder.build().get()
-            .uri("http://account-service/api/groups",
-            uriBuilder -> uriBuilder.pathSegment("{invitationGroupId}").build(groupId))
-            .retrieve()
-            .bodyToMono(InvitationGroup.class)
-            .block();
-        // postInvitation.setGroupId(null);
+        InvitationGroup group = postInvitation.getGroupId();
+        postInvitation.setGroupId(null);
         postInvitation = postInvitationService.create(post.getId(), postInvitation, listUsers);
 
+        System.out.println("[DEBUG] - " + group);
+
         if (group != null && listUsers != null) {
-            // Hải handle this
             // group = groupService.create(group);
+            final InvitationGroup finalGroup = webClientBuilder.build().post()
+                .uri("http://account-service/api/groups")
+                .bodyValue(group)
+                .exchangeToMono(res -> {
+                    if(res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(InvitationGroup.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                        .flatMap(message -> Mono.error(new Exception(message)));
+                })
+                .onErrorMap(ex -> new Exception(ex.getMessage()))
+                .block();
+
             // groupService.addUsers(group.getId(), listUsers);
+            webClientBuilder.build().post()
+                .uri("http://account-service/api/groups",
+                    uriBuilder -> uriBuilder.pathSegment("{groupId}").build(finalGroup.getId()))
+                .bodyValue(listUsers)
+                .exchangeToMono(res -> {
+                    if(res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(Void.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                        .flatMap(message -> Mono.error(new Exception(message)));
+                })
+                .onErrorMap(ex -> new Exception(ex.getMessage()))
+                .block();
+
+            group = finalGroup;
         }
 
         if (listUsers == null || listUsers.isEmpty()) {
             // fetch all user
-            // Hải handle this
-            // listUsers = userService.list();
+            listUsers = webClientBuilder.build().get()
+                .uri("http://account-service/api/users/list")
+                .retrieve()
+                .bodyToFlux(User.class)
+                .collectList()
+                .block();
         }
 
         postInvitation.setPost(post);

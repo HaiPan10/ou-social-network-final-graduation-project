@@ -213,8 +213,20 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post uploadPostInvitation(Post post, Long userId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'uploadPostInvitation'");
+        return builder.build().post()
+                .uri("http://post-service/api/posts/upload/invitation")
+                .header("AccountId", String.valueOf(userId))
+                .bodyValue(post)
+                .exchangeToMono(res -> {
+                    if (res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(Post.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                            .flatMap(message -> Mono.error(new Exception(message)));
+                })
+                .onErrorMap(ex -> new Exception(ex.getMessage()))
+                .block();
     }
 
     @Override

@@ -76,14 +76,14 @@ public class AdminController {
         return ResponseEntity.ok().body(accountService.list());
     }
 
-    // @PostMapping(path = "posts/upload_invitation")
-    // public ResponseEntity<?> uploadInvitation(@RequestBody Post post) {
-    //     try {
-    //         return ResponseEntity.ok().body(postService.uploadPostInvitation(post, Long.valueOf(1)));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @PostMapping(path = "posts/upload_invitation")
+    public ResponseEntity<?> uploadInvitation(@RequestBody Post post) {
+        try {
+            return ResponseEntity.ok().body(postService.uploadPostInvitation(post, Long.valueOf(1)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping(path = "statistics/users")
     public ResponseEntity<?> numberOfUsers(@RequestParam Map<String, String> params) {

@@ -192,4 +192,14 @@ public class PostController {
         }
     }
 
+    @PostMapping(path = "upload/invitation")
+    public ResponseEntity<?> uploadInvitation(@RequestBody @Valid Post post, @RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = Long.parseLong(headers.getFirst("AccountID"));
+            return ResponseEntity.ok().body(postService.uploadPostInvitation(post, userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
