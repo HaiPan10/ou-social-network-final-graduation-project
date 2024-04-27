@@ -132,7 +132,12 @@ public class CommentController {
     }
     
     @GetMapping("/getReplyInfo")
-    public Comment getReplyInfo(@RequestParam Comment comment) {
-        return commentService.getReplyInfo(comment);
+    public Comment getReplyInfo(@RequestParam Long commentId) throws Exception {
+        return commentService.getReplyInfo(commentId);
+    }
+
+    @GetMapping("/fetchComment")
+    public Comment fetchComment(@RequestParam Long commentId) throws Exception {
+        return commentService.retrieve(commentId);
     }
 }

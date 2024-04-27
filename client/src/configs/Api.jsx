@@ -17,13 +17,12 @@ export const endpoints = {
     "post_reactions": "/post_reactions",
     "search": "/accounts/search?kw=",
     "responses": "/responses",
-    "offline": "/firebase/user/offline",
-    "create_private_room": "/firebase/chat_room/private",
-    "messages": "/firebase/message",
-    "seen": "/firebase/message/seen",
-    "in_typing": "/firebase/typing/in_typing",
-    "stop_typing": "/firebase/typing/stop_typing",
-    "seen_notification": "/firebase/notification/seen",
+    "create_private_room": "/realtime/chat_room/private",
+    "messages": "/realtime/message",
+    "seen": "/realtime/message/seen",
+    "in_typing": "/realtime/typing/in_typing",
+    "stop_typing": "/realtime/typing/stop_typing",
+    "seen_notification": "/realtime/notification/seen",
     "socket": "/ws"
 }
 

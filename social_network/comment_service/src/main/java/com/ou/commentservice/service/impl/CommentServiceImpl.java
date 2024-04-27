@@ -11,19 +11,15 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.ou.commentservice.pojo.NotificationFirebaseModal;
-import com.cloudinary.provisioning.Account;
-import com.ou.commentservice.event.OrderPlacedEvent;
+import com.ou.commentservice.event.CommentEvent;
+import com.ou.commentservice.event.CommentTotalEvent;
+import com.ou.commentservice.event.NotificationEvent;
+import com.ou.commentservice.event.ReplyEvent;
 import com.ou.commentservice.pojo.Comment;
-import com.ou.commentservice.pojo.SocketClient;
 import com.ou.commentservice.pojo.User;
 import com.ou.commentservice.repository.repositoryJPA.CommentRepositoryJPA;
 import com.ou.commentservice.service.interfaces.CommentService;
 import com.ou.commentservice.pojo.Post;
-// import com.ou.commentservice.service.interfaces.FirebaseService;
-// import com.ou.commentservice.service.interfaces.PostService;
-// import com.ou.commentservice.service.interfaces.SocketService;
-// import com.ou.commentservice.service.interfaces.UserService;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -33,14 +29,6 @@ public class CommentServiceImpl implements CommentService {
     private WebClient.Builder webClientBuilder;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-    // @Autowired
-    // private PostService postService;
-    // @Autowired
-    // private UserService userService;
-    // @Autowired
-    // private FirebaseService firebaseService;
-    // @Autowired
-    // private SocketService socketService;
 
     @Override
     public Integer countComment(Long postId) {
@@ -49,7 +37,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment create(Comment comment, Long postId, Long userId) throws Exception {
-        // Post persistPost = postService.retrieve(postId);
         Post persistPost = webClientBuilder.build().get()
             .uri("http://post-service/api/posts/fetch-post",
             uriBuilder -> uriBuilder.queryParam("postId", postId).build())
@@ -59,7 +46,6 @@ public class CommentServiceImpl implements CommentService {
         if (!persistPost.getIsActiveComment()) {
             throw new Exception("Bài đăng này bị khóa bình luận");
         } else {
-            // return commentRepository.create(comment, persistPost, persistUser);
             comment.setPostId(postId);
             comment.setUserId(userId);
             comment.setCreatedDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
@@ -72,48 +58,32 @@ public class CommentServiceImpl implements CommentService {
             // boolean userIdExists = socketClients.stream()
             //         .anyMatch(client -> client.getId().equals(persistPost.getUserId().getId()));
             if (!persistPost.getUserId().equals(userId)) {
-                NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-                notificationDoc.setNotificationType("comment");
-                notificationDoc.setCommentId(comment.getId());
-                notificationDoc.setPostId(postId);
-                notificationDoc.setContent(comment.getContent());
-                notificationDoc.setSeen(false);
-                // firebaseService.notification(userId, persistPost.getUserId().getId(), notificationDoc);
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                    new NotificationEvent(this, "notificationTopic", "comment",
+                    postId, comment.getId(), comment.getContent(), false, userId, persistPost.getUserId()));
             }
 
             if (comment.getParentComment() == null) {
-                // socketService.realtimeComment(comment, postId, "CREATE");
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "realtimeComment"));
+                    new CommentEvent(this, "commentTopic", comment.getId(), postId, "CREATE"));
             } else {
                 Comment parentComment = comment.getParentComment();
                 parentComment = getReplyInfo(parentComment);
-                // socketService.realtimeComment(parentComment, postId, "UPDATE");
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "realtimeComment"));
-                // socketService.realtimeReply(comment, parentComment.getId(), "CREATE");
+                    new CommentEvent(this, "commentTopic", parentComment.getId(), postId, "UPDATE"));
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "realtimeReply"));
+                    new ReplyEvent(this, "replyTopic", comment.getId(), parentComment.getId(), "CREATE"));
 
-                if (!comment.getUserId().equals(comment.getRepliedUser().getId())) {
-                    NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-                    notificationDoc.setNotificationType("reply");
-                    notificationDoc.setCommentId(comment.getId());
-                    notificationDoc.setPostId(postId);
-                    notificationDoc.setContent(comment.getContent());
-                    notificationDoc.setSeen(false);
-                    notificationDoc.setParentCommentId(comment.getParentComment().getId());
-                    // firebaseService.notification(userId, comment.getRepliedUser().getId(), notificationDoc);
+                if (!comment.getUserId().equals(comment.getRepliedUserId())) {
                     applicationEventPublisher.publishEvent(
-                        new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                        new NotificationEvent(this, "notificationTopic", "reply",
+                        postId, comment.getId(), comment.getParentComment().getId(),
+                        comment.getContent(), false, userId, comment.getRepliedUserId()));
                 }
 
             }
-            // socketService.realtimeCommentTotal(postId);
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "realtimeCommentTotal"));
+                new CommentTotalEvent(this, "commentTotalTopic", postId));
             return comment;
         }
     }
@@ -167,19 +137,15 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepositoryJPA.save(persistComment);
         if (persistComment.getParentComment() == null) {
-            // socketService.realtimeComment(persistComment, persistComment.getPostId().getId(), "UPDATE");
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "realtimeComment"));
+                    new CommentEvent(this, "commentTopic", persistComment.getId(), persistComment.getPostId(), "UPDATE"));
         } else {
             Comment parentComment = persistComment.getParentComment();
-            // socketService.realtimeReply(persistComment, parentComment.getId(), "UPDATE");
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "realtimeReply"));
+                    new ReplyEvent(this, "replyTopic", persistComment.getId(), parentComment.getId(), "UPDATE"));
         }
-        // socketService.realtimeCommentTotal(persistComment.getPostId().getId());
         applicationEventPublisher.publishEvent(
-            new OrderPlacedEvent(this, "realtimeTopic", "realtimeCommentTotal"));
-
+                new CommentTotalEvent(this, "commentTotalTopic", persistComment.getPostId()));
         return persistComment;
     }
 
@@ -215,8 +181,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public boolean delete(Long commentId, Long userId) throws Exception {
         Comment persistComment = retrieve(commentId);
-        // Call service to fetch post
         Long postId = persistComment.getPostId();
+        Post persistPost = webClientBuilder.build().get()
+            .uri("http://post-service/api/posts/fetch-post",
+            uriBuilder -> uriBuilder.queryParam("postId", postId).build())
+            .retrieve()
+            .bodyToMono(Post.class)
+            .block();
+        persistComment.setPost(persistPost);
         if (!persistComment.getUserId().equals(userId)
                 && !persistComment.getPost().getUserId().equals(userId)) {
             throw new Exception("Not owner");
@@ -226,22 +198,18 @@ public class CommentServiceImpl implements CommentService {
         } catch (Exception e) {
             return false;
         }
-        // socketService.realtimeCommentTotal(postId);
         applicationEventPublisher.publishEvent(
-            new OrderPlacedEvent(this, "realtimeTopic", "realtimeCommentTotal"));
+                new CommentTotalEvent(this, "commentTotalTopic", postId));
         if (persistComment.getParentComment() == null) {
-            // socketService.realtimeComment(persistComment, postId, "DELETE");
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "realtimeComment"));
+                    new CommentEvent(this, "commentTopic", persistComment.getId(), postId, "DELETE"));
         } else {
             Comment parentComment = persistComment.getParentComment();
             parentComment = getReplyInfo(parentComment);
-            // socketService.realtimeComment(parentComment, postId, "UPDATE");
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "realtimeComment"));
-            // socketService.realtimeReply(persistComment, parentComment.getId(), "DELETE");
+                    new CommentEvent(this, "commentTopic", parentComment.getId(), postId, "UPDATE"));
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "realtimeReply"));
+                    new ReplyEvent(this, "replyTopic", persistComment.getId(), parentComment.getId(), "DELETE"));
         }
         return true;
     }
@@ -298,7 +266,6 @@ public class CommentServiceImpl implements CommentService {
             parentComment = repliedComment;
             comment.setLevel(repliedLevel + 1);
         }
-        // User repliedUser = userService.retrieve(repliedComment.getUserId());
         comment.setRepliedUserId(repliedComment.getUserId());
         comment.setParentComment(parentComment);
         return create(comment, postId, userId);
@@ -358,5 +325,11 @@ public class CommentServiceImpl implements CommentService {
         }
         comment.setFirstReply(firstReply);
         return comment;
+    }
+
+    @Override
+    public Comment getReplyInfo(Long commentId) throws Exception {
+        Comment comment = retrieve(commentId);
+        return getReplyInfo(comment);
     }
 }
