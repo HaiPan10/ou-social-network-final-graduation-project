@@ -79,8 +79,9 @@ public class RealtimeServiceApplication {
             try {
                 NotificationFirebaseModal notificationFirebaseModal = new NotificationFirebaseModal(
                     orderPlacedEvent.getNotificationType(), orderPlacedEvent.getPostId(),
-                    orderPlacedEvent.getCommentId(), orderPlacedEvent.getParentCommentId(),
-                    orderPlacedEvent.getContent(), orderPlacedEvent.isSeen()
+                    orderPlacedEvent.getReactionId(), orderPlacedEvent.getCommentId(), 
+                    orderPlacedEvent.getParentCommentId(), orderPlacedEvent.getContent(), 
+                    orderPlacedEvent.isSeen()
                 );
                 firebaseService.notification(orderPlacedEvent.getCurrentUserId(), orderPlacedEvent.getTargetUserId(), notificationFirebaseModal);
             } catch (InterruptedException | ExecutionException e) {

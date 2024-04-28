@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.ou.postservice.event.NotificationEvent;
 import com.ou.postservice.event.OrderPlacedEvent;
 import com.ou.postservice.pojo.NotificationFirebaseModal;
 import com.ou.postservice.pojo.Post;
@@ -70,13 +71,6 @@ public class PostReactionServiceImpl implements PostReactionService {
             throw new Exception("Post is unavailable!");
         }
 
-        NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-        notificationDoc.setNotificationType("reaction");
-        notificationDoc.setPostId(postId);
-        notificationDoc.setReactionId(reaction.getId());
-        notificationDoc.setContent(optionalPost.get().getContent());
-        notificationDoc.setSeen(false);
-
         try {
             Optional<PostReaction> persistPostReaction = postReactionRepositoryJPA.findUserReaction(userId, postId);
             if(!persistPostReaction.isPresent()){
@@ -86,9 +80,9 @@ public class PostReactionServiceImpl implements PostReactionService {
             persistPostReaction.get().setCreatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
             if (!optionalPost.get().getUserId().equals(userId)) {
-                // firebaseService.notification(userId, optionalPost.get().getUserId(), notificationDoc);
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                    new NotificationEvent(this, "notificationTopic", "reaction", postId,
+                    reaction.getId(), optionalPost.get().getContent(), false, userId, optionalPost.get().getUserId()));
             }
             PostReaction postReaction = postReactionRepositoryJPA.save(persistPostReaction.get());
             // socketService.realtimePostReaction(postId, userId);
@@ -103,9 +97,9 @@ public class PostReactionServiceImpl implements PostReactionService {
             postReaction.setReactionId(persistReaction);
 
             if (!optionalPost.get().getUserId().equals(userId)) {
-                // firebaseService.notification(userId, optionalPost.get().getUserId(), notificationDoc);
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                    new NotificationEvent(this, "notificationTopic", "reaction", postId,
+                    reaction.getId(), optionalPost.get().getContent(), false, userId, optionalPost.get().getUserId()));
             }           
             PostReaction returnPostReaction = postReactionRepositoryJPA.save(postReaction);
             // socketService.realtimePostReaction(postId, userId);
