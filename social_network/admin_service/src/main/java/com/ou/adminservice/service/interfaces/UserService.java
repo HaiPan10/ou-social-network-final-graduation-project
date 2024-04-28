@@ -7,6 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ou.adminservice.pojo.User;
 
 public interface UserService {
-    User create(User user);
     User uploadAvatar(MultipartFile uploadAvatar, Long userId) throws IOException, Exception;
 }

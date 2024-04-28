@@ -1,13 +1,11 @@
 package com.ou.adminservice.service.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,18 +13,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.ou.adminservice.pojo.Account;
 import com.ou.adminservice.service.interfaces.AccountService;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
-@Slf4j
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private WebClient.Builder builder;
 
-    @Autowired
-    private Environment env;
+    // @Autowired
+    // private Environment env;
 
     @Override
     public Object[][] list() {
@@ -124,12 +120,6 @@ public class AccountServiceImpl implements AccountService {
                 .bodyToMono(Account.class)
                 .onErrorMap(ex -> new Exception("Error retrieving account: " + ex.getMessage()))
                 .block();
-    }
-
-    @Override
-    public Account retrieve(String email) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'retrieve'");
     }
 
     @Override

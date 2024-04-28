@@ -13,21 +13,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.ou.adminservice.pojo.User;
 import com.ou.adminservice.service.interfaces.UserService;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
-@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private WebClient.Builder builder;
-
-    @Override
-    public User create(User user) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
-    }
 
     @Override
     public User uploadAvatar(MultipartFile uploadAvatar, Long userId) throws IOException, Exception {

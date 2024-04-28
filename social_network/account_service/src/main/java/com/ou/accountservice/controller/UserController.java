@@ -71,7 +71,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/list")
+    @GetMapping("/list-by-id")
     public List<User> listUser(@RequestParam List<Long> listUserId) {
         return userService.list(listUserId);
     }
@@ -88,5 +88,10 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> listUser() {
+        return ResponseEntity.ok().body(userService.list());
     }
 }

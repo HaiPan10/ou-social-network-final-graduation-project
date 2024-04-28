@@ -71,18 +71,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> loadPost(Long userId, Long currentUserId, Map<String, String> params) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadPost'");
-    }
-
-    @Override
-    public boolean update(Post post, List<MultipartFile> images, boolean isEditImage) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-
-    @Override
     public Post retrieve(Long postId) throws Exception {
         return builder.build().get()
                 .uri("http://post-service/api/posts/retrieve",
@@ -147,12 +135,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> loadNewFeed(Long currentUserId, Map<String, String> params) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'loadNewFeed'");
-    }
-
-    @Override
     public Long countPosts(Map<String, String> params) {
         return builder.build().get()
                 .uri("http://post-service/api/posts/count",
@@ -213,8 +195,20 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post uploadPostInvitation(Post post, Long userId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'uploadPostInvitation'");
+        return builder.build().post()
+                .uri("http://post-service/api/posts/upload/invitation")
+                .header("AccountId", String.valueOf(userId))
+                .bodyValue(post)
+                .exchangeToMono(res -> {
+                    if (res.statusCode().is2xxSuccessful()) {
+                        return res.bodyToMono(Post.class);
+                    }
+
+                    return res.bodyToMono(String.class)
+                            .flatMap(message -> Mono.error(new Exception(message)));
+                })
+                .onErrorMap(ex -> new Exception(ex.getMessage()))
+                .block();
     }
 
     @Override
@@ -229,12 +223,6 @@ public class PostServiceImpl implements PostService {
                 .retrieve()
                 .bodyToMono(Object[][].class)
                 .block();
-    }
-
-    @Override
-    public Post getDetail(Long postId, Long userId) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDetail'");
     }
 
 }

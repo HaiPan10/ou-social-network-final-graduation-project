@@ -50,5 +50,5 @@ public class QuestionServiceImpl implements QuestionService{
     public String getText(Long id) {
         return questionRepositoryJPA.getText(id);
     }
-    
+
 }

@@ -1,16 +1,22 @@
 package com.ou.accountservice.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ou.accountservice.pojo.InvitationGroup;
+import com.ou.accountservice.pojo.User;
 import com.ou.accountservice.service.interfaces.GroupService;
 import com.ou.accountservice.service.interfaces.InvitationGroupService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -35,6 +41,34 @@ public class GroupController {
     public ResponseEntity<?> list() {
         try {
             return ResponseEntity.ok().body(invitationGroupService.list());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("users/{invitationGroupId}")
+    public ResponseEntity<?> getUsers(@PathVariable Long invitationGroupId) {
+        try {
+            return ResponseEntity.ok().body(groupService.getUsers(invitationGroupId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping()
+    public ResponseEntity<?> create(@RequestBody InvitationGroup group) {
+        try {
+            return ResponseEntity.ok().body(groupService.create(group));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("{groupId}")
+    public ResponseEntity<?> addUsers(@PathVariable Long groupId, @RequestBody List<User> listUsers) {
+        try {
+            groupService.addUsers(groupId, listUsers);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

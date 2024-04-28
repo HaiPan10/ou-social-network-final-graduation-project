@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ou.adminservice.pojo.Post;
 import com.ou.adminservice.service.interfaces.AccountService;
+import com.ou.adminservice.service.interfaces.GroupService;
 import com.ou.adminservice.service.interfaces.PostInvitationService;
 import com.ou.adminservice.service.interfaces.PostService;
 import com.ou.adminservice.service.interfaces.PostSurveyService;
+import com.ou.adminservice.service.interfaces.QuestionService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,10 +37,10 @@ public class AdminController {
     private PostSurveyService postSurveyService;
     @Autowired
     private PostInvitationService postInvitationService;
-    // @Autowired
-    // private GroupService groupService;
-    // @Autowired
-    // private QuestionService questionService;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private QuestionService questionService;
 
     @PatchMapping("accounts/update_status")
     public ResponseEntity<?> update(@RequestBody Map<String, String> request) {
@@ -74,14 +76,14 @@ public class AdminController {
         return ResponseEntity.ok().body(accountService.list());
     }
 
-    // @PostMapping(path = "posts/upload_invitation")
-    // public ResponseEntity<?> uploadInvitation(@RequestBody Post post) {
-    //     try {
-    //         return ResponseEntity.ok().body(postService.uploadPostInvitation(post, Long.valueOf(1)));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @PostMapping(path = "posts/upload_invitation")
+    public ResponseEntity<?> uploadInvitation(@RequestBody Post post) {
+        try {
+            return ResponseEntity.ok().body(postService.uploadPostInvitation(post, Long.valueOf(1)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping(path = "statistics/users")
     public ResponseEntity<?> numberOfUsers(@RequestParam Map<String, String> params) {
@@ -122,30 +124,31 @@ public class AdminController {
         }
     }
 
-    // @GetMapping(path = "invitation_groups/{id}")
-    // public ResponseEntity<?> getUsers(@PathVariable Long id) {
-    //     try {
-    //         return ResponseEntity.ok().body(groupService.getUsers(id));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "invitation_groups/{id}")
+    public ResponseEntity<?> getUsers(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok().body(groupService.getUsers(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
-    // @GetMapping(path = "stat/question/{id}")
-    // public ResponseEntity<?> statQuestion(@PathVariable Long id) {
-    //     try {
-    //         return ResponseEntity.ok().body(questionService.stat(id));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "stat/question/{id}")
+    public ResponseEntity<?> statQuestion(@PathVariable Long id) {
+        try {
+            Object[][] stat = questionService.stat(id);
+            return ResponseEntity.ok().body(stat);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
-    // @GetMapping(path = "stat/question/get_total/{id}")
-    // public ResponseEntity<?> getTotal(@PathVariable Long id) {
-    //     try {
-    //         return ResponseEntity.ok().body(questionService.countUnchoiceOption(id));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+    @GetMapping(path = "stat/question/get_total/{id}")
+    public ResponseEntity<?> getTotal(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok().body(questionService.countUnchoiceOption(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

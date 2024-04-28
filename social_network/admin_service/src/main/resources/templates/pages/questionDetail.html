@@ -17,7 +17,7 @@
             </h5>
             <!-- Checkboxes and Radios -->
             <div class="card-body">
-                <div th:if="${listTextAnswer != null}" class="table-responsive text-nowrap">
+                <div th:if="${listTextAnswer.size() > 0}" class="table-responsive text-nowrap">
                     <table class="table">
                         <thead>
                             <tr>
@@ -34,7 +34,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div th:unless="${listTextAnswer != null}" class="row gy-3">
+                <div th:unless="${listTextAnswer.size() > 0}" class="row gy-3">
                     <div class="col-md-3"></div>
                     <div class="col-md-6">
                         <div>
@@ -172,9 +172,9 @@
                 chart = new Chart(chartCtx, chartConfis);
             }
 
-            var isTrue = /*[[${listTextAnswer} == null ? true:false]]*/ false;
+            var listTextAnswer = /*[[${listTextAnswer}]]*/ []
 
-            if (isTrue) {
+            if (listTextAnswer.length == 0) {
                 statQuest(apiStatQuest);
             }
 
