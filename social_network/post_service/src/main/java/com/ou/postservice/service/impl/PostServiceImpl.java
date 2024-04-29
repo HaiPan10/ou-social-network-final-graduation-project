@@ -3,7 +3,6 @@ package com.ou.postservice.service.impl;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.ou.postservice.pojo.NotificationFirebaseModal;
+import com.ou.postservice.event.NotificationEvent;
 import com.ou.postservice.event.OrderPlacedEvent;
+import com.ou.postservice.event.PostMailEvent;
 import com.ou.postservice.pojo.Account;
 import com.ou.postservice.pojo.ImageInPost;
 import com.ou.postservice.pojo.InvitationGroup;
@@ -49,14 +49,6 @@ import com.ou.postservice.service.interfaces.QuestionService;
 import com.ou.postservice.utils.CloudinaryUtils;
 
 import reactor.core.publisher.Mono;
-
-// import com.ou.postservice.service.interfaces.SocketService;
-// import com.ou.postservice.service.interfaces.UserService;
-// import com.ou.postservice.pojo.SocketPostModal;
-// import com.ou.postservice.service.interfaces.CommentService;
-// import com.ou.postservice.service.interfaces.FirebaseService;
-// import com.ou.postservice.service.interfaces.GroupService;
-// import com.ou.postservice.service.interfaces.MailService;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -87,19 +79,6 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
-    // @Autowired
-    // private SocketService socketService;
-    // @Autowired
-    // private GroupService groupService;
-    // @Autowired
-    // private MailService mailService;
-    // @Autowired
-    // private FirebaseService firebaseService;
-    // @Autowired
-    // private UserService userService;
-    // @Autowired
-    // private CommentService commentService;
-
     @Override
     public Post uploadPost(String postContent, Long userId, List<MultipartFile> images, boolean isActiveComment)
             throws Exception {
@@ -127,14 +106,9 @@ public class PostServiceImpl implements PostService {
         newPost.setCommentTotal(commentTotal);
 
         if (userId.equals(Long.valueOf(1))) {
-            NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-            notificationDoc.setNotificationType("post");
-            notificationDoc.setContent(postContent);
-            notificationDoc.setPostId(newPost.getId());
-            notificationDoc.setSeen(true);
-            // firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                new NotificationEvent(this, "notificationTopic", "post", newPost.getId(),
+                null, postContent, true, userId, Long.valueOf(0)));
         }
 
         // socketService.realtimePost(new SocketPostModal(newPost, "create"));
@@ -229,7 +203,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post retrieve(Long postId) throws Exception {
         System.out.println("[DEBUG] - INSIDE THE POST SERVICE");
-        // Optional<Post> postOptional = postRepository.retrieve(postId);
         Optional<Post> postOptional = postRepositoryJPA.findById(postId);
         if (postOptional.isPresent()) {
             return postOptional.get();
@@ -297,11 +270,6 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    // @Override
-    // public List<Post> list(Map<String, String> params) {
-    // return postRepository.list(params);
-    // }
-
     @Override
     public Long countPosts(Map<String, String> params) {
         String kw;
@@ -358,7 +326,6 @@ public class PostServiceImpl implements PostService {
         post.setUpdatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         PostSurvey postSurvey = post.getPostSurvey();
         post.setPostSurvey(null);
-        // postRepository.uploadPost(post, userId);
         post.setUserId(userId);
         postRepositoryJPA.save(post);
         List<Question> questions = postSurvey.getQuestions();
@@ -368,14 +335,9 @@ public class PostServiceImpl implements PostService {
         postSurvey.setQuestions(questions);
         post.setPostSurvey(postSurvey);
 
-        NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-        notificationDoc.setNotificationType("survey");
-        notificationDoc.setContent(postSurvey.getSurveyTitle());
-        notificationDoc.setPostId(post.getId());
-        notificationDoc.setSeen(true);
-        // firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
         applicationEventPublisher.publishEvent(
-            new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+            new NotificationEvent(this, "notificationTopic", "survey", post.getId(),
+            null, postSurvey.getSurveyTitle(), true, userId, Long.valueOf(0)));
 
         postReactionService.countReaction(post, userId);
         Integer commentTotal = webClientBuilder.build().get()
@@ -397,12 +359,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post uploadPostInvitation(Post post, Long userId) throws Exception {
-        System.out.println("[DEBUG] - START COUNT TIME " + Calendar.getInstance().getTimeInMillis());
         post.setCreatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         post.setUpdatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         PostInvitation postInvitation = post.getPostInvitation();
         post.setPostInvitation(null);
-        // postRepository.uploadPost(post, userId);
         post.setUserId(userId);
         postRepositoryJPA.save(post);
 
@@ -434,8 +394,6 @@ public class PostServiceImpl implements PostService {
         InvitationGroup group = postInvitation.getGroupId();
         postInvitation.setGroupId(null);
         postInvitation = postInvitationService.create(post.getId(), postInvitation, listUsers);
-
-        System.out.println("[DEBUG] - " + group);
 
         if (group != null && listUsers != null) {
             // group = groupService.create(group);
@@ -488,37 +446,33 @@ public class PostServiceImpl implements PostService {
         final PostInvitation finalInvitation = postInvitation;
 
         Runnable runnable = () -> {
-            // mailService.sendMultipleEmail(finalList, finalInvitation);
-            applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "mailTopic", "sendMultipleEmail"));
+            finalList.parallelStream().forEach(u -> {
+                applicationEventPublisher.publishEvent(
+                    new PostMailEvent(this, "mailPostTopic", u.getEmail(), finalInvitation.getEventName(), finalInvitation.getPost().getContent()));
+            });
         };
 
         executorService.execute(runnable);
 
         post.setPostInvitation(postInvitation);
-        System.out.println("[DEBUG] - FINISH CALLING SEND MAIL AT " + Calendar.getInstance().getTimeInMillis());
 
-        NotificationFirebaseModal notificationDoc = new NotificationFirebaseModal();
-        notificationDoc.setNotificationType("invitation");
-        notificationDoc.setPostId(post.getId());
-        notificationDoc.setContent(postInvitation.getEventName());
+        String content = postInvitation.getEventName();
 
         if (listUserId != null) {
             listUserId.forEach(id -> {
-                notificationDoc.setSeen(false);
-                // firebaseService.notification(userId, id, notificationDoc);
                 applicationEventPublisher.publishEvent(
-                    new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                    new NotificationEvent(this, "notificationTopic", "invitation", post.getId(),
+                    null, content, false, userId, id));
             });
         } else {
-            notificationDoc.setSeen(true);
-            // firebaseService.notification(userId, Long.valueOf(0), notificationDoc);
             applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "realtimeTopic", "notification"));
+                new NotificationEvent(this, "notificationTopic", "invitation", post.getId(),
+                null, content, true, userId, Long.valueOf(0)));
         }
 
         // socketService.realtimePost(new SocketPostModal(post, "create"));
-
+        // applicationEventPublisher.publishEvent(
+        //     new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
         return post;
     }
 

@@ -10,7 +10,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.accountservice.event.UploadAvatarEvent;
 import com.ou.accountservice.pojo.User;
@@ -28,8 +27,6 @@ public class UserServiceImpl implements UserService {
     private UserRepositoryJPA userRepositoryJPA;
     @Autowired
     private CloudinaryService cloudinaryService;
-    @Autowired
-    private WebClient.Builder webClientBuilder;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -106,7 +103,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> list(List<Long> listUserId) {
-        return userRepositoryJPA.list(listUserId);
+        System.out.println("DEBUG Called");
+        List<User> users = userRepositoryJPA.list(listUserId);
+        users.forEach(user -> user.setEmail(user.getAccount().getEmail()));
+        return users;
     }
 
     @Override

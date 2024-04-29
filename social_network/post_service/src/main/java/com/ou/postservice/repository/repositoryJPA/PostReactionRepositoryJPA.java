@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import com.ou.postservice.pojo.Post;
 import com.ou.postservice.pojo.PostReaction;
-import com.ou.postservice.pojo.User;
 
 public interface PostReactionRepositoryJPA extends JpaRepository<PostReaction, Long>{
     List<PostReaction> findByPostId(Post postId);
@@ -25,5 +24,5 @@ public interface PostReactionRepositoryJPA extends JpaRepository<PostReaction, L
     void delete(@Param("postId") Long postId, @Param("userId") Long userId);
 
     @Query("SELECT p.userId FROM PostReaction p WHERE p.reactionId.id = :reactionId AND p.postId.id = :postId")
-    List<User> getReactionUsers(@Param("postId") Long postId, @Param("reactionId") Long reactionId);
+    List<Long> getReactionUsers(@Param("postId") Long postId, @Param("reactionId") Long reactionId);
 }

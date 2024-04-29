@@ -26,10 +26,11 @@ public class NotificationFirebaseModal {
     private boolean isSeen;
 
     public NotificationFirebaseModal(String notificationType,
-    Long postId, Long commentId, Long parentCommentId, 
-    String content, boolean isSeen) {
+    Long postId, Long reactionId, Long commentId, 
+    Long parentCommentId, String content, boolean isSeen) {
         this.notificationType = notificationType;
         this.postId = postId;
+        this.reactionId = reactionId;
         this.commentId = commentId;
         this.parentCommentId = parentCommentId;
         this.content = content;

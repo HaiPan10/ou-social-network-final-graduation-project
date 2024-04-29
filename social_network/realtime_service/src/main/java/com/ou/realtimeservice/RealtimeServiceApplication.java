@@ -10,7 +10,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import com.ou.realtimeservice.event.CommentEvent;
 import com.ou.realtimeservice.event.CommentTotalEvent;
 import com.ou.realtimeservice.event.NotificationEvent;
-import com.ou.realtimeservice.event.OrderPlacedEvent;
+import com.ou.realtimeservice.event.PostReactionEvent;
 import com.ou.realtimeservice.event.ReplyEvent;
 import com.ou.realtimeservice.event.UploadAvatarEvent;
 import com.ou.realtimeservice.event.UserDocEvent;
@@ -79,8 +79,9 @@ public class RealtimeServiceApplication {
             try {
                 NotificationFirebaseModal notificationFirebaseModal = new NotificationFirebaseModal(
                     orderPlacedEvent.getNotificationType(), orderPlacedEvent.getPostId(),
-                    orderPlacedEvent.getCommentId(), orderPlacedEvent.getParentCommentId(),
-                    orderPlacedEvent.getContent(), orderPlacedEvent.isSeen()
+                    orderPlacedEvent.getReactionId(), orderPlacedEvent.getCommentId(), 
+                    orderPlacedEvent.getParentCommentId(), orderPlacedEvent.getContent(), 
+                    orderPlacedEvent.isSeen()
                 );
                 firebaseService.notification(orderPlacedEvent.getCurrentUserId(), orderPlacedEvent.getTargetUserId(), notificationFirebaseModal);
             } catch (InterruptedException | ExecutionException e) {
@@ -115,6 +116,14 @@ public class RealtimeServiceApplication {
         Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
             log.info("Got message from commentTotalTopic <postId {}>", orderPlacedEvent.getPostId());
             socketService.realtimeCommentTotal(orderPlacedEvent.getPostId());
+        });
+    }
+
+    @KafkaListener(topics = "reactionTopic")
+    public void handleNotification(PostReactionEvent orderPlacedEvent) {
+        Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
+            log.info("Got message from reactionTopic <postId {} userId {}>", orderPlacedEvent.getPostId(), orderPlacedEvent.getUserId());
+            socketService.realtimePostReaction(orderPlacedEvent.getPostId(), orderPlacedEvent.getUserId());
         });
     }
 	
