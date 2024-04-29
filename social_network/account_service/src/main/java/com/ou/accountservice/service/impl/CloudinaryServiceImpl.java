@@ -29,6 +29,7 @@ public class CloudinaryServiceImpl implements CloudinaryService{
     @Override
     public void deleteImage(String imageUrl) throws IOException {
         System.out.println(CloudinaryUtils.getPublicId(imageUrl));
+        @SuppressWarnings("unchecked")
         Map<String, String> response = cloudinary.uploader().destroy(CloudinaryUtils.getPublicId(imageUrl), ObjectUtils.emptyMap());
         System.out.println(response);
     }

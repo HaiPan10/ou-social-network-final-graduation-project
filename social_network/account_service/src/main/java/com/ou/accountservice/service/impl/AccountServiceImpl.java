@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
@@ -60,6 +61,7 @@ public class AccountServiceImpl implements AccountService {
     private Environment env;
 
     @Override
+    @Cacheable(value="accounts", key="#id")
     public Account retrieve(Long id) throws Exception {
         Optional<Account> accountOptional = accountRepositoryJPA.findById(id);
         if (accountOptional.isPresent()) {
@@ -172,21 +174,21 @@ public class AccountServiceImpl implements AccountService {
                 case "ACTIVE":
                     if (account.getStatus().equals(Status.AUTHENTICATION_PENDING.toString())) {
                         applicationEventPublisher.publishEvent(
-                            new UserDocEvent(this, "updateUserDocTopic", 
+                            new UserDocEvent(this, "updateUserDocTopic",
                             account.getUser().getId(), String.format("%s %s", account.getUser().getLastName(),
                             account.getUser().getFirstName()), account.getUser().getAvatar(), "offline"));
                         applicationEventPublisher.publishEvent(
-                            new AccountMailEvent(this, 
-                            "mailAccountTopic", 
-                            "sendAcceptedMail", 
+                            new AccountMailEvent(this,
+                            "mailAccountTopic",
+                            "sendAcceptedMail",
                             account.getId(), account.getEmail(),
                             account.getVerificationCode(), account.getStatus(),
                             account.getUser().getFirstName(), account.getUser().getLastName()));
                     } else if (account.getStatus().equals(Status.LOCKED.toString())) {
                         applicationEventPublisher.publishEvent(
-                            new AccountMailEvent(this, 
-                            "mailAccountTopic", 
-                            "sendUnlockMail", 
+                            new AccountMailEvent(this,
+                            "mailAccountTopic",
+                            "sendUnlockMail",
                             account.getId(), account.getEmail(),
                             account.getVerificationCode(), account.getStatus(),
                             account.getUser().getFirstName(), account.getUser().getLastName()));
@@ -194,27 +196,27 @@ public class AccountServiceImpl implements AccountService {
                     break;
                 case "REJECT":
                     applicationEventPublisher.publishEvent(
-                        new AccountMailEvent(this, 
-                        "mailAccountTopic", 
-                        "sendRejectMail", 
+                        new AccountMailEvent(this,
+                        "mailAccountTopic",
+                        "sendRejectMail",
                         account.getId(), account.getEmail(),
                         account.getVerificationCode(), account.getStatus(),
                         account.getUser().getFirstName(), account.getUser().getLastName()));
                     break;
                 case "LOCKED":
                     applicationEventPublisher.publishEvent(
-                        new AccountMailEvent(this, 
-                        "mailAccountTopic", 
-                        "sendLockMail", 
+                        new AccountMailEvent(this,
+                        "mailAccountTopic",
+                        "sendLockMail",
                         account.getId(), account.getEmail(),
                         account.getVerificationCode(), account.getStatus(),
                         account.getUser().getFirstName(), account.getUser().getLastName()));
                     break;
                 case "PASSWORD_CHANGE_REQUIRED":
                     applicationEventPublisher.publishEvent(
-                        new AccountMailEvent(this, 
-                        "mailAccountTopic", 
-                        "sendResetPasswordRequire", 
+                        new AccountMailEvent(this,
+                        "mailAccountTopic",
+                        "sendResetPasswordRequire",
                         account.getId(), account.getEmail(),
                         account.getVerificationCode(), account.getStatus(),
                         account.getUser().getFirstName(), account.getUser().getLastName()));
@@ -319,6 +321,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Cacheable(value="accounts", key="#email")
     public Account loadAccountByEmail(String email) {
         return accountRepositoryJPA.findByEmail(email).get();
     }
@@ -350,6 +353,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Cacheable(value="listAccount")
     public List<Object[]> list() {
         return accountRepositoryJPA.list();
     }
@@ -368,6 +372,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Cacheable(value="accounts", key="#email")
     public Account retrieve(String email) throws Exception {
         Optional<Account> accountOptional = accountRepositoryJPA.findByEmail(email);
         if (accountOptional.isPresent()) {

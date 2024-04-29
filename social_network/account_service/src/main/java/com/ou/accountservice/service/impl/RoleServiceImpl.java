@@ -23,5 +23,5 @@ public class RoleServiceImpl implements RoleService {
             throw new Exception("Role not found!");
         }
     }
-    
+
 }
