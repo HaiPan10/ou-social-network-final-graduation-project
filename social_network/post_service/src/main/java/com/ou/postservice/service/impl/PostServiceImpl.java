@@ -3,7 +3,6 @@ package com.ou.postservice.service.impl;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,14 +50,6 @@ import com.ou.postservice.utils.CloudinaryUtils;
 
 import reactor.core.publisher.Mono;
 
-// import com.ou.postservice.service.interfaces.SocketService;
-// import com.ou.postservice.service.interfaces.UserService;
-// import com.ou.postservice.pojo.SocketPostModal;
-// import com.ou.postservice.service.interfaces.CommentService;
-// import com.ou.postservice.service.interfaces.FirebaseService;
-// import com.ou.postservice.service.interfaces.GroupService;
-// import com.ou.postservice.service.interfaces.MailService;
-
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class PostServiceImpl implements PostService {
@@ -87,19 +78,6 @@ public class PostServiceImpl implements PostService {
     private WebClient.Builder webClientBuilder;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-
-    // @Autowired
-    // private SocketService socketService;
-    // @Autowired
-    // private GroupService groupService;
-    // @Autowired
-    // private MailService mailService;
-    // @Autowired
-    // private FirebaseService firebaseService;
-    // @Autowired
-    // private UserService userService;
-    // @Autowired
-    // private CommentService commentService;
 
     @Override
     public Post uploadPost(String postContent, Long userId, List<MultipartFile> images, boolean isActiveComment)
@@ -225,7 +203,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post retrieve(Long postId) throws Exception {
         System.out.println("[DEBUG] - INSIDE THE POST SERVICE");
-        // Optional<Post> postOptional = postRepository.retrieve(postId);
         Optional<Post> postOptional = postRepositoryJPA.findById(postId);
         if (postOptional.isPresent()) {
             return postOptional.get();
@@ -293,11 +270,6 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    // @Override
-    // public List<Post> list(Map<String, String> params) {
-    // return postRepository.list(params);
-    // }
-
     @Override
     public Long countPosts(Map<String, String> params) {
         String kw;
@@ -354,7 +326,6 @@ public class PostServiceImpl implements PostService {
         post.setUpdatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         PostSurvey postSurvey = post.getPostSurvey();
         post.setPostSurvey(null);
-        // postRepository.uploadPost(post, userId);
         post.setUserId(userId);
         postRepositoryJPA.save(post);
         List<Question> questions = postSurvey.getQuestions();
@@ -392,7 +363,6 @@ public class PostServiceImpl implements PostService {
         post.setUpdatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         PostInvitation postInvitation = post.getPostInvitation();
         post.setPostInvitation(null);
-        // postRepository.uploadPost(post, userId);
         post.setUserId(userId);
         postRepositoryJPA.save(post);
 
