@@ -1,7 +1,5 @@
 package com.ou.mailservice.service.impl;
 
-import java.util.Calendar;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.mailservice.pojo.Account;
-import com.ou.mailservice.pojo.PostInvitation;
 import com.ou.mailservice.pojo.Status;
-import com.ou.mailservice.pojo.User;
-// import com.ou.mailservice.service.interfaces.AccountService;
 import com.ou.mailservice.service.interfaces.MailService;
 
 import jakarta.mail.internet.MimeMessage;
@@ -258,13 +253,5 @@ public class MailServiceImpl implements MailService {
 
             executorService.execute(runnable);
         }
-    }
-
-    @Override
-    public void sendMultipleEmail(List<User> listUser, PostInvitation postInvitation) {
-        listUser.parallelStream().forEach(u -> {
-            sendEmail(u.getAccount().getEmail(), postInvitation.getEventName(), postInvitation.getPost().getContent());
-        });
-        System.out.println("[DEBUG] - FINISH SENDING MAIL TO ALL TARGET " + Calendar.getInstance().getTimeInMillis());
     }
 }

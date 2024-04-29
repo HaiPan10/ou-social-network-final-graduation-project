@@ -1,9 +1,6 @@
 package com.ou.mailservice.service.interfaces;
 
-import java.util.List;
 import com.ou.mailservice.pojo.Account;
-import com.ou.mailservice.pojo.PostInvitation;
-import com.ou.mailservice.pojo.User;
 
 
 public interface MailService {
@@ -16,5 +13,4 @@ public interface MailService {
     void sendLockMail(Account account) throws Exception;
     void sendUnlockMail(Account account) throws Exception;
     void sendResetPasswordRequire(Account account) throws Exception;
-    void sendMultipleEmail(List<User> listUser, PostInvitation postInvitation);
 }

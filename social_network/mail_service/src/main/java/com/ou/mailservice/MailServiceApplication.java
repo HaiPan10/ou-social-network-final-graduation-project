@@ -2,7 +2,6 @@ package com.ou.mailservice;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 
 import com.ou.mailservice.event.AccountMailEvent;
 import com.ou.mailservice.pojo.Account;
-import com.ou.mailservice.event.OrderPlacedEvent;
+import com.ou.mailservice.event.PostMailEvent;
 import com.ou.mailservice.service.interfaces.MailService;
 
 import io.micrometer.observation.Observation;
@@ -47,10 +46,13 @@ public class MailServiceApplication {
         });
     }
 
-    @KafkaListener(topics = "mailTopic")
-    public void handleNotification(OrderPlacedEvent orderPlacedEvent) {
+    @KafkaListener(topics = "mailPostTopic")
+    public void handleNotification(PostMailEvent orderPlacedEvent) {
         Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
-            log.info("Got message <{}>", orderPlacedEvent.getOrderAction());
+            log.info("Got message from mailPostTopic <email {} event {} content {}>",
+            orderPlacedEvent.getEmail(), orderPlacedEvent.getEventName(), orderPlacedEvent.getContent());
+            mailService.sendEmail(orderPlacedEvent.getEmail(), orderPlacedEvent.getEventName(), orderPlacedEvent.getContent());
         });
     }
+
 }

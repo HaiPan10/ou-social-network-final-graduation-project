@@ -10,7 +10,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import com.ou.realtimeservice.event.CommentEvent;
 import com.ou.realtimeservice.event.CommentTotalEvent;
 import com.ou.realtimeservice.event.NotificationEvent;
-import com.ou.realtimeservice.event.OrderPlacedEvent;
 import com.ou.realtimeservice.event.ReplyEvent;
 import com.ou.realtimeservice.event.UploadAvatarEvent;
 import com.ou.realtimeservice.event.UserDocEvent;

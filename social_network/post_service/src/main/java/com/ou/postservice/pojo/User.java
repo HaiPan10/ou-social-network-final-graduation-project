@@ -18,6 +18,7 @@ public class User implements Serializable {
     private String lastName;
     private String avatar;
     private String coverAvatar;
+    private String email;
     
     public User(Long id) {
         this.id = id;

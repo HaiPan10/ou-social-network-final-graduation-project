@@ -28,6 +28,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.postservice.event.NotificationEvent;
 import com.ou.postservice.event.OrderPlacedEvent;
+import com.ou.postservice.event.PostMailEvent;
 import com.ou.postservice.pojo.Account;
 import com.ou.postservice.pojo.ImageInPost;
 import com.ou.postservice.pojo.InvitationGroup;
@@ -387,7 +388,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post uploadPostInvitation(Post post, Long userId) throws Exception {
-        System.out.println("[DEBUG] - START COUNT TIME " + Calendar.getInstance().getTimeInMillis());
         post.setCreatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         post.setUpdatedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         PostInvitation postInvitation = post.getPostInvitation();
@@ -424,8 +424,6 @@ public class PostServiceImpl implements PostService {
         InvitationGroup group = postInvitation.getGroupId();
         postInvitation.setGroupId(null);
         postInvitation = postInvitationService.create(post.getId(), postInvitation, listUsers);
-
-        System.out.println("[DEBUG] - " + group);
 
         if (group != null && listUsers != null) {
             // group = groupService.create(group);
@@ -478,16 +476,15 @@ public class PostServiceImpl implements PostService {
         final PostInvitation finalInvitation = postInvitation;
 
         Runnable runnable = () -> {
-            // mailService.sendMultipleEmail(finalList, finalInvitation);
-            applicationEventPublisher.publishEvent(
-                new OrderPlacedEvent(this, "mailTopic", "sendMultipleEmail"));
+            finalList.parallelStream().forEach(u -> {
+                applicationEventPublisher.publishEvent(
+                    new PostMailEvent(this, "mailPostTopic", u.getEmail(), finalInvitation.getEventName(), finalInvitation.getPost().getContent()));
+            });
         };
 
         executorService.execute(runnable);
 
         post.setPostInvitation(postInvitation);
-        System.out.println("[DEBUG] - FINISH CALLING SEND MAIL AT " + Calendar.getInstance().getTimeInMillis());
-
 
         String content = postInvitation.getEventName();
 
@@ -504,7 +501,8 @@ public class PostServiceImpl implements PostService {
         }
 
         // socketService.realtimePost(new SocketPostModal(post, "create"));
-
+        // applicationEventPublisher.publishEvent(
+        //     new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
         return post;
     }
 
