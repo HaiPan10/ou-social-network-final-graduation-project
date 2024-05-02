@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -74,6 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value="users", key="#userId")
     public User retrieve(Long userId) throws Exception {
         Optional<User> userOptional = userRepositoryJPA.findById(userId);
         if (userOptional.isPresent()) {
@@ -110,6 +112,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value="listUser")
     public List<User> list(){
         return userRepositoryJPA.findAll();
     }
