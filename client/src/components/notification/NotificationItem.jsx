@@ -106,7 +106,7 @@ export const NotificationItem = ({ notification, type, toggleNotification }) => 
                             {notification.notificationType === "reaction" && (
                                 <>
                                     <b>{interactUser.displayName}</b>
-                                    {totalReaction - 1 != 0 && <span>
+                                    {totalReaction - 1 > 0 && <span>
                                     {' '}và {totalReaction - 1} người khác{' '}
                                     </span>}
                                     {' '}đã bày tỏ cảm xúc với bài viết của bạn: <b>{notification.content}</b>
