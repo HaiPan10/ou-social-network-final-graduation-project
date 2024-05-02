@@ -55,7 +55,6 @@ export const Notification = () => {
                         list.push({ ...doc.data(), id: doc.id });
                     }
                 })
-                console.log(list)
                 setPrivateNotifications(list)
             })
         }
