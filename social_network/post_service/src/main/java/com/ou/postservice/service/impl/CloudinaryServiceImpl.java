@@ -21,15 +21,13 @@ public class CloudinaryServiceImpl implements CloudinaryService{
 
     @Override
     public String uploadImage(MultipartFile image) throws IOException {
-        System.out.println("[DEBUG] - CURRENTLY IN UPLOADIMAGE");
         return cloudinary.uploader().upload(image.getBytes(), ObjectUtils.asMap("resource_type", "auto"))
         .get("secure_url").toString();
     }
 
     @Override
     public void deleteImage(String imageUrl) throws IOException {
-        System.out.println(CloudinaryUtils.getPublicId(imageUrl));
         Map<String, String> response = cloudinary.uploader().destroy(CloudinaryUtils.getPublicId(imageUrl), ObjectUtils.emptyMap());
-        System.out.println(response);
+        System.out.println("Delete image: " + imageUrl + " status: " + response);
     }
 }

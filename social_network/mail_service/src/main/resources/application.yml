@@ -26,7 +26,7 @@ spring:
             trusted:
               packages: "*"
             type:
-              mapping: event-account:com.ou.mailservice.event.AccountMailEvent, event-post:com.ou.mailservice.event.PostMailEvent
+              mapping: event-mailaccount:com.ou.mailservice.event.AccountMailEvent, event-mailpost:com.ou.mailservice.event.PostMailEvent
   application:
     name: mail-service
 #JPA/Hibernate

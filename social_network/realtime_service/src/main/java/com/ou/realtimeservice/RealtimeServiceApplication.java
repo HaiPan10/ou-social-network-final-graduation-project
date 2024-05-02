@@ -1,20 +1,27 @@
 package com.ou.realtimeservice;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import com.cloudinary.provisioning.Account;
 import com.ou.realtimeservice.event.CommentEvent;
 import com.ou.realtimeservice.event.CommentTotalEvent;
 import com.ou.realtimeservice.event.NotificationEvent;
+import com.ou.realtimeservice.event.PostEvent;
 import com.ou.realtimeservice.event.PostReactionEvent;
 import com.ou.realtimeservice.event.ReplyEvent;
 import com.ou.realtimeservice.event.UploadAvatarEvent;
 import com.ou.realtimeservice.event.UserDocEvent;
 import com.ou.realtimeservice.pojo.NotificationFirebaseModal;
+import com.ou.realtimeservice.pojo.Post;
+import com.ou.realtimeservice.pojo.PostSocketModal;
 import com.ou.realtimeservice.pojo.UserFirebaseModal;
 import com.ou.realtimeservice.service.interfaces.FirebaseService;
 import com.ou.realtimeservice.service.interfaces.SocketService;
@@ -34,6 +41,9 @@ public class RealtimeServiceApplication {
 
     @Autowired
     private SocketService socketService;
+
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     public static void main(String[] args) {
 		SpringApplication.run(RealtimeServiceApplication.class, args);
@@ -126,11 +136,29 @@ public class RealtimeServiceApplication {
             socketService.realtimePostReaction(orderPlacedEvent.getPostId(), orderPlacedEvent.getUserId());
         });
     }
-	
-	// @KafkaListener(topics = "realtimeTopic")
-    // public void handleNotification(OrderPlacedEvent orderPlacedEvent) {
-    //     Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
-    //         log.info("Got message <{}>", orderPlacedEvent.getOrderAction());
-    //     });
-    // }
+
+    @KafkaListener(topics = "postTopic")
+    public void handleNotification(PostEvent orderPlacedEvent) {
+        Observation.createNotStarted("on-message", this.observationRegistry).observe(() -> {
+            log.info("Got message from postTopic <action: {}, postId: {}>",
+            orderPlacedEvent.getOrderAction(), orderPlacedEvent.getPostId());
+            try {
+                Post realtimePost;
+                do {
+                    realtimePost = webClientBuilder.build().get()
+                        .uri("http://post-service/api/posts/fetch-full-post",
+                        uriBuilder -> uriBuilder.queryParam("postId", orderPlacedEvent.getPostId()).build())
+                        .retrieve()
+                        .bodyToMono(Post.class)
+                        .block();
+                } while (realtimePost == null);
+
+                PostSocketModal postSocketModal = new PostSocketModal(realtimePost, orderPlacedEvent.getRealtimeAction());
+                Method method = SocketService.class.getMethod(orderPlacedEvent.getOrderAction(), PostSocketModal.class);
+                method.invoke(socketService, postSocketModal);
+            } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }

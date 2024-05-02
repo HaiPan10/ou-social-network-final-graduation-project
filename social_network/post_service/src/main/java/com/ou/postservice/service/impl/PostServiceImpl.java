@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ou.postservice.event.NotificationEvent;
-import com.ou.postservice.event.OrderPlacedEvent;
+import com.ou.postservice.event.PostEvent;
 import com.ou.postservice.event.PostMailEvent;
 import com.ou.postservice.pojo.Account;
 import com.ou.postservice.pojo.ImageInPost;
@@ -110,13 +110,6 @@ public class PostServiceImpl implements PostService {
                 new NotificationEvent(this, "notificationTopic", "post", newPost.getId(),
                 null, postContent, true, userId, Long.valueOf(0)));
         }
-
-        // socketService.realtimePost(new SocketPostModal(newPost, "create"));
-        applicationEventPublisher.publishEvent(
-            new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
-        // socketService.realtimeProfile(new SocketPostModal(newPost, "create"));
-        applicationEventPublisher.publishEvent(
-            new OrderPlacedEvent(this, "realtimeTopic", "realtimeProfile"));
         return newPost;
     }
 
@@ -202,7 +195,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post retrieve(Long postId) throws Exception {
-        System.out.println("[DEBUG] - INSIDE THE POST SERVICE");
         Optional<Post> postOptional = postRepositoryJPA.findById(postId);
         if (postOptional.isPresent()) {
             return postOptional.get();
@@ -219,7 +211,6 @@ public class PostServiceImpl implements PostService {
         }
         List<String> oldImageUrls = persistPost.getImageInPostList().stream().map(img -> img.getImageUrl())
                 .collect(Collectors.toList());
-        System.out.println("GOT PERSIST: " + persistPost);
         boolean isDeleted = true;
         try {
             postRepositoryJPA.delete(persistPost);
@@ -347,13 +338,6 @@ public class PostServiceImpl implements PostService {
             .bodyToMono(Integer.class)
             .block();
         post.setCommentTotal(commentTotal);
-
-        // socketService.realtimePost(new SocketPostModal(post, "create"));
-        applicationEventPublisher.publishEvent(
-            new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
-        // socketService.realtimeProfile(new SocketPostModal(post, "create"));
-        applicationEventPublisher.publishEvent(
-            new OrderPlacedEvent(this, "realtimeTopic", "realtimeProfile"));
         return post;
     }
 
@@ -471,8 +455,6 @@ public class PostServiceImpl implements PostService {
         }
 
         // socketService.realtimePost(new SocketPostModal(post, "create"));
-        // applicationEventPublisher.publishEvent(
-        //     new OrderPlacedEvent(this, "realtimeTopic", "realtimePost"));
         return post;
     }
 
@@ -506,5 +488,32 @@ public class PostServiceImpl implements PostService {
             .block();
         post.setUser(user);
         return post;
+    }
+
+    @Override
+    public Post getFullPost(Long postId) throws Exception {
+        Post post = retrieve(postId);
+        postReactionService.countReaction(post, post.getUserId());
+
+        Integer commentTotal = webClientBuilder.build().get()
+            .uri("http://comment-service/api/comments/count",
+            uriBuilder -> uriBuilder.queryParam("postId", post.getId()).build())
+            .retrieve()
+            .bodyToMono(Integer.class)
+            .block();
+            post.setCommentTotal(commentTotal);
+
+        User user = webClientBuilder.build().get()
+            .uri("http://account-service/api/users",
+            uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
+            .retrieve()
+            .bodyToMono(User.class)
+            .block();
+
+        post.setUser(user);
+
+        System.out.println("Realtime for post " + post);
+
+        return post; 
     }
 }

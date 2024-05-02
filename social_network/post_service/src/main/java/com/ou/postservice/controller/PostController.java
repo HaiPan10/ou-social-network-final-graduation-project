@@ -128,6 +128,15 @@ public class PostController {
         }
     }
 
+    @GetMapping(path = "/fetch-full-post")
+    public Post getFullPost(@RequestParam Long postId) {
+        try {
+            return postService.getFullPost(postId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @GetMapping(path = "/stat/post")
     public ResponseEntity<?> stat(@RequestParam Map<String, String> params) {
         try {

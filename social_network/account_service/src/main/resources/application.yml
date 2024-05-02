@@ -28,7 +28,7 @@ spring:
         spring:
           json:
             type:
-              mapping: event-account:com.ou.accountservice.event.AccountMailEvent, event-userdoc:com.ou.accountservice.event.UserDocEvent, event-uploadavatar:com.ou.accountservice.event.UploadAvatarEvent
+              mapping: event-mailaccount:com.ou.accountservice.event.AccountMailEvent, event-userdoc:com.ou.accountservice.event.UserDocEvent, event-uploadavatar:com.ou.accountservice.event.UploadAvatarEvent
   application:
     name: account-service
 

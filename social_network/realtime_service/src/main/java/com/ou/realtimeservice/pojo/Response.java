@@ -5,8 +5,10 @@
 package com.ou.realtimeservice.pojo;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,26 +19,25 @@ import lombok.Setter;
  *
  * @author PHONG
  */
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostSurvey implements Serializable {
-    private Long id;
-    private Date startAt;
-    private String surveyTitle;
-    private String surveyStatus;
-    private Post post;
-    private List<Question> questions;
+public class Response implements Serializable {
 
-    @Override
-    public String toString() {
-        return "com.ou.pojo.PostSurvey[ id=" + id + " ]";
-    }
+    private Long id;
+
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    private Date createdAt;
+
+    private Collection<Answer> answers;
+
+    private PostSurvey surveyId;
+
+    private User userId;
+
     // @Override
     // public String toString() {
-    //     return "PostSurvey [surveyTitle=" + surveyTitle + ", surveyStatus=" + surveyStatus + ", questions=" + questions
-    //             + "]";
+    //     return "Response [answers=" + answers + ", surveyId=" + surveyId + ", userId=" + userId + "]";
     // }
-
 }

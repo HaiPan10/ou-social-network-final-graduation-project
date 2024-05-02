@@ -3,10 +3,6 @@ package com.ou.realtimeservice.pojo;
 import java.io.Serializable;
 import java.util.Date;
 
-
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
