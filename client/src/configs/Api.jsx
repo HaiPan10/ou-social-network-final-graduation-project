@@ -23,7 +23,8 @@ export const endpoints = {
     "in_typing": "/realtime/typing/in_typing",
     "stop_typing": "/realtime/typing/stop_typing",
     "seen_notification": "/realtime/notification/seen",
-    "socket": "/ws"
+    "socket": "/ws",
+    "count_reactions": "/post_reactions/count"
 }
 
 export const authAPI = () => axios.create({

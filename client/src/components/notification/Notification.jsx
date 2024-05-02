@@ -47,8 +47,24 @@ export const Notification = () => {
             privateNotificationUnsubscribe = onSnapshot(notificationQuery, (snapshot) => {
                 let list = [];
                 snapshot.forEach((doc) => {
-                    list.push({ ...doc.data(), id: doc.id });
+                    // console.log({ notificationType: doc.data().notificationType, postId: doc.data().postId });
+                    // if (doc.data().notificationType == "reaction") {
+                    //     list = list.filter(item => item.notificationType !== "reaction" || item.postId !== doc.data().postId);
+                    //     updateNotificationReactionMap(doc.data().postId);
+                    //     list.push({ ...doc.data(), id: doc.id, count: notificationReactionMap[doc.data().postId]});
+                    // } else {
+                    //     list.push({ ...doc.data(), id: doc.id });
+                    // }
+                    // console.log(list.some(item => item.notificationType === doc.data().notificationType || item.postId === doc.data().postId));
+                    if (doc.data().notificationType == "reaction") {
+                        if (!list.some(item => item.notificationType == "reaction" && item.postId == doc.data().postId)) {
+                            list.push({ ...doc.data(), id: doc.id });
+                        }
+                    } else {
+                        list.push({ ...doc.data(), id: doc.id });
+                    }
                 })
+                console.log(list)
                 setPrivateNotifications(list)
             })
         }

@@ -10,6 +10,7 @@ import com.ou.postservice.pojo.User;
 
 public interface PostReactionService {
     void countReaction(Post returnPost, Long currentUser);
+    int countReaction(Long postId);
     PostReaction reaction(Long postId, Long userId, Reaction reaction) throws Exception;
     boolean delete(Long postId, Long userId) throws Exception;
     List<User> getReactionUsers(Long postId, Long reactionId);

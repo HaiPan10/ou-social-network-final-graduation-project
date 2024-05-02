@@ -53,6 +53,11 @@ public class PostReactionServiceImpl implements PostReactionService {
     }
 
     @Override
+    public int countReaction(Long postId) {
+        return postReactionRepositoryJPA.countReaction(postId);
+    }
+
+    @Override
     public PostReaction reaction(Long postId, Long userId, Reaction reaction) throws Exception {
         Reaction persistReaction = reactionRepositoryJPA.findById(reaction.getId()).get();
 
