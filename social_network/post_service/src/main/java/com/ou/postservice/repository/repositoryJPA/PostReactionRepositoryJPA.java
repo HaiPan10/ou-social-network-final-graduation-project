@@ -25,4 +25,7 @@ public interface PostReactionRepositoryJPA extends JpaRepository<PostReaction, L
 
     @Query("SELECT p.userId FROM PostReaction p WHERE p.reactionId.id = :reactionId AND p.postId.id = :postId")
     List<Long> getReactionUsers(@Param("postId") Long postId, @Param("reactionId") Long reactionId);
+
+    @Query("SELECT COUNT(p) FROM PostReaction p WHERE p.postId.id = ?1")
+    int countReaction(@Param("postId") Long postId);
 }

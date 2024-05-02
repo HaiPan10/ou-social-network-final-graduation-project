@@ -18,6 +18,7 @@ export const NotificationItem = ({ notification, type, toggleNotification }) => 
     const [user, dispatch] = useContext(AuthContext)
     const [interactUser, setInteractUser] = useState(null)
     const [postModalShow, setPostModalShow] = useState(false)
+    const [totalReaction, setTotalReaction] = useState(0)
 
     useEffect(() => {
         const fetchInteractUser = async () => {
@@ -36,13 +37,22 @@ export const NotificationItem = ({ notification, type, toggleNotification }) => 
             return () => unsubscribe();
         }
 
+        const countReaction = async () => {
+            let res = await authAPI().get(endpoints['count_reactions'] + `/${notification.postId}`)
+            if (res.status === 200) {
+                setTotalReaction(res.data)
+            }
+        }    
+
         fetchInteractUser()
+        if (notification.notificationType == "reaction") {
+            countReaction()
+        }
     }, [])
 
     const seenNotification = async () => {
         await authAPI().put(endpoints['seen_notification'] + `/${notification.id}`, {})
     }
-
     const viewNotification = () => {
         if (!notification.seen) {
             seenNotification()
@@ -95,7 +105,11 @@ export const NotificationItem = ({ notification, type, toggleNotification }) => 
                         <div className="notificationText">
                             {notification.notificationType === "reaction" && (
                                 <>
-                                    <b>{interactUser.displayName}</b> đã bày tỏ cảm xúc với bài viết của bạn: <b>{notification.content}</b>
+                                    <b>{interactUser.displayName}</b>
+                                    {totalReaction - 1 != 0 && <span>
+                                    {' '}và {totalReaction - 1} người khác{' '}
+                                    </span>}
+                                    {' '}đã bày tỏ cảm xúc với bài viết của bạn: <b>{notification.content}</b>
                                 </>
                             )}
                             {notification.notificationType === "comment" && (

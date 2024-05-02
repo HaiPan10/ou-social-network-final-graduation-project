@@ -58,6 +58,15 @@ public class PostReactionController {
         }
     }
 
+    @GetMapping(path = "/count/{postId}")
+    public ResponseEntity<Object> countReactionFromNotifcation(@PathVariable Long postId) throws Exception {
+        try {
+            return ResponseEntity.ok(postReactionService.countReaction(postId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    } 
+
     @GetMapping("/countReaction")
     public Post countReaction(@RequestParam Long postId) {
         Post post = new Post(postId);

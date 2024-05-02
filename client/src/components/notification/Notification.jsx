@@ -47,8 +47,15 @@ export const Notification = () => {
             privateNotificationUnsubscribe = onSnapshot(notificationQuery, (snapshot) => {
                 let list = [];
                 snapshot.forEach((doc) => {
-                    list.push({ ...doc.data(), id: doc.id });
+                    if (doc.data().notificationType == "reaction") {
+                        if (!list.some(item => item.notificationType == "reaction" && item.postId == doc.data().postId)) {
+                            list.push({ ...doc.data(), id: doc.id });
+                        }
+                    } else {
+                        list.push({ ...doc.data(), id: doc.id });
+                    }
                 })
+                console.log(list)
                 setPrivateNotifications(list)
             })
         }
