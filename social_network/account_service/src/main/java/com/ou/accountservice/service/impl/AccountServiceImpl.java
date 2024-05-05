@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
@@ -43,6 +44,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Autowired
     private JwtService jwtService;
@@ -230,6 +234,9 @@ public class AccountServiceImpl implements AccountService {
 
         try {
             accountRepositoryJPA.verifyAccount(account.getId(), status);
+            // Evict cache of accounts by both id and email
+            cacheManager.getCache("accounts").evictIfPresent(account.getEmail());
+            cacheManager.getCache("accounts").evictIfPresent(account.getId());
         } catch (Exception e) {
             return false;
         }
@@ -314,7 +321,12 @@ public class AccountServiceImpl implements AccountService {
             String encoded = bCryptPasswordEncoder.encode(changedPassword);
             authAccount.setPassword(encoded);
             authAccount.setConfirmPassword(encoded);
-            return accountRepositoryJPA.save(authAccount);
+            Account changedAccount = accountRepositoryJPA.save(authAccount);
+            // Evict cache of accounts by both id and email
+            cacheManager.getCache("accounts").evictIfPresent(authAccount.getEmail());
+            cacheManager.getCache("accounts").evictIfPresent(authAccount.getId());
+
+            return changedAccount;
         } catch (Exception exception){
             throw new Exception(exception);
         }
