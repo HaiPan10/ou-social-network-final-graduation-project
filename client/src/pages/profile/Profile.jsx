@@ -109,7 +109,7 @@ const UpdateAvatar = (props) => {
                 <div className="avatar-container">
                   <img src={selectedAvatar || props.profileUser.avatar} alt="" />
                 </div>
-                <div style={{display:"flex", justifyContent:"center"}}><input type="file" ref={avatar} name="uploadAvatar" onChange={handleAvatarChange} accept="image/png, image/jpeg"/></div>
+                <div style={{display:"flex", justifyContent:"center"}}><input type="file" ref={avatar} name="uploadAvatar" onChange={handleAvatarChange} accept="image/png, image/jpeg, image/gif"/></div>
               </div>
           </Modal.Body>
           <Modal.Footer>

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
@@ -30,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private CloudinaryService cloudinaryService;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private CacheManager cacheManager;
 
     @Override
     public User create(User user) {
@@ -50,6 +54,12 @@ public class UserServiceImpl implements UserService {
             }
             applicationEventPublisher.publishEvent(
                 new UploadAvatarEvent(this, "uploadAvatarTopic", userId, newUrl));
+            
+            // Need to delete the cache both accounts and users
+            cacheManager.getCache("accounts").evictIfPresent(returnUser.getAccount().getEmail());
+            cacheManager.getCache("accounts").evictIfPresent(userId);
+            cacheManager.getCache("users").evictIfPresent(userId);
+
             return returnUser;
         } catch (IOException e) {
             throw new IOException("Fail to upload avatar");
@@ -68,6 +78,12 @@ public class UserServiceImpl implements UserService {
             if (!oldUrl.equals(defaultCover)) {
                 cloudinaryService.deleteImage(oldUrl);
             }
+
+            // Need to delete the cache both accounts and users
+            cacheManager.getCache("accounts").evictIfPresent(returnUser.getAccount().getEmail());
+            cacheManager.getCache("accounts").evictIfPresent(userId);
+            cacheManager.getCache("users").evictIfPresent(userId);
+
             return returnUser;
         } catch (IOException e) {
             throw new IOException("Fail to upload avatar");
@@ -100,7 +116,14 @@ public class UserServiceImpl implements UserService {
             persistentUser.setLastName(user.getLastName());
         }
 
-        return userRepositoryJPA.save(persistentUser);
+        User savedUser =  userRepositoryJPA.save(persistentUser);
+
+        // Need to delete the cache both accounts and users
+        cacheManager.getCache("accounts").evictIfPresent(persistentUser.getAccount().getEmail());
+        cacheManager.getCache("accounts").evictIfPresent(userId);
+        cacheManager.getCache("users").evictIfPresent(userId);
+
+        return savedUser;
     }
 
     @Override
