@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: react-app
+  name: mail-deployment
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: react-app
+      app: mail
+  replicas: 1
   template:
     metadata:
       labels:
-        app: react-app
+        app: mail
     spec:
       containers:
-        - name: react-app
-          image: phonglai0809/react-app:latest
+        - name: mail
+          image: phonglai0809/ou-social-network-mail:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 8084

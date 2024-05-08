@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realtime-deployment
+spec:
+  selector:
+    matchLabels:
+      app: realtime
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: realtime
+    spec:
+      containers:
+        - name: realtime
+          image: phonglai0809/ou-social-network-realtime:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8086
