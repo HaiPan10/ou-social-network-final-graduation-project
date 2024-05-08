@@ -13,3 +13,8 @@ logging:
     org:
       springframework:
         security: INFO
+
+server:
+  error:
+    include-message: always
+  port: 80

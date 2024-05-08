@@ -1,12 +1,6 @@
 package com.ou.mailservice.configs;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,36 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-// import org.springframework.security.core.GrantedAuthority;
-// import org.springframework.security.core.authority.SimpleGrantedAuthority;
-// import org.springframework.security.core.userdetails.UserDetails;
-// import org.springframework.security.core.userdetails.UserDetailsService;
-// import org.springframework.security.core.userdetails.UsernameNotFoundException;
-// import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.validation.Validator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-// import com.cloudinary.Cloudinary;
-// import com.cloudinary.utils.ObjectUtils;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import com.google.auth.oauth2.GoogleCredentials;
-// import com.google.firebase.FirebaseApp;
-// import com.google.firebase.FirebaseOptions;
-// import com.ou.social_network.components.DateFormatter;
-// import com.ou.social_network.pojo.Account;
-// import com.ou.social_network.repository.repositoryJPA.AccountRepositoryJPA;
-
 import jakarta.annotation.PostConstruct;
 
 @Configuration

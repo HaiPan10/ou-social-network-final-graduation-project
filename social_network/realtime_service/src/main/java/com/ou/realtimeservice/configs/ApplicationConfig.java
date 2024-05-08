@@ -11,8 +11,6 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 import com.ou.realtimeservice.components.DateFormatter;
 
 import jakarta.annotation.PostConstruct;
