@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: comment-service
 spec:
-  type: NodePort
+  # type: NodePort
   selector:
     app: comment
   ports:

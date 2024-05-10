@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-gateway-nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "ou-social-network-prod"
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - hosts:
+    - ousocialnetwork.southeastasia.cloudapp.azure.com
+    secretName: ousocialnetwork-tls
+  rules:
+  - host: ousocialnetwork.southeastasia.cloudapp.azure.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway-service
+            port:
+              number: 80

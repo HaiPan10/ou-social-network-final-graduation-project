@@ -1,6 +1,7 @@
 eureka:
     instance:
         hostname: 10.0.193.60
+        prefer-ip-address: true
     client:
         register-with-eureka: false
         fetch-registry: false

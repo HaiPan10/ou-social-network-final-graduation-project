@@ -6,6 +6,8 @@ spring:
           max-request-size: 10MB
   main:
     allow-circular-references: true
+  application:
+    name: admin-service
 
 #JPA/Hibernate
 server:
@@ -29,3 +31,5 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://10.0.193.60:8761/eureka
+  instance:
+    prefer-ip-address: true
