@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: post-service
 spec:
-  type: NodePort
+  # type: NodePort
   selector:
     app: post
   ports:

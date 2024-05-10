@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: eureka-server-service
 spec:
+  # type: LoadBalancer
   selector:
     app: eureka-server
   ports:
