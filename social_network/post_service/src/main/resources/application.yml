@@ -22,7 +22,7 @@ spring:
   application:
     name: post-service
   kafka:
-    bootstrap-servers: 10.0.54.147:9092
+    bootstrap-servers: 10.0.163.82:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -53,6 +53,6 @@ logging:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://10.0.193.60:8761/eureka
+      defaultZone: http://10.0.24.90:8761/eureka
   instance:
     prefer-ip-address: true
