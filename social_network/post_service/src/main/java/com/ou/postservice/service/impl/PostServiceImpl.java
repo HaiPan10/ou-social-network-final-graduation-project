@@ -482,7 +482,7 @@ public class PostServiceImpl implements PostService {
             .setContentType(String.format("image/%s", CloudinaryUtils.getImageType(img.getImageUrl()))));
         User user = webClientBuilder.build().get()
             .uri("http://account-service/api/users",
-            uriBuilder -> uriBuilder.queryParam("userId", userId).build())
+            uriBuilder -> uriBuilder.queryParam("userId", post.getUserId()).build())
             .retrieve()
             .bodyToMono(User.class)
             .block();

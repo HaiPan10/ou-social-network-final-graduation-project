@@ -321,6 +321,7 @@ public class AccountServiceImpl implements AccountService {
             String encoded = bCryptPasswordEncoder.encode(changedPassword);
             authAccount.setPassword(encoded);
             authAccount.setConfirmPassword(encoded);
+            authAccount.setStatus(Status.ACTIVE.toString());
             Account changedAccount = accountRepositoryJPA.save(authAccount);
             // Evict cache of accounts by both id and email
             cacheManager.getCache("accounts").evictIfPresent(authAccount.getEmail());
