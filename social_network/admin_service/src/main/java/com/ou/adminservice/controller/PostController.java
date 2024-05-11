@@ -114,8 +114,9 @@ public class PostController {
             if(bindingResult.hasErrors()){
                 return "pages/uploadPost";
             }
+            String hostName = env.getProperty("SERVER_HOSTNAME");
             postService.uploadPost(post.getContent(), Long.valueOf(1), images, post.getIsActiveComment());
-            return "redirect:/admin/posts?status=success";
+            return String.format("redirect:%s/admin/posts?status=success", hostName);
         } catch (Exception e) {
             bindingResult.addError(new ObjectError("exceptionError", e.getMessage()));
             return "pages/uploadPost";

@@ -108,9 +108,10 @@ public class AccountController {
 
     @GetMapping("/verification/{accountId}")
     public String verify(@PathVariable Long accountId, @RequestParam String status) throws Exception {
+        String hostName = env.getProperty("SERVER_HOSTNAME");
         boolean result = accountService.verifyAccount(accountId, status);
         log.info("Verify result: " + result);
-        return "redirect:/admin/accounts/verification";
+        return String.format("redirect:%s/admin/accounts/verification", hostName);
     }
 
     @GetMapping("/provider")
@@ -131,6 +132,7 @@ public class AccountController {
             @RequestPart(value = "fileInput", required = false) MultipartFile avatar,
             BindingResult bindingResult, Model model) throws Exception {
         try {
+            String hostName = env.getProperty("SERVER_HOSTNAME");
             System.out.printf("[INFO] - Provider email: %s\n", account);
             String defaultPassword = env.getProperty("DEFAULT_PASSWORD");
             model.addAttribute("defaultPassword", defaultPassword);
@@ -155,7 +157,7 @@ public class AccountController {
             if (!avatar.isEmpty()) {
                 userService.uploadAvatar(avatar, createdAccount.getId());
             }
-            return "redirect:/admin/accounts/provider?status=success";
+            return String.format("redirect:%s/admin/accounts/provider?status=success", hostName);
         } catch (Exception e) {
             bindingResult.addError(new ObjectError("exceptionError", e.getMessage()));
             System.out.println("[DEBUG] - " + e.getMessage());
