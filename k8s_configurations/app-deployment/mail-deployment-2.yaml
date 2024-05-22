@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mail-deployment
+  name: mail-deployment-2
 spec:
   selector:
     matchLabels:
-      app: mail
-  replicas: 2
+      app: mail-2
+  replicas: 1
   template:
     metadata:
       labels:
-        app: mail
+        app: mail-2
     spec:
       containers:
-        - name: mail
+        - name: mail-2
           image: phonglai0809/ou-social-network-mail:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8084
+            - containerPort: 8087

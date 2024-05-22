@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: post-deployment
+  name: account-deployment-1
 spec:
   selector:
     matchLabels:
-      app: post
-  replicas: 2
+      app: account-1
+  replicas: 1
   template:
     metadata:
       labels:
-        app: post
+        app: account-1
     spec:
       containers:
-        - name: post
-          image: phonglai0809/ou-social-network-post:latest
+        - name: account-1
+          image: phonglai0809/ou-social-network-account:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8085
+            - containerPort: 8082
           # env:
           #   - name: DB_HOST
           #     valueFrom :

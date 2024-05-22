@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: account-deployment
+  name: comment-deployment-2
 spec:
   selector:
     matchLabels:
-      app: account
-  replicas: 2
+      app: comment-2
+  replicas: 1
   template:
     metadata:
       labels:
-        app: account
+        app: comment-2
     spec:
       containers:
-        - name: account
-          image: phonglai0809/ou-social-network-account:latest
+        - name: comment-2
+          image: phonglai0809/ou-social-network-comment:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8082
+            - containerPort: 8085
           # env:
           #   - name: DB_HOST
           #     valueFrom :

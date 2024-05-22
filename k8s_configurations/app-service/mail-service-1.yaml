@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: realtime-service
+  name: mail-service-1
 spec:
   selector:
-    app: realtime
+    app: mail-1
   ports:
     - protocol: "TCP"
       port: 8086
