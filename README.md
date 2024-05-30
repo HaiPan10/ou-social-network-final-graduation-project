@@ -72,6 +72,7 @@ Bước này cần thiết để tạo các trường dữ liệu cần thiết,
 ### Cài đặt các dependencies của project
 Chạy câu lệnh
 ```
+cd client
 npm install --legacy-peer-deps
 ```
 
