@@ -3,7 +3,7 @@
 Hệ thống mạng xã hội cựu sinh viên trường đại học Mở thành phố Hồ Chí Minh với mục tiêu gắn kết các sinh viên sau khi ra trường với nhà trường và tạo điều kiện thuận lợi cho nhà trường khi cần giao tiếp và liên lạc với cựu sinh viên.
 
 ## Hướng dẫn chạy local phía server
-### Môi trường cần được chuyển bị sẵn
+### Môi trường cần được chuẩn bị sẵn
 - JAVA Development Kit 17.
 - Biến môi trường JAVA_HOME.
 - Docker cho Desktop.
@@ -66,7 +66,7 @@ Bước này cần thiết để tạo các trường dữ liệu cần thiết,
 - social_network\post_service\backup.sql
 
 ## Hướng dẫn chạy local phía client
-### Môi trường cần được chuyển bị sẵn
+### Môi trường cần được chuẩn bị sẵn
 - Môi trường ReactJS
 
 ### Cài đặt các dependencies của project
