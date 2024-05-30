@@ -8,12 +8,12 @@ spring:
     allow-circular-references: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # url: jdbc:mysql://localhost:3306/ou-social-network-commentdb
-    # username: root
-    # password: IamPhong89
-    url: jdbc:mysql://ou-social-network.mysql.database.azure.com:3306/ou-social-network-commentdb
-    username: ousocialnetwork
-    password: SVDaiHocMo2020?!
+    url: jdbc:mysql://localhost:3306/ou-social-network-commentdb
+    username: root
+    password: IamPhong89
+    # url: jdbc:mysql://ou-social-network.mysql.database.azure.com:3306/ou-social-network-commentdb
+    # username: ousocialnetwork
+    # password: SVDaiHocMo2020?!
   jpa:
     show-sql: true
     hibernate:
@@ -22,7 +22,7 @@ spring:
   application:
     name: comment-service
   kafka:
-    bootstrap-servers: 10.0.163.82:9092
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -53,6 +53,6 @@ logging:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://10.0.24.90:8761/eureka
+      defaultZone: http://localhost:8761/eureka
   instance:
     prefer-ip-address: true

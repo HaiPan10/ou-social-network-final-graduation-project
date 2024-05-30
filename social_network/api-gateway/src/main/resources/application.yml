@@ -17,4 +17,4 @@ logging:
 server:
   error:
     include-message: always
-  port: 80
+  port: 8080

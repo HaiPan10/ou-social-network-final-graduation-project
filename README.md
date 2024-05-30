@@ -2,86 +2,82 @@
 
 Hệ thống mạng xã hội cựu sinh viên trường đại học Mở thành phố Hồ Chí Minh với mục tiêu gắn kết các sinh viên sau khi ra trường với nhà trường và tạo điều kiện thuận lợi cho nhà trường khi cần giao tiếp và liên lạc với cựu sinh viên.
 
-## Hướng dẫn chạy local
-### Chuẩn bị môi trường
-- Cài đặt JAVA Development Kit 17 từ trang: https://www.oracle.com/java/technologies/downloads/#java17 <br>
-- Cài đặt biến JAVA_HOME bằng cách vào tìm kiếm trên Windows gõ Edit Environment Variables for your account
-- Trong mục User variables chọn New 
-- Nhập JAVA_HOME trong variable name và đường dẫn tới JDK trong variable values
+## Hướng dẫn chạy local phía server
+### Môi trường cần được chuyển bị sẵn
+- JAVA Development Kit 17.
+- Biến môi trường JAVA_HOME.
+- Docker cho Desktop.
+- Tạo sẵn các database: ou-social-network-accountdb, ou-social-network-commentdb, ou-social-network-postdb.
+### Thiết lập kết nối với MySQL
+- Mở file config.json
+- Thêm 1 thông tin user theo mẫu
+```
+"<Tên tùy ý>": {
+        "username": "root",
+        "password": "<mật khẩu mysql trên máy>"
+}
+```
+- Gõ .\Set-Password.ps1 sau đó nhập tên mới được thêm vào.
+### Khởi chạy các service
+- Có 8 services nên cần mở 8 terminal tương ứng với từng services
+- Lần lượt thực hiện các commands sau:
+```
+cd social_network/account_service
+mvn spring-boot:run
+```
+```
+cd social_network/admin_service
+mvn spring-boot:run
+```
+```
+cd social_network/api-gateway
+mvn spring-boot:run
+```
+```
+cd social_network/comment_service
+mvn spring-boot:run
+```
+```
+cd social_network/eureka-server
+mvn spring-boot:run
+```
+```
+cd social_network/mail_service
+mvn spring-boot:run
+```
+```
+cd social_network/post_service
+mvn spring-boot:run
+```
+```
+cd social_network/realtime_service
+mvn spring-boot:run
+```
+### Khởi chạy kafka và redis
+Mở 1 terminal khác, gõ docker compose up -d
 
-## Hướng dẫn triển khai
+> [!IMPORTANT]  
+> Sau khi xong các bước trên, ở các service sẽ không còn hiện lỗi hay exception nào
 
-### Một số lưu ý khi triển khai 
-#### Phía server
-Trong application.yml, comment dòng code
-```
-driver-class-name: com.mysql.cj.jdbc.Driver
-url: jdbc:mysql://localhost:3306/ou-social-network
-username: root
-# password: mai2604
-password: IamPhong89
-```
-Sau đó uncomment dòng code
-```
-# url: jdbc:mysql://34.118.232.140:3306/${DB_NAME}
-# username: ${DB_USERNAME}
-# password: ${DB_PASSWORD}
-```
-Trong configs.properties, comment dòng code
-```
-SERVER_HOSTNAME=http://localhost:8080
-CLIENT_HOSTNAME=http://localhost:3000
-```
-Sau đó uncomment dòng code
-```
-SERVER_HOSTNAME=http://34.101.48.117:80
-CLIENT_HOSTNAME=http://ousocialnetwork.id.vn
-```
+### Back up dữ liệu
+Bước này cần thiết để tạo các trường dữ liệu cần thiết, đồng thời phục hồi dữ liệu của người dùng. Mở MySQL, lần lượt chạy các file sql sau:
+- social_network\account_service\backup.sql
+- social_network\comment_service\backup.sql
+- social_network\post_service\backup.sql
 
-#### Phía client
-Trong package.json, sửa đoạn code
-```
-"scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-},
-```
-thành
-```
-"scripts": {
-    "start": "export PORT=80 && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-},
-```
-Trong configs/Api.jsx, comment toàn bộ đoạn code
-```
-baseURL: 'http://127.0.0.1:8080/api'
-export const socketUrl = 'http://127.0.0.1:8080/api/ws'
-```
-Và uncomment toàn bộ đoạn code
-```
-baseURL: "http://34.101.48.117:80/api"
-baseURL:"'http://34.101.48.117:80/api/ws"
-```
+## Hướng dẫn chạy local phía client
+### Môi trường cần được chuyển bị sẵn
+- Môi trường ReactJS
 
-### Một số câu lệnh build Docker trước khi triển khai
-#### Khi build server
+### Cài đặt các dependencies của project
+Chạy câu lệnh
 ```
-docker build -t ou-social-network:latest . 
-docker tag ou-social-network:latest phonglai0809/ou-social-network:latest 
-docker push phonglai0809/ou-social-network:latest
-```
-#### Khi build client
-```
-docker build -t react-app:latest . 
-docker tag react-app:latest phonglai0809/react-app:latest 
-docker push phonglai0809/react-app:latest
+npm install --legacy-peer-deps
 ```
 
-#### Note mới
-mvn clean compile jib:build
-update timestamp in userDoc
+### Khởi chạy client
+Tạo 1 terminal mới thực thi lệnh sau:
+```
+cd client
+npm start
+```

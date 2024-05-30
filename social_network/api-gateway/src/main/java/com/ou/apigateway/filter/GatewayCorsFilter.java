@@ -27,7 +27,7 @@ public class GatewayCorsFilter implements GlobalFilter {
                         for (String h : header) {
                             log.info(h);
                         }
-                        httpHeaders.set("Access-Control-Allow-Origin", "https://ousocialnetwork.id.vn");
+                        httpHeaders.set("Access-Control-Allow-Origin", "http://localhost:3000");
                         httpHeaders.set("Access-Control-Allow-Credentials", "true");
                     }
 
